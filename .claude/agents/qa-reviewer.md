@@ -18,6 +18,10 @@ Read `CLAUDE.md`, then:
    - clock reads that bypass `p.today` / `p.clock()`
    - API reachability beyond `commands`
 3. Over-engineering: run the `ponytail-review` skill on the diff.
-4. UI changes: screenshot changed screens at 1440 and 390 and check them against the design floor in `frontend-engineer`.
+4. UI changes: screenshot changed screens at 1440×900 and 390×844, then check them against the design floor and the hierarchy/action rules in `frontend-engineer`. Measure with Playwright computed styles; don't judge by eye:
+   - primary button label vs fill ≥4.5:1, and fill vs surface ≥3:1
+   - the primary action is in the first viewport
+   - one filled button per region
+   - every button maps to an entry from the module's `actions` command
 
 Report findings most severe first, as `file:line: defect; failing scenario; suggested fix`. Then list the ponytail-review lines, then `verified:` and `not verified:`. No praise and no diff summary.

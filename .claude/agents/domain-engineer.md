@@ -21,6 +21,7 @@ You build one capability of the Source-to-Pay platform. Read `CLAUDE.md`, load t
 - Every command runs in this order: `guard()` (role, project, value) → validate inputs → `next(flow, …)` on a Flow table declared in your module → mutate → `p.emit(user, '<entity>.<past-tense>', id, data)`.
 - Your own tables go through `p.table<T>('name')`, and your own types live in your file.
 - `export const commands = { ... }`: exactly what the API may call. Nothing else is reachable.
+- A module with a Flow also exports an `actions(p, user, id)` command that returns `available(flow, state, user)`. The UI draws its buttons from it.
 - Money is AED at 2dp, rounded per line. Dates are ISO strings. Use `p.today` and `p.clock()`, never `new Date()`.
 - Never simplify away: access checks, segregation of duties, authority limits, sealed data, audit events.
 

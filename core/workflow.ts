@@ -11,6 +11,11 @@ export function next(flow: Flow, state: string, action: string, user: User): str
   return t.to;
 }
 
+// Actions this user's roles allow from the current state. The UI renders exactly
+// these as buttons; extra checks (SoD, budget, limits) come back as the command's error.
+export const available = (flow: Flow, state: string, user: User) =>
+  Object.entries(flow[state] ?? {}).filter(([, t]) => t.roles.some(r => user.roles.includes(r))).map(([action]) => action);
+
 // Role + attribute check: role, project scope and transaction value.
 export function guard(user: User, roles: Role[], ctx: { projectId?: string; value?: number } = {}) {
   if (!roles.some(r => user.roles.includes(r))) throw new Error(`${user.name} needs one of: ${roles.join(', ')}`);

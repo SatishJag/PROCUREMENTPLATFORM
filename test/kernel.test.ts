@@ -3,6 +3,7 @@ import { test } from 'node:test';
 import { AuditLog } from '../core/audit.ts';
 import { parseCsv, toCsv } from '../core/csv.ts';
 import { Platform } from '../core/kernel.ts';
+import { available } from '../core/workflow.ts';
 
 test('audit: tampering with any event breaks the chain', () => {
   const log = new AuditLog();
@@ -29,4 +30,11 @@ test('kernel: new modules get their own tables and event subscriptions without k
   assert.deepEqual(seen, ['PO-1']);
   assert.equal(p.get<{ id: string }>('purchaseOrders', 'PO-1').id, 'PO-1');
   assert.throws(() => p.get('purchaseOrders', 'PO-2'), /not found/);
+});
+
+test('workflow: available() returns only the actions the user can take, so the UI never shows dead buttons', () => {
+  const flow = { submitted: { approve: { to: 'approved', roles: ['budget_owner' as const] }, withdraw: { to: 'draft', roles: ['requester' as const] } } };
+  const user = { id: 'u', name: 'U', projects: ['*'], roles: ['budget_owner' as const] };
+  assert.deepEqual(available(flow, 'submitted', user), ['approve']);
+  assert.deepEqual(available(flow, 'approved', user), []);
 });

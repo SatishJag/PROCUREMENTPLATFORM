@@ -42,6 +42,7 @@ web/      next: React app + scroll-craft product tour
 | contracts | `contract.drafted` | |
 
 ### API contract
+Every module with a workflow has an `actions` command (intake, suppliers, sourcing, awards).
 `POST /api/<module>/<command>`, body `{"args":[...]}`, header `x-user-id` → `{ok:true,data}` or `400/401/404/413 {ok:false,error}`. `GET /api` lists the commands.
 
 ## Conventions
@@ -49,6 +50,13 @@ web/      next: React app + scroll-craft product tour
 - Errors: `throw new Error('<sentence an end user can act on>')`. The API returns the message as is.
 - IDs: `p.id('PREFIX')` → `PREFIX-0001`. Commands are verbs; events are `entity.past_tense`.
 - Sample data is fictional: no real company names and no client or vendor branding.
+
+## Design principles (web/, mandatory)
+1. **Visual hierarchy**: every screen answers, in order: what is this, what state is it in, what do I do next. One focal point per screen, and it passes the squint test.
+2. **Prominent actions**: the next workflow step is a high-contrast primary button, visible without scrolling, one per region. Secondary actions are visibly quieter. Destructive actions look different and ask for a reason.
+3. **Actions come from the engine**: buttons render from each module's `actions` command (`core/workflow.ts` `available()`), so users only see what they can do. A blocked action shows the engine's error message as the reason.
+
+The measurable rules are in `.claude/agents/frontend-engineer.md`, and `qa-reviewer` enforces them.
 
 ## Decisions
 - **Decided**: TypeScript throughout. RPC API. Web stack: React + Vite + Tailwind v4 tokens + TanStack Query (see `frontend-engineer`). Postgres and Entra ID come next on the platform track. The uploaded `# CLAUDE.md — Frontend Website Rule.txt` guardrails apply to `web/`; its Windows paths and scripts don't.
@@ -76,5 +84,5 @@ Don't spawn an agent for a change the lead can make in a few edits. Default mode
 Update this file in the same commit as any change to: layout, conventions, the event catalogue, the API contract, decisions, agent roles, or status. Agents propose edits with a `CLAUDE.md delta:` line in their report. Only the lead edits this file.
 
 ## Status
-- **Done**: Phase 1 capability core (intake, planning, suppliers, sourcing, two-envelope evaluation, award scenarios, DOA approvals, contract handoff, reporting, audit chain, CSV), RPC API, 9 tests.
+- **Done**: Phase 1 capability core (intake, planning, suppliers, sourcing, two-envelope evaluation, award scenarios, DOA approvals, contract handoff, reporting, audit chain, CSV), RPC API, `actions` commands for engine-driven buttons, 10 tests.
 - **Next**: `web/` (design system → module screens → tour), then the user's new capabilities, then Postgres and Entra ID.

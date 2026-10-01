@@ -5,7 +5,7 @@ This is the Source-to-Contract engine behind the platform described in `PRocurem
 There is no UI yet (that's next). Everything here is TypeScript with **no runtime dependencies**. Node 22.18+ runs it directly, with no build step. Architecture, conventions and the multi-agent team are in [`CLAUDE.md`](CLAUDE.md).
 
 ```bash
-npm test            # 9 checks: end-to-end flow, money paths, approvals, audit tamper, CSV safety, kernel, API
+npm test            # 10 checks: end-to-end flow, money paths, approvals, audit tamper, CSV safety, kernel, API
 npm run demo        # walks a 24 MW data-centre generator ITT from intake to signed-off award
 npm run api         # JSON RPC on http://127.0.0.1:8787/api (GET /api lists commands)
 npm i && npm run typecheck

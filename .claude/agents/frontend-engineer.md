@@ -25,6 +25,19 @@ React + TypeScript + Vite in `web/`. Tailwind v4 with design tokens declared onc
   - Hover, focus-visible, active and disabled states on every control.
   - Tabular numerals for money, 4.5:1 text contrast, and layouts that work down to 390px.
   - Respect reduced-motion. No em dashes, invented statistics or emoji icons.
+- Visual hierarchy (check each screen against all of these):
+  - The page header holds the title, a status chip, the key figures (value, deadline, score) and the primary action. All of it is visible at 1440×900 and 390×844 without scrolling.
+  - Use at most three type levels: title, section, and body/label. Each level differs in both size and weight. Supporting text uses `ink-soft`.
+  - The deciding number on a screen (award value, score, float days) is set at display size in tabular numerals. Supporting detail goes in collapsible sections.
+  - Squint test: blur the screenshot. The title and the primary action must still be the first two things you can make out.
+- Action buttons (check each screen against all of these):
+  - Exactly one filled primary button per region. It uses the accent fill, the next workflow step, and a verb + object label of 1–3 words that never wraps ("Approve award", "Submit bid"). The label needs 4.5:1 contrast with the fill, and the fill needs 3:1 against the surface behind it. Height is at least 40px on desktop and 44px on touch.
+  - Same place on every screen: the right of the page header on desktop, and a sticky bottom action bar on mobile and on long forms.
+  - Secondary actions are outlined, tertiary ones are text links, and two filled buttons never sit side by side.
+  - Destructive actions (reject, suspend, withdraw) use the danger colour, outlined, and collect a reason before calling the engine.
+  - States: hover; focus-visible with a 3:1 ring and offset; active (`scale(0.97)`); disabled with the reason shown next to it; loading that keeps the button's width.
+  - Render buttons from the module's `actions` command. Never hard-code role checks in the UI.
+  - The dashboard's "My actions" list has the action button inline on every row.
 - Verify with Playwright (Chromium at `/opt/pw-browsers`): screenshot every screen you change at 1440 and 390, read the PNGs, fix, then shoot again.
 
 Done: `npm --prefix web run build` passes, screenshots reviewed, and a report listing the screenshot paths and any `CLAUDE.md delta:`.

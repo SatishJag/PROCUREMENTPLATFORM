@@ -2,7 +2,7 @@ import { sha256 } from '../core/audit.ts';
 import { parseCsv } from '../core/csv.ts';
 import type { Platform } from '../core/kernel.ts';
 import type { BidLine, BoqLine, Criterion, EventStatus, Exclusion, Lot, Package, Role, SourcingEvent, User } from '../core/types.ts';
-import { type Flow, guard, next } from '../core/workflow.ts';
+import { available, type Flow, guard, next } from '../core/workflow.ts';
 import { ROUTES } from './intake.ts';
 import { eligibility } from './suppliers.ts';
 
@@ -172,4 +172,10 @@ export function close(p: Platform, user: User, eventId: string) {
   return ev;
 }
 
-export const commands = { create, publish, clarify, answer, portal, submitBid, close };
+// Event-stage actions. Approval-stage buttons come from awards.actions.
+export function actions(p: Platform, user: User, eventId: string) {
+  const ev = eventFor(p, user, eventId);
+  return ev.status === 'approval' ? [] : available(eventFlow, ev.status, user);
+}
+
+export const commands = { create, publish, clarify, answer, portal, submitBid, close, actions };

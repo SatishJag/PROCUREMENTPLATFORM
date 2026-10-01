@@ -1,6 +1,6 @@
 import type { Platform } from '../core/kernel.ts';
 import type { BudgetCheck, Package, Project, Recommendation, Requisition, Route, User } from '../core/types.ts';
-import { type Flow, guard, next } from '../core/workflow.ts';
+import { available, type Flow, guard, next } from '../core/workflow.ts';
 import { schedule } from './planning.ts';
 
 // Guided intake: free text + value → structured requisition → approved package.
@@ -127,4 +127,10 @@ export function decide(p: Platform, user: User, id: string, decision: 'approve' 
 }
 
 // What the API may call. Pure helpers above stay internal.
-export const commands = { submit, decide };
+export function actions(p: Platform, user: User, id: string) {
+  const req = p.get<Requisition>('requisitions', id);
+  guard(user, user.roles, { projectId: req.projectId });
+  return available(requisitionFlow, req.status, user);
+}
+
+export const commands = { submit, decide, actions };

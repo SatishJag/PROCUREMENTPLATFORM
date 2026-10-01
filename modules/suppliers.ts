@@ -1,7 +1,7 @@
 import { daysBetween } from '../core/dates.ts';
 import type { Platform } from '../core/kernel.ts';
 import type { Supplier, SupplierDoc, User } from '../core/types.ts';
-import { type Flow, guard, next } from '../core/workflow.ts';
+import { available, type Flow, guard, next } from '../core/workflow.ts';
 
 // Supplier onboarding, qualification, eligibility and discovery.
 
@@ -68,4 +68,9 @@ export function search(p: Platform, user: User, category: string) {
   return discover([...p.suppliers.values()], category, p.today);
 }
 
-export const commands = { register, qualify, search };
+export function actions(p: Platform, user: User, supplierId: string) {
+  if (user.roles.includes('supplier') && user.supplierId !== supplierId) return [];
+  return available(supplierFlow, p.get<Supplier>('suppliers', supplierId).status, user);
+}
+
+export const commands = { register, qualify, search, actions };

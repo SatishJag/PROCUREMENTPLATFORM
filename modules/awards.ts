@@ -96,4 +96,12 @@ export function decide(p: Platform, user: User, awardId: string, decision: 'appr
   return award;
 }
 
-export const commands = { recommend, decide };
+// Approve/reject buttons only for the role the award is waiting on.
+export function actions(p: Platform, user: User, awardId: string) {
+  const award = p.get<Award>('awards', awardId);
+  eventFor(p, user, award.eventId);
+  const step = award.status === 'pending' ? award.steps.find(s => !s.decision) : undefined;
+  return step && user.roles.includes(step.role) ? ['approved', 'rejected'] : [];
+}
+
+export const commands = { recommend, decide, actions };
