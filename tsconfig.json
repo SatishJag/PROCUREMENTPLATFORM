@@ -8,5 +8,5 @@
     "verbatimModuleSyntax": true,
     "types": ["node"]
   },
-  "include": ["core", "test", "demo.ts"]
+  "include": ["core", "modules", "sample", "server", "test"]
 }

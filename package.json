@@ -7,8 +7,9 @@
   },
   "scripts": {
     "test": "node --test test/*.test.ts",
-    "demo": "node demo.ts",
-    "typecheck": "tsc"
+    "demo": "node sample/demo.ts",
+    "typecheck": "tsc",
+    "api": "node server/index.ts"
   },
   "devDependencies": {
     "@types/node": "^22.18.0",

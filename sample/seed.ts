@@ -1,6 +1,6 @@
-import { schedule } from './planning.ts';
-import type { Package, Supplier, User } from './types.ts';
-import type { Seed } from './platform.ts';
+import type { Seed } from '../core/kernel.ts';
+import type { Package, Project, Supplier, User } from '../core/types.ts';
+import { schedule } from '../modules/planning.ts';
 
 // Sample data: a fictional 24 MW data-centre programme. All names are invented.
 const SEEDED_ON = '2026-10-01';
@@ -55,16 +55,15 @@ const packages: Package[] = [
   pkg({ id: 'PKG-MV', projectId: 'DC1', costCode: '26-11-00', title: 'MV switchgear and 6 x 3 MVA transformers', category: 'Electrical / MV Switchgear', estimate: 16_900_000, needBy: '2027-12-01', route: 'ITT', status: 'planned', leadWeeks: 36, prequal: true }),
 ];
 
+const projects: Project[] = [{
+  id: 'DC1', name: 'Data Centre DC1, Phase 1', site: 'Dubai South (sample)', capacityMW: 24,
+  budgets: { '26-32-00': 48_000_000, '23-64-00': 36_000_000, '26-33-00': 22_000_000, '26-11-00': 18_000_000, '27-10-00': 6_500_000, '01-41-00': 3_000_000 },
+  committed: { '26-33-00': 19_400_000, '01-41-00': 1_150_000 },
+}];
+
 export function demoSeed(): Seed {
   return {
-    users,
-    suppliers,
-    packages,
-    projects: [{
-      id: 'DC1', name: 'Data Centre DC1, Phase 1', site: 'Dubai South (sample)', capacityMW: 24,
-      budgets: { '26-32-00': 48_000_000, '23-64-00': 36_000_000, '26-33-00': 22_000_000, '26-11-00': 18_000_000, '27-10-00': 6_500_000, '01-41-00': 3_000_000 },
-      committed: { '26-33-00': 19_400_000, '01-41-00': 1_150_000 },
-    }],
+    tables: { users, suppliers, packages, projects },
     fx: { AED: 1, USD: 3.6725, EUR: 4.28 }, // AED per unit, sample rates
   };
 }

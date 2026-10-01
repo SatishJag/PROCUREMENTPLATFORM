@@ -1,10 +1,13 @@
-// Core data objects, following the requirement's chain:
+// Shared data objects, following the requirement's chain. A new module keeps its
+// own types in its own file and only adds here what other modules must share.
 // Project → Budget → Package → Requisition → Sourcing Event → Lot → Bid → Evaluation → Award → Contract
 // Money is AED unless a field says otherwise. Dates are ISO strings (YYYY-MM-DD or full timestamps).
 
+// Every role in the requirement's portal list, so new modules don't edit this line.
 export type Role =
-  | 'requester' | 'buyer' | 'procurement_manager' | 'technical_evaluator' | 'commercial_evaluator'
-  | 'budget_owner' | 'legal' | 'executive' | 'auditor' | 'admin' | 'supplier';
+  | 'requester' | 'project_manager' | 'buyer' | 'procurement_manager' | 'category_manager'
+  | 'technical_evaluator' | 'commercial_evaluator' | 'legal' | 'finance' | 'budget_owner' | 'executive'
+  | 'compliance_reviewer' | 'expeditor' | 'admin' | 'auditor' | 'supplier';
 
 export interface User {
   id: string;

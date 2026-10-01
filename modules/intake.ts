@@ -1,4 +1,9 @@
-import type { BudgetCheck, Project, Recommendation, Route } from './types.ts';
+import type { Platform } from '../core/kernel.ts';
+import type { BudgetCheck, Package, Project, Recommendation, Requisition, Route, User } from '../core/types.ts';
+import { type Flow, guard, next } from '../core/workflow.ts';
+import { schedule } from './planning.ts';
+
+// Guided intake: free text + value → structured requisition → approved package.
 
 // Category taxonomy with typical manufacturing + delivery lead times (weeks).
 // ponytail: keyword classifier. Swap for an LLM classifier later; keep the
@@ -67,3 +72,59 @@ export function checkBudget(project: Project, costCode: string, amount: number):
   const available = budget - committed;
   return { ok: amount <= available, budget, committed, available, shortfall: Math.max(0, amount - available) };
 }
+
+export const requisitionFlow: Flow = {
+  draft: { submit: { to: 'submitted', roles: ['requester', 'buyer'] } },
+  submitted: {
+    approve: { to: 'approved', roles: ['budget_owner'] },
+    reject: { to: 'rejected', roles: ['budget_owner'] },
+  },
+};
+
+export const requisitions = (p: Platform) => p.table<Requisition>('requisitions');
+const ISO_DATE = /^\d{4}-\d{2}-\d{2}$/;
+
+export function submit(p: Platform, user: User, input: { projectId: string; costCode: string; title: string; description: string; amount: number; needBy: string }) {
+  guard(user, ['requester', 'buyer'], { projectId: input.projectId });
+  if (!(input.amount > 0)) throw new Error('Amount must be positive');
+  if (!ISO_DATE.test(input.needBy) || input.needBy <= p.today) throw new Error('Need-by must be a future YYYY-MM-DD date');
+  const recommendation = recommend(`${input.title} ${input.description}`, input.amount);
+  const req: Requisition = {
+    ...input,
+    id: p.id('PR'),
+    requesterId: user.id,
+    status: next(requisitionFlow, 'draft', 'submit', user),
+    recommendation,
+    budget: checkBudget(p.get<Project>('projects', input.projectId), input.costCode, input.amount),
+    schedule: schedule(input.needBy, recommendation.route, recommendation.leadTimeWeeks, recommendation.prequal, p.today),
+  };
+  requisitions(p).set(req.id, req);
+  p.emit(user, 'requisition.submitted', req.id, { amount: req.amount, category: recommendation.category, route: recommendation.route });
+  return req;
+}
+
+export function decide(p: Platform, user: User, id: string, decision: 'approve' | 'reject', reason = '') {
+  const req = p.get<Requisition>('requisitions', id);
+  guard(user, ['budget_owner'], { projectId: req.projectId });
+  if (user.id === req.requesterId) throw new Error('Segregation of duties: cannot approve your own requisition');
+  if (decision === 'reject' && !reason.trim()) throw new Error('A rejection needs a reason');
+  if (decision === 'approve') {
+    req.budget = checkBudget(p.get<Project>('projects', req.projectId), req.costCode, req.amount);
+    if (!req.budget.ok) throw new Error(`Budget shortfall of AED ${req.budget.shortfall.toLocaleString('en')}: raise a budget transfer first`);
+  }
+  req.status = next(requisitionFlow, req.status, decision, user);
+  p.emit(user, `requisition.${req.status}`, req.id, { reason });
+  if (decision === 'reject') return { requisition: req };
+  const r = req.recommendation;
+  const pkg: Package = {
+    id: p.id('PKG'), requisitionId: req.id, requesterId: req.requesterId, projectId: req.projectId, costCode: req.costCode,
+    title: req.title, category: r.category, estimate: req.amount, needBy: req.needBy, route: r.route, longLead: r.longLead,
+    schedule: req.schedule, status: 'planned',
+  };
+  p.packages.set(pkg.id, pkg);
+  p.emit(user, 'package.created', pkg.id, { requisition: req.id, route: pkg.route, longLead: pkg.longLead });
+  return { requisition: req, package: pkg };
+}
+
+// What the API may call. Pure helpers above stay internal.
+export const commands = { submit, decide };

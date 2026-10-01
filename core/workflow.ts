@@ -1,43 +1,8 @@
 import type { Role, User } from './types.ts';
 
-// Table-driven state machines: an administrator changes stages, transitions and
-// who may trigger them by editing these tables, not the code that runs them.
+// Table-driven state machines. Each module declares its own Flow table (stages,
+// transitions, allowed roles) so an administrator edits data, not code.
 export type Flow = Record<string, Record<string, { to: string; roles: Role[] }>>;
-
-const approvers: Role[] = ['procurement_manager', 'budget_owner', 'legal', 'executive'];
-
-export const flows = {
-  requisition: {
-    draft: { submit: { to: 'submitted', roles: ['requester', 'buyer'] } },
-    submitted: {
-      approve: { to: 'approved', roles: ['budget_owner'] },
-      reject: { to: 'rejected', roles: ['budget_owner'] },
-    },
-  },
-  event: {
-    draft: { publish: { to: 'open', roles: ['buyer'] } },
-    open: {
-      extend: { to: 'open', roles: ['buyer'] },
-      close: { to: 'closed', roles: ['buyer'] },
-    },
-    closed: { open_technical: { to: 'technical', roles: ['buyer', 'procurement_manager'] } },
-    technical: { complete_technical: { to: 'commercial', roles: ['procurement_manager'] } },
-    commercial: { recommend: { to: 'approval', roles: ['buyer', 'procurement_manager'] } },
-    approval: {
-      award: { to: 'awarded', roles: approvers },
-      reject: { to: 'commercial', roles: approvers },
-    },
-  },
-  supplier: {
-    invited: { register: { to: 'registered', roles: ['supplier'] } },
-    registered: {
-      qualify: { to: 'qualified', roles: ['procurement_manager'] },
-      reject: { to: 'rejected', roles: ['procurement_manager'] },
-    },
-    qualified: { suspend: { to: 'suspended', roles: ['procurement_manager'] } },
-    suspended: { reinstate: { to: 'qualified', roles: ['procurement_manager'] } },
-  },
-} satisfies Record<string, Flow>;
 
 export function next(flow: Flow, state: string, action: string, user: User): string {
   const t = flow[state]?.[action];

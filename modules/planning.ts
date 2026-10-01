@@ -1,9 +1,5 @@
-import type { Health, Milestone, Route, Schedule } from './types.ts';
-
-const DAY = 86_400_000;
-const ms = (iso: string) => Date.parse(iso.slice(0, 10) + 'T00:00:00Z');
-export const addDays = (iso: string, days: number) => new Date(ms(iso) + days * DAY).toISOString().slice(0, 10);
-export const daysBetween = (from: string, to: string) => Math.round((ms(to) - ms(from)) / DAY);
+import { addDays, daysBetween } from '../core/dates.ts';
+import type { Health, Milestone, Package, Route, Schedule } from '../core/types.ts';
 
 // Weeks each sourcing stage takes per route. Admin-configurable.
 const TENDER_WEEKS: Record<Route, number> = { 'Direct PO': 1, RFQ: 2, RFP: 4, ITT: 6 };
@@ -32,4 +28,10 @@ export function schedule(needBy: string, route: Route, leadTimeWeeks: number, pr
 export function health(milestones: Milestone[], today: string): { floatDays: number; health: Health } {
   const floatDays = daysBetween(today, milestones[0].date);
   return { floatDays, health: floatDays < 0 ? 'late' : floatDays < 14 ? 'at_risk' : 'on_track' };
+}
+
+// Milestones still ahead of a package given how far it has got.
+export function remaining(p: Package) {
+  const award = p.schedule.milestones.findIndex(m => m.name === 'Award');
+  return p.schedule.milestones.slice(p.status === 'planned' ? 0 : p.status === 'sourcing' ? award : award + 1);
 }

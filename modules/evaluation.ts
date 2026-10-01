@@ -1,7 +1,11 @@
-import type { Allocation, Bid, Criterion, SourcingEvent } from './types.ts';
+import type { Platform } from '../core/kernel.ts';
+import type { Allocation, Bid, Role, SourcingEvent, User } from '../core/types.ts';
+import { guard } from '../core/workflow.ts';
+import { advance, eventFor } from './sourcing.ts';
 
-// The evaluation engine: technical consensus, commercial normalization,
-// combined ranking, weight sensitivity and award scenarios. Pure functions.
+// The evaluation engine (pure functions): technical consensus, commercial
+// normalization, combined ranking, weight sensitivity and award scenarios.
+// Commands at the bottom drive the two sealed envelopes.
 
 export const SCORE_MAX = 10;
 const SPREAD_LIMIT = 3;           // max points between evaluators before consensus moderation
@@ -19,12 +23,6 @@ const median = (xs: number[]) => {
 
 export const alias = (ev: SourcingEvent, supplierId: string) =>
   `Bidder ${String.fromCharCode(65 + ev.bids.findIndex(b => b.supplierId === supplierId))}`;
-
-export function validateCriteria(criteria: Criterion[]) {
-  if (criteria.some(c => !c.gate && !(c.weight > 0))) throw new Error('Every scored criterion needs a positive weight');
-  const total = criteria.filter(c => !c.gate).reduce((s, c) => s + c.weight, 0);
-  if (Math.abs(total - 100) > 1e-9) throw new Error(`Scored criteria weights must total 100 (got ${total})`);
-}
 
 export interface TechResult {
   supplierId: string;
@@ -211,3 +209,114 @@ export function evaluate(ev: SourcingEvent, fx: Record<string, number>) {
   const ranking = rank(tech, norm, ev.techWeight);
   return { technical: tech, normalized: norm, ranking, sensitivity: sensitivity(tech, norm), scenarios: scenarios(ev, ranking, norm) };
 }
+
+// ---------- Commands: technical envelope ----------
+
+export function openTechnical(p: Platform, user: User, eventId: string) {
+  const ev = eventFor(p, user, eventId);
+  if (!ev.bids.length) throw new Error('No bids received');
+  advance(ev, 'open_technical', user);
+  p.emit(user, 'technical.opened', ev.id);
+  return ev;
+}
+
+// What an evaluator sees: deviations and references, never prices.
+export function technicalPack(p: Platform, user: User, eventId: string) {
+  const ev = eventFor(p, user, eventId);
+  guard(user, ['technical_evaluator', 'procurement_manager']);
+  if (ev.status === 'draft' || ev.status === 'open' || ev.status === 'closed') throw new Error('Technical envelope is not open yet');
+  return {
+    criteria: ev.criteria,
+    bidders: ev.bids.map(b => ({
+      ref: ev.blind ? alias(ev, b.supplierId) : b.supplierId,
+      name: ev.blind ? alias(ev, b.supplierId) : p.suppliers.get(b.supplierId)!.name,
+      deviations: b.deviations,
+      exclusions: b.exclusions.map(x => x.description),
+    })),
+  };
+}
+
+export function declareConflicts(p: Platform, user: User, eventId: string, conflictedSupplierIds: string[]) {
+  const ev = eventFor(p, user, eventId);
+  if (!ev.evaluators.includes(user.id)) throw new Error(`${user.name} is not on the evaluation committee`);
+  ev.declarations[user.id] = conflictedSupplierIds;
+  p.emit(user, 'conflict.declared', ev.id, { conflicts: conflictedSupplierIds });
+}
+
+export function score(p: Platform, user: User, eventId: string, bidderRef: string, criterionId: string, value: number, comment?: string) {
+  const ev = eventFor(p, user, eventId);
+  guard(user, ['technical_evaluator']);
+  if (ev.status !== 'technical') throw new Error('Technical scoring is not open');
+  if (!ev.evaluators.includes(user.id)) throw new Error(`${user.name} is not on the evaluation committee`);
+  const conflicts = ev.declarations[user.id];
+  if (!conflicts) throw new Error('Declare conflicts of interest before scoring');
+  const supplierId = resolve(ev, bidderRef);
+  if (conflicts.includes(supplierId)) throw new Error('Conflict declared: you cannot score this bidder');
+  checkScore(ev, criterionId, value);
+  ev.scores = ev.scores.filter(s => !(s.evaluatorId === user.id && s.supplierId === supplierId && s.criterionId === criterionId));
+  ev.scores.push({ evaluatorId: user.id, supplierId, criterionId, score: value, comment });
+  p.emit(user, 'score.recorded', ev.id, { supplierId, criterionId, score: value, comment });
+}
+
+// Consensus meeting outcome overrides the individual median for one criterion.
+export function moderate(p: Platform, user: User, eventId: string, bidderRef: string, criterionId: string, value: number, note: string) {
+  const ev = eventFor(p, user, eventId);
+  guard(user, ['procurement_manager']);
+  if (ev.status !== 'technical') throw new Error('Technical scoring is not open');
+  if (!note.trim()) throw new Error('Moderation needs a note of the consensus reached');
+  const supplierId = resolve(ev, bidderRef);
+  checkScore(ev, criterionId, value);
+  ev.moderations = ev.moderations.filter(m => !(m.supplierId === supplierId && m.criterionId === criterionId));
+  ev.moderations.push({ supplierId, criterionId, score: value, note, by: user.id });
+  p.emit(user, 'score.moderated', ev.id, { supplierId, criterionId, score: value, note });
+}
+
+export function completeTechnical(p: Platform, user: User, eventId: string) {
+  const ev = eventFor(p, user, eventId);
+  const results = technical(ev);
+  const open = results.flatMap(t => t.flags.map(f => `${alias(ev, t.supplierId)}: ${f}`));
+  if (open.length) throw new Error(`Technical envelope cannot be signed off:\n- ${open.join('\n- ')}`);
+  advance(ev, 'complete_technical', user);
+  p.emit(user, 'technical.completed', ev.id, results.map(({ supplierId, score, qualified }) => ({ supplierId, score, qualified })));
+  return results;
+}
+
+// ---------- Commands: commercial envelope ----------
+
+export function loadExclusion(p: Platform, user: User, eventId: string, supplierId: string, index: number, addBackAED: number) {
+  const ev = eventFor(p, user, eventId);
+  guard(user, ['commercial_evaluator', 'buyer']);
+  if (ev.status !== 'commercial') throw new Error('Commercial envelope is not open');
+  const x = ev.bids.find(b => b.supplierId === supplierId)?.exclusions[index];
+  if (!x) throw new Error('Exclusion not found');
+  if (!(addBackAED >= 0)) throw new Error('Add-back must be zero or more');
+  x.addBack = addBackAED;
+  p.emit(user, 'exclusion.loaded', ev.id, { supplierId, exclusion: x.description, addBackAED });
+}
+
+const READERS: Role[] = ['buyer', 'procurement_manager', 'commercial_evaluator', 'auditor', 'budget_owner', 'legal', 'executive'];
+
+export function results(p: Platform, user: User, eventId: string) {
+  const ev = eventFor(p, user, eventId);
+  guard(user, READERS);
+  if (!['commercial', 'approval', 'awarded'].includes(ev.status)) {
+    throw new Error('Commercial envelope is sealed until the technical evaluation is signed off');
+  }
+  return evaluate(ev, p.fx);
+}
+
+function checkScore(ev: SourcingEvent, criterionId: string, value: number) {
+  const c = ev.criteria.find(x => x.id === criterionId);
+  if (!c) throw new Error(`Unknown criterion ${criterionId}`);
+  if (c.gate ? value !== 0 && value !== 1 : !(value >= 0 && value <= SCORE_MAX)) {
+    throw new Error(c.gate ? 'Gate criteria are scored 1 (pass) or 0 (fail)' : `Scores run 0 to ${SCORE_MAX}`);
+  }
+}
+
+function resolve(ev: SourcingEvent, ref: string) {
+  const bid = ev.bids.find(b => b.supplierId === ref || alias(ev, b.supplierId) === ref);
+  if (!bid) throw new Error(`Unknown bidder ${ref}`);
+  return bid.supplierId;
+}
+
+export const commands = { openTechnical, technicalPack, declareConflicts, score, moderate, completeTechnical, loadExclusion, results };
