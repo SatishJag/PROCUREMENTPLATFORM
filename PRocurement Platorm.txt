@@ -1,0 +1,315 @@
+The product should be designed as an end-to-end Source-to-Pay platform, not only a tendering application. It should connect procurement planning, sourcing, supplier management, contracts, purchasing, delivery, invoicing, project controls, and analytics in one auditable workflow.
+
+## 1. Recommended product capability map
+
+| Product module | Capabilities |
+|---|---|
+| Procurement Workspace | Personal dashboard, tasks, approvals, alerts, delegated authority, watchlists, recently accessed events and role-based navigation |
+| Guided Procurement Intake | Conversational or form-based request intake, category identification, scope templates, budget checks, procurement route recommendation and automatic workflow creation |
+| Procurement Planning | Annual procurement plan, project procurement plan, package register, demand aggregation, sourcing calendar, milestone planning and procurement pipeline |
+| Category Management | Category hierarchy, category strategies, preferred suppliers, market intelligence, rate benchmarks, spend targets and savings plans |
+| Requisition Management | Purchase requisitions, catalogue and non-catalogue requests, BOQ/BOM import, cost-code allocation, budget validation, attachments and approvals |
+| Sourcing and Tendering | RFI, RFQ, RFP, ITT, sealed bids, multi-round tenders, clarifications, addenda, bid extensions, reverse auctions and tender calendars |
+| Package Management | Procurement packages, scope breakdown, WBS linkage, lots, bid packages, technical specifications, drawings, quantities and commercial schedules |
+| Supplier Discovery | Supplier search by category, region, capability, certification, historic performance, project experience, capacity and approved status |
+| Supplier Onboarding | Registration, company profile, trade licences, banking details, tax data, insurance, certifications, beneficial ownership and compliance documentation |
+| Supplier Qualification | Prequalification questionnaires, category-specific qualification, HSE evaluation, financial checks, technical capability, factory capacity and approval expiry |
+| Supplier Portal | Invitations, bid submission, clarification responses, document upload, catalogue maintenance, PO acknowledgement, delivery updates, invoices and performance feedback |
+| Technical Evaluation | Configurable criteria, weighted scoring, pass/fail requirements, evaluator assignment, conflict declarations, consensus scoring and evidence capture |
+| Commercial Evaluation | Bid normalization, landed-cost comparison, exclusions, qualifications, unit-rate comparison, arithmetic checks, currency conversion and commercial scoring |
+| Bid Analysis | Side-by-side comparison, deviation analysis, specification compliance, historical price comparison, should-cost analysis and bid sensitivity scenarios |
+| Negotiation Management | Negotiation rounds, meeting records, revised offers, best-and-final offers, concession tracking and approval of negotiated outcomes |
+| Award Management | Award scenarios, split awards, recommendation reports, award approvals, regret letters, award notices and full decision audit trail |
+| Contract Lifecycle Management | Template library, clause library, contract authoring, redlining, approvals, e-signature, repository, amendments, renewals and termination controls |
+| Obligation Management | Deliverables, milestones, securities, warranties, insurance, certificates, notices, SLA obligations, expiry alerts and responsible owners |
+| Purchase Order Management | PO creation, releases, call-off orders, blanket POs, variation orders, change history, supplier acknowledgement and ERP synchronization |
+| Delivery and Expediting | Manufacturing milestones, document submittals, inspections, FAT/SAT, shipping, customs, delivery schedules, logistics tracking and delay escalation |
+| Goods and Services Receipt | GRN, service entry sheets, partial receipt, inspection, rejection, damaged goods, warehouse receipt and proof of delivery |
+| Invoice Management | Supplier invoice submission, OCR capture, duplicate detection, tax validation, two/three-way matching, payment certification and exception handling |
+| Payment Visibility | Invoice status, due dates, payment batches, retention, advances, payment milestones, ageing and supplier-facing status |
+| Change and Claims Management | Variations, change requests, quotations, claims, entitlement assessment, time/cost impact, approvals and contract-value reconciliation |
+| Supplier Performance | Scorecards for quality, delivery, commercial, HSE, responsiveness, ESG and project performance; corrective action plans and trend analysis |
+| Supplier Risk | Financial, operational, geopolitical, sanctions, cyber, concentration, capacity and continuity risks with alerts and mitigation plans |
+| Spend Analytics | Spend by category, supplier, project, business unit and geography; leakage, fragmentation, tail spend and contract coverage analysis |
+| Savings and Value Tracking | Baseline, negotiated savings, cost avoidance, realized savings, benefits ownership, finance validation and forecast-versus-actual reporting |
+| Reporting and Dashboards | Cycle time, sourcing pipeline, award status, supplier performance, commitment, delivery, invoice, savings, risk and exception dashboards |
+| Administration | Users, roles, organizations, business units, projects, categories, currencies, tax rules, approval limits, templates and numbering schemes |
+
+## 2. Data-centre and construction procurement capabilities
+
+These should be treated as a dedicated product domain rather than minor configuration:
+
+- Project, program, site, building and data-hall hierarchy
+- Procurement package register linked to WBS and cost codes
+- BOQ, BOM and equipment schedule import from Excel
+- Equipment specification and approved-equal management
+- Long-lead equipment register
+- Manufacturing and delivery milestone tracking
+- Vendor document submittal register
+- Technical submittal, material approval and shop-drawing linkage
+- FAT, SAT, inspection and test-plan workflows
+- Logistics, shipping, customs clearance and site-delivery tracking
+- Capacity-based procurement analysis, including AED/MW and cost/MW
+- Equipment tracking by make, model, serial number and asset tag
+- Warranty, spare-parts and maintenance-document capture
+- Commissioning and handover-document requirements
+- Contractor, subcontractor, consultant and OEM relationship tracking
+- Provisional sums, nominated suppliers and contractor procurement
+- Retention, advance-payment guarantees, performance bonds and insurance
+- Variation and claim linkage to contracts, budgets and forecasts
+- Oracle budget, commitment and actual-cost reconciliation
+- PMWeb/Procore package, schedule and project-control integration
+
+## 3. Evaluation and award controls
+
+The evaluation engine is one of the product’s most important differentiators.
+
+It should support:
+
+- Separate technical and commercial evaluation envelopes
+- Blind evaluation where required
+- Configurable weighted criteria and subcriteria
+- Mandatory gates and minimum technical thresholds
+- Individual evaluator scoring followed by consensus scoring
+- Evaluation committees with quorum rules
+- Evaluator conflict-of-interest declarations
+- Comments and evidence required for low or high scores
+- Automatic normalization and weighted-score calculation
+- Price, quality, delivery, risk and total-cost-of-ownership models
+- Bid deviation and qualification registers
+- Alternative and value-engineering proposals
+- Sensitivity and award-scenario modelling
+- Split awards across suppliers, lots, regions or quantities
+- Approval routing based on value, category, project and deviation
+- Immutable evaluation and approval audit trail
+- Automatically generated bid evaluation and award reports
+
+## 4. AI and automation layer
+
+AI should assist decisions while keeping procurement users accountable.
+
+### Procurement copilot
+
+- Convert a business request into a structured requisition
+- Recommend procurement route, templates and timelines
+- Generate draft scopes of work and RFx documents
+- Suggest evaluation criteria
+- Summarize bids, clarifications and supplier submissions
+- Compare technical responses against requirements
+- Identify missing information, exclusions and contradictory statements
+- Draft clarification questions
+- Prepare negotiation points and award recommendations
+- Answer questions across contracts, bids, suppliers and POs
+
+### Commercial intelligence
+
+- Historical rate and price recommendations
+- Quote coverage and confidence scoring
+- Supplier recommendations based on capability and performance
+- Bid outlier and collusion-risk indicators
+- Cost-driver and should-cost analysis
+- Currency and escalation impact modelling
+- Total-cost-of-ownership analysis
+- Demand aggregation opportunities
+
+### Operational automation
+
+- Document classification and metadata extraction
+- Compliance-document expiry monitoring
+- Approval and cycle-time bottleneck detection
+- Invoice and PO exception triage
+- Contract obligation extraction
+- Risk-alert summarization
+- Recommended next actions
+- Automated reporting narratives
+
+Every AI result should display its source evidence, confidence, model/version details where appropriate, and require human approval for controlled decisions.
+
+## 5. Roles and portals
+
+The platform should support distinct experiences for:
+
+- Requester
+- Project manager
+- Procurement manager
+- Buyer and sourcing specialist
+- Category manager
+- Technical evaluator
+- Commercial evaluator/QS
+- Legal and contract manager
+- Finance and accounts payable
+- Budget owner
+- Executive approver
+- HSE, QA/QC and compliance reviewer
+- Expeditor and logistics coordinator
+- System administrator
+- Auditor
+- Supplier administrator and supplier bid user
+
+Access must be restricted by role, organization, project, category, region and transaction value.
+
+## 6. Workflow and low-code configuration
+
+Build a reusable workflow engine rather than hard-coding every process.
+
+The administrator should be able to configure:
+
+- Workflow stages and status transitions
+- Sequential and parallel approvals
+- Approval thresholds and authority matrices
+- Conditional routing
+- Delegation and out-of-office rules
+- Escalation timeframes
+- SLA timers
+- Forms and custom fields
+- Evaluation templates
+- Document requirements
+- Email and in-app notifications
+- Business rules and validation
+- Numbering formats
+- Country, entity and project variations
+- Workflow versioning and effective dates
+
+## 7. Core dashboards
+
+At minimum:
+
+- Executive procurement overview
+- Procurement pipeline and upcoming awards
+- Procurement-plan progress
+- Tender cycle-time analysis
+- Evaluation and approval bottlenecks
+- Contract and commitment position
+- Budget versus commitment versus actual
+- Savings and cost avoidance
+- Long-lead equipment status
+- Supplier performance and risk
+- Compliance-document expiry
+- Open PO and overdue delivery
+- Invoice and matching exceptions
+- User workload and SLA performance
+- Audit and control exceptions
+
+## 8. Recommended technical architecture
+
+Your proposed stack is suitable, with a few additions.
+
+| Layer | Recommended technology |
+|---|---|
+| Web application | React with TypeScript, preferably Next.js |
+| UI framework | Tailwind CSS with a reusable design system |
+| Server state | TanStack Query |
+| Client state | Zustand or Redux Toolkit where genuinely needed |
+| Forms and validation | React Hook Form, Zod |
+| Backend | Node.js with NestJS and TypeScript |
+| API | REST/OpenAPI initially; event APIs for integrations |
+| Transaction database | PostgreSQL |
+| Cache | Redis |
+| Search | OpenSearch or Azure AI Search |
+| Workflow | Temporal, Camunda or a custom state-machine layer |
+| Messaging | Azure Service Bus or Kafka |
+| Documents | Azure Blob Storage with versioning and malware scanning |
+| Identity | Microsoft Entra ID for employees; Entra External ID for suppliers |
+| Analytics | Power BI semantic model and embedded dashboards |
+| AI services | Azure OpenAI plus retrieval, evaluation and guardrail services |
+| Observability | OpenTelemetry, Application Insights and centralized logs |
+| Deployment | Azure Kubernetes Service or Azure Container Apps |
+| CI/CD | Azure DevOps or GitHub Actions |
+| Infrastructure | Terraform or Bicep |
+
+A modular monolith is the sensible starting architecture. Clear domain modules can later be extracted into microservices when transaction volume, team ownership or scaling justifies it.
+
+## 9. Key integrations
+
+- Oracle Fusion: suppliers, budgets, PRs, POs, receipts, invoices, payments and chart of accounts
+- PMWeb: projects, WBS, packages, contracts, commitments, progress and cost information
+- Procore: project documents, submittals, RFIs and project procurement
+- ProTenders and market-data services
+- Microsoft 365: Outlook, Teams, SharePoint and Excel
+- Power BI
+- E-signature platforms
+- Banking and supplier-verification services
+- Tax, sanctions and corporate-registration services
+- BIM/document-management platforms
+- SSO and enterprise identity governance
+
+Integration ownership must be explicit: each data object should have one authoritative system of record and defined synchronization rules.
+
+## 10. Security and enterprise controls
+
+Include these from the first release:
+
+- Role- and attribute-based access control
+- Segregation-of-duties rules
+- Approval authority limits
+- Project and legal-entity data isolation
+- Supplier tenant isolation
+- Encryption in transit and at rest
+- Immutable audit events
+- Field-level protection for bank and personal data
+- Document access and download controls
+- Malware scanning
+- MFA and conditional access
+- Data-retention and legal-hold policies
+- API throttling and integration authentication
+- Security monitoring and anomalous-access detection
+- Backup, disaster recovery and tested restoration
+- Configurable data residency
+- AI prompt, response and evidence logging
+- Controlled impersonation for support with full auditability
+
+## 11. Important core data objects
+
+The platform data model should include:
+
+`Organization → Project → Budget → WBS → Procurement Plan → Package → Requisition → Sourcing Event → Lot → Bid → Evaluation → Award → Contract → PO → Shipment/Delivery → Receipt → Invoice → Payment`
+
+Supporting master objects include suppliers, contacts, categories, items, cost codes, technical specifications, currencies, tax codes, locations, documents, workflows, approval matrices, risks, performance assessments and audit events.
+
+## 12. Sensible delivery roadmap
+
+### Phase 1 — Procurement foundation
+
+- Identity and role management
+- Supplier onboarding
+- Guided intake
+- Procurement planning
+- RFx and tender management
+- Technical/commercial evaluation
+- Award approvals
+- Audit trail
+- Core dashboards
+- Excel import/export
+
+### Phase 2 — Contract and purchasing control
+
+- Contract lifecycle management
+- Obligations and securities
+- Requisitions and POs
+- Delivery and expediting
+- Goods/service receipt
+- Oracle integration
+- Project and WBS integration
+
+### Phase 3 — Supplier and commercial intelligence
+
+- Supplier performance and risk
+- Spend analytics
+- Savings tracking
+- Market intelligence
+- Price benchmarks
+- Long-lead equipment control
+- Power BI analytics
+
+### Phase 4 — AI-enabled procurement
+
+- Guided intake copilot
+- Document and bid summarization
+- Compliance checking
+- Supplier recommendations
+- Bid comparison and anomaly detection
+- Negotiation assistance
+- Contract intelligence
+- Predictive delays and risk alerts
+
+The strongest initial product boundary is: **procurement planning through award, supplier onboarding, technical/commercial evaluation, contract handoff, and Oracle/PMWeb integration**. This provides a valuable first release without attempting to replace the ERP’s mature accounting and payment functions.
