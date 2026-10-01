@@ -55,11 +55,19 @@ Every module with a workflow has an `actions` command (intake, suppliers, sourci
 1. **Visual hierarchy**: every screen answers, in order: what is this, what state is it in, what do I do next. One focal point per screen, and it passes the squint test.
 2. **Prominent actions**: the next workflow step is a high-contrast primary button, visible without scrolling, one per region. Secondary actions are visibly quieter. Destructive actions look different and ask for a reason.
 3. **Actions come from the engine**: buttons render from each module's `actions` command (`core/workflow.ts` `available()`), so users only see what they can do. A blocked action shows the engine's error message as the reason.
+4. **Typography is one superfamily**: IBM Plex (open licence, on Google Fonts). Each member has one job:
+   - **Plex Sans**: UI and body text. Headings use the same family at SemiBold/Bold with tighter tracking.
+   - **Plex Sans Condensed**: dense tables and bid comparisons.
+   - **Plex Mono**: IDs, cost codes, BOQ refs and audit hashes.
+   - **Plex Serif**: only for generated documents (award reports, contracts, regret letters).
+   - **Plex Sans Arabic**: Arabic text in the same family.
+   - All numbers use tabular figures. No font from outside the superfamily. This replaces the uploaded rules' "pair a serif display with a sans" guidance.
 
 The measurable rules are in `.claude/agents/frontend-engineer.md`, and `qa-reviewer` enforces them.
 
 ## Decisions
 - **Decided**: TypeScript throughout. RPC API. Web stack: React + Vite + Tailwind v4 tokens + TanStack Query (see `frontend-engineer`). Postgres and Entra ID come next on the platform track. The uploaded `# CLAUDE.md — Frontend Website Rule.txt` guardrails apply to `web/`; its Windows paths and scripts don't.
+- **Decided (user)**: visual hierarchy, high-contrast primary actions, and the IBM Plex superfamily (Design principles above).
 - **Open (ask the user)**: product name; brand palette (candidate from the deck: teal `#0E8C7A` and rust `#C9541A` on warm greys); whether the scroll-craft tour ships.
 
 ## Multi-agent operating model

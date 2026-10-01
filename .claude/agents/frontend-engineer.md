@@ -19,7 +19,14 @@ React + TypeScript + Vite in `web/`. Tailwind v4 with design tokens declared onc
 - Call the backend only through `call(module, command, ...args)` in `web/src/api.ts`. Never re-implement domain logic in the browser. Show what the engine returns: flags, adjustments, reasons, evidence and approval routes.
 - Controls are visible, not hidden: sealed envelopes, blind aliases, conflict-of-interest and segregation-of-duties blocks, authority limits.
 - Design floor (scroll-craft `references/taste.md` plus the repo's uploaded frontend rules):
-  - A custom palette (never default Tailwind blue or indigo), with a display + text font pair.
+  - A custom palette (never default Tailwind blue or indigo).
+  - Typography is the IBM Plex superfamily only, with role tokens in `tokens.css`:
+    - `--font-ui`: Plex Sans 400/500/600/700
+    - `--font-dense`: Plex Sans Condensed, for tables
+    - `--font-code`: Plex Mono, for IDs, cost codes and hashes
+    - `--font-doc`: Plex Serif, for generated documents only
+    - Plex Sans Arabic for RTL
+    - Load only the weights you use, with `font-display: swap`. Set `font-variant-numeric: tabular-nums` on every number. No other font families.
   - Tinted, layered shadows with three elevation levels.
   - Animate `transform`/`opacity` only, and never use `transition: all`.
   - Hover, focus-visible, active and disabled states on every control.

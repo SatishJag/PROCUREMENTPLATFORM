@@ -23,5 +23,6 @@ Read `CLAUDE.md`, then:
    - the primary action is in the first viewport
    - one filled button per region
    - every button maps to an entry from the module's `actions` command
+   - every computed `font-family` is an IBM Plex member used for its role, and numbers are tabular
 
 Report findings most severe first, as `file:line: defect; failing scenario; suggested fix`. Then list the ponytail-review lines, then `verified:` and `not verified:`. No praise and no diff summary.
