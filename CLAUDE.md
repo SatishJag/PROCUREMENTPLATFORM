@@ -52,6 +52,7 @@ Every module with a workflow has an `actions` command (intake, suppliers, sourci
 - Sample data is fictional: no real company names and no client or vendor branding.
 
 ## Design principles (web/, mandatory)
+These principles apply to all UI work, including any skill (`scroll-craft`, `artifact-design`, `dataviz`). Where a skill's own taste rules conflict with them, these principles win.
 1. **Visual hierarchy**: every screen answers, in order: what is this, what state is it in, what do I do next. One focal point per screen, and it passes the squint test.
 2. **Prominent actions**: the next workflow step is a high-contrast primary button, visible without scrolling, one per region. Secondary actions are visibly quieter. Destructive actions look different and ask for a reason.
 3. **Actions come from the engine**: buttons render from each module's `actions` command (`core/workflow.ts` `available()`), so users only see what they can do. A blocked action shows the engine's error message as the reason.
@@ -68,7 +69,13 @@ The measurable rules are in `.claude/agents/frontend-engineer.md`, and `qa-revie
 ## Decisions
 - **Decided**: TypeScript throughout. RPC API. Web stack: React + Vite + Tailwind v4 tokens + TanStack Query (see `frontend-engineer`). Postgres and Entra ID come next on the platform track. The uploaded `# CLAUDE.md — Frontend Website Rule.txt` guardrails apply to `web/`; its Windows paths and scripts don't.
 - **Decided (user)**: visual hierarchy, high-contrast primary actions, and the IBM Plex superfamily (Design principles above).
-- **Open (ask the user)**: product name; brand palette (candidate from the deck: teal `#0E8C7A` and rust `#C9541A` on warm greys); whether the scroll-craft tour ships.
+- **Open (ask the user)**: product name; whether the scroll-craft tour ships.
+- **Not now**: the AI copilot and other AI features stay out of scope until the user brings them back.
+
+## Next session agenda (user's notes, start here)
+1. **Colour and UI inspiration**: a fresh-eyes session with the user. Don't choose a palette or a visual direction before it. The deck's teal `#0E8C7A` and rust `#C9541A` are only one input.
+2. Then the design system (frontend-engineer), applying all four design principles.
+3. Then the user's new procurement capabilities (domain-engineer per capability).
 
 ## Multi-agent operating model
 The main session is the **lead architect**. It talks to the user, writes specs, owns `core/`, `modules/index.ts`, `CLAUDE.md` and `README.md`, and spawns, reviews and merges.
