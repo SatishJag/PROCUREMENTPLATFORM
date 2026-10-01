@@ -17,7 +17,7 @@ npm i && npm run typecheck
 |---|---|---|
 | Identity and access | `core/workflow.ts` | Role, project scope and value authority on every command. Suppliers are isolated to events they're invited to and can see only their own bid. |
 | Workflow configuration | `core/workflow.ts` + each module | Requisition, sourcing-event and supplier lifecycles are Flow tables in their modules that an admin edits: stages, transitions and allowed roles. |
-| Guided intake | `modules/intake.ts` | Free text plus value becomes a requisition. It gets a category (with evidence and confidence), a route (Direct PO / RFQ / RFP / ITT, minimum bidders, envelopes, prequal) and a budget check against the cost code. |
+| Guided intake | `modules/intake.ts` | Free text plus value becomes a requisition. It gets a category (with evidence and confidence), a route (Direct PO / RFQ / RFP / ITT, minimum bidders, envelopes, prequal) and a budget check against the cost code. BOQ upload: import from CSV, extract items, create packages for tendering. |
 | Procurement planning | `modules/planning.ts` | Backward schedule from the required-on-site date and category lead time, a long-lead flag, and float with on track / at risk / late status. |
 | Supplier onboarding and qualification | `modules/suppliers.ts` | Register, qualify, suspend, search. Mandatory documents and expiry, sanctions, and category approval. Ineligible suppliers can't be invited. Discovery is ranked by eligibility and performance. |
 | RFx and tender management | `modules/sourcing.ts` | Lots, BOQ imported from Excel CSV, minimum eligible bidders per route, clarifications answered to all bidders anonymously, addenda with bid extensions, sealed bids (the audit holds a SHA-256 seal, not prices) and bid revisions. |

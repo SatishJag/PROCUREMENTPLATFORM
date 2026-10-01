@@ -97,6 +97,7 @@ export interface Supplier {
 export interface Criterion { id: string; name: string; weight: number; gate?: boolean } // gate: pass(1)/fail(0), no weight
 export interface Lot { id: string; name: string }
 export interface BoqLine { id: string; lotId: string; item: string; unit: string; qty: number }
+export interface BoqTemplate { id: string; projectId: string; name: string; description?: string; lines: BoqLine[]; lots: { id: string; name: string }[]; createdBy: string; createdAt: string }
 export interface BidLine { lineId: string; rate: number; amount: number } // bid currency
 export interface Exclusion { lotId: string; description: string; addBack?: number } // add-back in AED, set by the commercial evaluator
 

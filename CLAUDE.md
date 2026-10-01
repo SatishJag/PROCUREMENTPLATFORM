@@ -34,7 +34,7 @@ web/      next: React app + scroll-craft product tour
 ### Event catalogue
 | Module | Emits | Subscribers |
 |---|---|---|
-| intake | `requisition.submitted/approved/rejected`, `package.created` | |
+| intake | `requisition.submitted/approved/rejected`, `package.created`, `boq.uploaded` | |
 | suppliers | `supplier.registered/qualified/rejected/suspended` (reinstating emits `qualified`) | |
 | sourcing | `event.created/published/closed`, `clarification.asked/answered`, `addendum.issued`, `bid.submitted` (seal hash, never prices) | |
 | evaluation | `technical.opened/completed`, `conflict.declared`, `score.recorded/moderated`, `exclusion.loaded` | |

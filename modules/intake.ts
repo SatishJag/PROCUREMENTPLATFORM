@@ -1,6 +1,7 @@
 import type { Platform } from '../core/kernel.ts';
-import type { BudgetCheck, Package, Project, Recommendation, Requisition, Route, User } from '../core/types.ts';
+import type { BoqTemplate, BudgetCheck, Package, Project, Recommendation, Requisition, Route, User } from '../core/types.ts';
 import { available, type Flow, guard, next } from '../core/workflow.ts';
+import { boqFromCsv } from './sourcing.ts';
 import { schedule } from './planning.ts';
 
 // Guided intake: free text + value → structured requisition → approved package.
@@ -82,6 +83,7 @@ export const requisitionFlow: Flow = {
 };
 
 export const requisitions = (p: Platform) => p.table<Requisition>('requisitions');
+export const boqTemplates = (p: Platform) => p.table<BoqTemplate>('boqTemplates');
 const ISO_DATE = /^\d{4}-\d{2}-\d{2}$/;
 
 export function submit(p: Platform, user: User, input: { projectId: string; costCode: string; title: string; description: string; amount: number; needBy: string }) {
@@ -126,6 +128,44 @@ export function decide(p: Platform, user: User, id: string, decision: 'approve' 
   return { requisition: req, package: pkg };
 }
 
+export function uploadBoq(p: Platform, user: User, input: { projectId: string; name: string; description?: string; csvText: string }) {
+  guard(user, ['buyer', 'procurement_manager'], { projectId: input.projectId });
+  const lines = boqFromCsv(input.csvText);
+  const lots = Array.from(new Set(lines.map(l => l.lotId))).map(id => ({ id, name: `Lot ${id}` }));
+  const boq: BoqTemplate = {
+    id: p.id('BOQ'),
+    projectId: input.projectId,
+    name: input.name,
+    description: input.description,
+    lines,
+    lots,
+    createdBy: user.id,
+    createdAt: p.clock(),
+  };
+  boqTemplates(p).set(boq.id, boq);
+  p.emit(user, 'boq.uploaded', boq.id, { name: boq.name, lineCount: lines.length, lotCount: lots.length });
+  return boq;
+}
+
+export function createPackagesFromBoq(p: Platform, user: User, input: { boqTemplateId: string; costCode: string; category: string; estimate: number; needBy: string; route: Route; longLead: boolean }) {
+  guard(user, ['buyer', 'procurement_manager'], { projectId: input.costCode });
+  if (!(input.estimate > 0)) throw new Error('Estimate must be positive');
+  if (!ISO_DATE.test(input.needBy) || input.needBy <= p.today) throw new Error('Need-by must be a future YYYY-MM-DD date');
+  const boq = p.get<BoqTemplate>('boqTemplates', input.boqTemplateId);
+  guard(user, user.roles, { projectId: boq.projectId });
+  const project = p.get<Project>('projects', boq.projectId);
+  const budgetCheck = checkBudget(project, input.costCode, input.estimate);
+  if (!budgetCheck.ok) throw new Error(`Budget shortfall of AED ${budgetCheck.shortfall.toLocaleString('en')}: raise a budget transfer first`);
+  const sched = schedule(input.needBy, input.route, 10, input.longLead, p.today);
+  const pkg: Package = {
+    id: p.id('PKG'), projectId: boq.projectId, costCode: input.costCode, title: boq.name, category: input.category,
+    estimate: input.estimate, needBy: input.needBy, route: input.route, longLead: input.longLead, schedule: sched, status: 'planned',
+  };
+  p.packages.set(pkg.id, pkg);
+  p.emit(user, 'package.created', pkg.id, { boqTemplate: input.boqTemplateId, route: input.route, longLead: input.longLead });
+  return pkg;
+}
+
 // What the API may call. Pure helpers above stay internal.
 export function actions(p: Platform, user: User, id: string) {
   const req = p.get<Requisition>('requisitions', id);
@@ -133,4 +173,4 @@ export function actions(p: Platform, user: User, id: string) {
   return available(requisitionFlow, req.status, user);
 }
 
-export const commands = { submit, decide, actions };
+export const commands = { submit, decide, uploadBoq, createPackagesFromBoq, actions };
