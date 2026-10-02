@@ -2,37 +2,47 @@ import type { ReactNode } from 'react';
 
 type Figure = { label: string; value: ReactNode; big?: boolean };
 type Props = {
+  /** Small gold line above the title, e.g. the project. */
+  eyebrow?: string;
   title: string;
   chip?: ReactNode;
   figures?: Figure[];
-  /** The one primary action (or an ActionBar). Sits top right on desktop, full width under the figures on mobile. */
+  /** The one primary action (or an ActionBar). Top right on desktop; render it with `sticky` so it docks to the bottom on mobile. */
   action?: ReactNode;
-  /** Optional layered visual, shown from lg. Content below the header overlaps its bottom edge. */
+  /** Optional layered visual, shown from lg beside the figures. */
   visual?: ReactNode;
 };
 
-/** Title, status, key figures and the primary action, all above the fold. The deciding number is the `big` figure. */
-export function PageHeader({ title, chip, figures = [], action, visual }: Props) {
+/** Title, status, key figures and the primary action, all above the fold, directly on the midnight stage. The deciding number is the `big` figure. */
+export function PageHeader({ eyebrow, title, chip, figures = [], action, visual }: Props) {
+  const big = figures.find(f => f.big);
+  const rest = figures.filter(f => !f.big);
   return (
-    <header className="on-dark rise relative isolate rounded-hero bg-hero px-5 pb-20 pt-6 text-white shadow-e3 md:px-10 md:pb-24 md:pt-8 lg:min-h-[26rem]">
-      {/* Gradient and glow layers, clipped to the rounded edge so the visual may overhang. */}
-      <div aria-hidden className="absolute inset-0 -z-10 overflow-hidden rounded-hero" style={{ background: 'radial-gradient(40rem 22rem at 100% 0%, rgb(107 114 214 / 0.55), transparent 65%), radial-gradient(28rem 16rem at 0% 110%, rgb(245 184 0 / 0.16), transparent 70%), linear-gradient(135deg, #2d2a7a, #1b1858 70%)' }} />
-      <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
-        <div className="grid gap-3">
-          <h1 className="text-title font-bold tracking-tight">{title}</h1>
-          {chip && <div className="flex flex-wrap gap-2">{chip}</div>}
-        </div>
-        {action && <div className="max-md:[&>*]:w-full md:shrink-0">{action}</div>}
+    <header className="rise grid grid-cols-[minmax(0,1fr)] gap-x-10 gap-y-6 lg:grid-cols-[1fr_28rem]">
+      <div className="grid content-start gap-2">
+        {eyebrow && <p className="eyebrow !text-(--gold)">{eyebrow}</p>}
+        <h1 className="text-title font-light tracking-[-0.01em]">{title}</h1>
+        {chip && <div className="flex flex-wrap gap-2 pt-1">{chip}</div>}
       </div>
-      <dl className="mt-6 flex flex-wrap items-end gap-x-10 gap-y-4 lg:max-w-[calc(100%-30rem)]">
-        {figures.map(f => (
-          <div key={f.label} className={f.big ? 'w-full' : ''}>
-            <dt className="text-on-hero-soft">{f.label}</dt>
-            <dd className={f.big ? 'text-[2rem] font-bold leading-none md:text-display' : 'text-section font-semibold'}>{f.value}</dd>
+      {action && <div className="lg:justify-self-end lg:pt-5">{action}</div>}
+      <div className="grid content-start gap-5 lg:row-start-2">
+        {big && (
+          <div>
+            <p className="eyebrow">{big.label}</p>
+            <p className="numeral mt-1 text-[2.75rem] leading-none md:text-display">{big.value}</p>
           </div>
-        ))}
-      </dl>
-      {visual && <div className="absolute right-10 top-24 hidden w-[27rem] lg:block">{visual}</div>}
+        )}
+        <div className="gold-rule" />
+        <dl className="flex flex-wrap gap-x-10 gap-y-4">
+          {rest.map(f => (
+            <div key={f.label}>
+              <dt className="eyebrow">{f.label}</dt>
+              <dd className="numeral mt-1 text-[1.5rem] leading-none">{f.value}</dd>
+            </div>
+          ))}
+        </dl>
+      </div>
+      {visual && <div className="hidden lg:row-start-2 lg:block lg:-mt-6">{visual}</div>}
     </header>
   );
 }

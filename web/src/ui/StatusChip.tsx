@@ -1,20 +1,8 @@
 import type { ReactNode } from 'react';
 
 export type Tone = 'success' | 'warning' | 'danger' | 'neutral';
-const tones: Record<Tone, string> = {
-  success: 'bg-success-soft text-success',
-  warning: 'bg-warning-soft text-warning',
-  danger: 'bg-danger-soft text-danger',
-  neutral: 'bg-primary-soft text-primary',
-};
-// Dot colour is a second cue next to the label; on the dark header the chip turns glass (see tokens.css).
-const dots: Record<Tone, string> = { success: 'var(--dot-ok)', warning: 'var(--color-accent)', danger: 'var(--dot-bad)', neutral: 'currentColor' };
 
+/** Colour plus a dot plus the label: never colour alone. Reads the surface context (see app.css). */
 export function StatusChip({ tone = 'neutral', children }: { tone?: Tone; children: ReactNode }) {
-  return (
-    <span className={`chip inline-flex items-center gap-2 whitespace-nowrap rounded-full px-3 py-1 font-semibold ${tones[tone]}`}>
-      <span aria-hidden className="size-2 rounded-full" style={{ background: dots[tone] }} />
-      {children}
-    </span>
-  );
+  return <span className={`chip tone-${tone}`}><i aria-hidden />{children}</span>;
 }

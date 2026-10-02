@@ -67,8 +67,8 @@
 @keyframes grow { from { transform: scaleX(0); } }
 @keyframes spin { to { transform: rotate(360deg); } }
 @layer utilities {
-  .rise { animation: rise 0.9s cubic-bezier(0.16, 0.8, 0.2, 1) both; animation-delay: calc(var(--i, 0) * 90ms); }
-  .enter { animation: enter 0.6s cubic-bezier(0.16, 0.8, 0.2, 1) both; }
+  .rise { animation: rise 0.9s cubic-bezier(0.16, 0.8, 0.2, 1) backwards; animation-delay: calc(var(--i, 0) * 90ms); }
+  .enter { animation: enter 0.6s cubic-bezier(0.16, 0.8, 0.2, 1) backwards; }
   .lift { position: relative; transition: transform 0.45s cubic-bezier(0.16, 0.8, 0.2, 1); }
   .lift::after { content: ''; position: absolute; inset: 0; border-radius: inherit; box-shadow: var(--shadow-e3), 0 0 0 1px rgb(212 180 106 / 0.55); opacity: 0; transition: opacity 0.45s; pointer-events: none; }
   .lift:hover, .lift:focus-within { transform: translateY(-3px); }

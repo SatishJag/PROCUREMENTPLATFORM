@@ -11,7 +11,7 @@ type Props = {
   run: (action: string, reason: string) => Promise<unknown>;
   /** Action name to button text, verb + object, e.g. `{ approved: 'Approve award' }`. Defaults to the action name. */
   labels?: Record<string, string>;
-  /** Fixed to the bottom on mobile (long forms, entity screens). */
+  /** Fixed to the bottom on mobile as a dark glass bar (the page action, long forms, entity screens). */
   sticky?: boolean;
 };
 
@@ -34,9 +34,9 @@ export function ActionBar({ module, id, run, labels = {}, sticky }: Props) {
   const reason = blocked || (actions.error as Error | null)?.message || (actions.isSuccess && !list.length ? 'Nothing for you to do on this item.' : '');
 
   return (
-    <div className={`flex flex-wrap items-center gap-3 ${sticky ? 'max-md:fixed max-md:inset-x-0 max-md:bottom-0 max-md:z-30 max-md:flex-nowrap max-md:border-t max-md:border-line max-md:bg-card/90 max-md:p-3 max-md:shadow-e3 max-md:backdrop-blur' : ''}`}>
+    <div className={`flex flex-wrap items-center gap-3 ${sticky ? 'bar-sticky' : ''}`}>
       {reason && (
-        <p role={blocked ? 'alert' : undefined} className={`min-w-0 flex-1 max-md:basis-full ${blocked ? 'font-medium text-danger' : 'text-ink-soft'}`}>{reason}</p>
+        <p role={blocked ? 'alert' : undefined} className={`min-w-0 flex-1 max-md:basis-full ${blocked ? 'font-medium text-(--bad)' : 'soft'}`}>{reason}</p>
       )}
       {ordered.map(a => {
         const pending = m.isPending && m.variables?.action === a;
