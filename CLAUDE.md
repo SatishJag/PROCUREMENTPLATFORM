@@ -69,13 +69,16 @@ The measurable rules are in `.claude/agents/frontend-engineer.md`, and `qa-revie
 ## Decisions
 - **Decided**: TypeScript throughout. RPC API. Web stack: React + Vite + Tailwind v4 tokens + TanStack Query (see `frontend-engineer`). Postgres and Entra ID come next on the platform track. The uploaded `# CLAUDE.md — Frontend Website Rule.txt` guardrails apply to `web/`; its Windows paths and scripts don't.
 - **Decided (user)**: visual hierarchy, high-contrast primary actions, and the IBM Plex superfamily (Design principles above).
-- **Open (ask the user)**: product name; whether the scroll-craft tour ships.
+- **Decided (user, UI inspiration session)**: references are the clean enterprise-SaaS screens (light blue-white surfaces, deep indigo primary, small amber accent, large rounded white cards, product screens tilted in perspective). Palette direction: **indigo + amber**, tuned by the design-system instance for contrast (start near indigo `#2D2A7A`, amber `#F5B800`, ink navy `#14284B`, surface `#F5F8FE`). Type stays IBM Plex (the references' rounded sans does not override it).
+- **Decided (user)**: the landing page uses `scroll-craft` with tilted live platform UI (real screens, no AI video, no `lets-scroll` render chain). Story is 5 beats, requisition to award: intake, sourcing, sealed bids, evaluation, award and approval. Audience: procurement and commercial heads. Desktop and mobile get separate compositions.
+- **Open (ask the user)**: product name; scroll-craft `BRIEF.md` answers still missing (vibe words, the one remembered moment, signature move).
 - **Not now**: the AI copilot and other AI features stay out of scope until the user brings them back.
 
 ## Next session agenda (user's notes, start here)
-1. **Colour and UI inspiration**: a fresh-eyes session with the user. Don't choose a palette or a visual direction before it. The deck's teal `#0E8C7A` and rust `#C9541A` are only one input.
-2. Then the design system (frontend-engineer), applying all four design principles.
-3. Then the user's new procurement capabilities (domain-engineer per capability).
+1. ~~Colour and UI inspiration~~ done (see Decisions: indigo + amber, tilted live UI).
+2. Design system (frontend-engineer, `web/src/ui/`, `tokens.css`, `api.ts`), applying all four design principles. In progress.
+3. Landing page (scroll-craft, tilted live UI, 5 beats) once the design system lands. Needs `BRIEF.md` first.
+4. Then the user's new procurement capabilities (domain-engineer per capability).
 
 ## Multi-agent operating model
 The main session is the **lead architect**. It talks to the user, writes specs, owns `core/`, `modules/index.ts`, `CLAUDE.md` and `README.md`, and spawns, reviews and merges.
@@ -100,4 +103,5 @@ Update this file in the same commit as any change to: layout, conventions, the e
 
 ## Status
 - **Done**: Phase 1 capability core (intake, planning, suppliers, sourcing, two-envelope evaluation, award scenarios, DOA approvals, contract handoff, reporting, audit chain, CSV), RPC API, `actions` commands for engine-driven buttons, 10 tests.
-- **Next**: `web/` (design system → module screens → tour), then the user's new capabilities, then Postgres and Entra ID.
+- **Done (extraction)**: `core/`, `modules/` and their tests now live in `SatishJag/Procurement_core` (`@satishjag/procurement-core`, compiled `.js` committed, installed via `github:SatishJag/Procurement_core#main`). This repo keeps `server/`, `sample/`, `web/`. Import from the package (`planning.schedule`, `/core` for types); the layout above describes the package contents. The package is a git dependency: pin a commit hash for releases, and keep core imports extensionless with `.js` added after build.
+- **Next**: `web/` (design system → landing page → module screens), then the user's new capabilities, then Postgres and Entra ID.
