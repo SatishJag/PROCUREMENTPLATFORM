@@ -13,6 +13,7 @@ import '@fontsource/ibm-plex-mono/latin-500.css';
 import './styles/app.css';
 import { AppShell, type NavItem } from './ui/AppShell';
 import { Dashboard } from './screens/dashboard/Dashboard';
+import { Workflows } from './screens/workflows/Workflows';
 
 // Module screen instances: build the screen, then replace `soon` with its component in `screens`.
 const nav: NavItem[] = [
@@ -22,8 +23,9 @@ const nav: NavItem[] = [
   { to: '/evaluation', label: 'Evaluation', icon: 'evaluation', soon: true },
   { to: '/awards', label: 'Awards', icon: 'awards', soon: true },
   { to: '/suppliers', label: 'Suppliers', icon: 'suppliers', soon: true },
+  { to: '/workflows', label: 'Workflows', icon: 'workflows', group: 'Administration' },
 ];
-const screens: Record<string, ComponentType> = { '/': Dashboard };
+const screens: Record<string, ComponentType> = { '/': Dashboard, '/workflows': Workflows };
 
 const client = new QueryClient({ defaultOptions: { queries: { retry: false, refetchOnWindowFocus: false } } });
 const path = () => location.hash.slice(1) || '/';

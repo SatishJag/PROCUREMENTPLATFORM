@@ -1,5 +1,5 @@
 import { useQueryClient } from '@tanstack/react-query';
-import { useEffect, useRef, useState, type KeyboardEvent, type ReactNode } from 'react';
+import { Fragment, useEffect, useRef, useState, type KeyboardEvent, type ReactNode } from 'react';
 import { getUser, setUser } from '../api';
 
 // ponytail: the sample users, copied from sample/seed.ts. Replace with the signed-in session (Entra ID) or a users command.
@@ -10,7 +10,7 @@ const USERS = [
 ] as const;
 const initials = (n: string) => n.split(' ').map(w => w[0]).slice(0, 2).join('');
 
-export type NavItem = { to: string; label: string; icon: keyof typeof icons; soon?: boolean };
+export type NavItem = { to: string; label: string; icon: keyof typeof icons; soon?: boolean; group?: string };
 const icons = {
   dashboard: 'M3 3h7v9H3zM14 3h7v5h-7zM14 12h7v9h-7zM3 16h7v5H3z',
   intake: 'M4 13l2-8h12l2 8v6H4zM4 13h5l1 2h4l1-2h5',
@@ -18,6 +18,7 @@ const icons = {
   evaluation: 'M12 3v18M5 7h14M5 7l-3 7a3 3 0 006 0zM19 7l-3 7a3 3 0 006 0z',
   awards: 'M12 14a6 6 0 100-12 6 6 0 000 12zM8.5 13L7 22l5-3 5 3-1.5-9',
   suppliers: 'M4 21V7l8-4 8 4v14M9 21v-6h6v6M9 10h.01M15 10h.01',
+  workflows: 'M5 5h5v5H5zM14 14h5v5h-5zM10 7.5h4a3 3 0 013 3V14',
 };
 const Icon = ({ name }: { name: NavItem['icon'] }) => (
   <svg aria-hidden viewBox="0 0 24 24" className="size-[1.125rem] shrink-0" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d={icons[name]} /></svg>
@@ -84,7 +85,7 @@ export function AppShell({ nav, route, children }: { nav: NavItem[]; route: stri
           <span className="text-section font-medium tracking-[0.04em]">Procurement</span>
         </div>
         <p className="eyebrow mb-2 px-3">Workspace</p>
-        <nav aria-label="Modules" className="grid gap-1">{nav.map(n => <NavLink key={n.to} item={n} active={n.to === route} />)}</nav>
+        <nav aria-label="Modules" className="grid gap-1">{nav.map((n, i) => <Fragment key={n.to}>{n.group && n.group !== nav[i - 1]?.group && <p className="eyebrow mb-1 mt-5 px-3">{n.group}</p>}<NavLink item={n} active={n.to === route} /></Fragment>)}</nav>
         <div className="gold-rule mt-auto" />
         <p className="soft flex items-center gap-2 px-3 pt-3"><span aria-hidden className="size-1.5 rounded-full bg-gold" />Sample data, project DC1</p>
       </aside>
