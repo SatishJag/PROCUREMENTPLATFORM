@@ -40,10 +40,10 @@ export function serve(p = modules.createPlatform(demoSeed()), port = Number(proc
     } catch (e) {
       send(400, { ok: false, error: (e as Error).message });
     }
-  }).listen(port, '127.0.0.1');
+  }).listen(port, process.env.HOST ?? '127.0.0.1'); // set HOST=0.0.0.0 on a host like Railway
 }
 
 if (process.argv[1] === fileURLToPath(import.meta.url)) {
   const server = serve(run(() => {}, true).p); // ponytail: scripted mid-process state for the UI, swap for Postgres data
-  server.on('listening', () => console.log(`API on http://127.0.0.1:${(server.address() as { port: number }).port}/api`));
+  server.on('listening', () => { const a = server.address() as { address: string; port: number }; console.log(`API on http://${a.address}:${a.port}/api`); });
 }

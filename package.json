@@ -8,9 +8,10 @@
     "typecheck": "tsc",
     "demo": "node sample/demo.ts",
     "api": "node server/index.ts",
-    "dev": "vite",
-    "build": "vite build",
-    "preview": "vite preview"
+    "start": "node server/index.ts"
+  },
+  "engines": {
+    "node": ">=22.18"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.131.0",
