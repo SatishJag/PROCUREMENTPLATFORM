@@ -35,7 +35,7 @@ export function serve(p = modules.createPlatform(demoSeed()), port = Number(proc
     }
     try {
       const { args = [] } = body ? JSON.parse(body) : {};
-      send(200, { ok: true, data: command(p, user, ...args) });
+      send(200, { ok: true, data: await command(p, user, ...args) });
     } catch (e) {
       send(400, { ok: false, error: (e as Error).message });
     }

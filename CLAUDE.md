@@ -26,7 +26,7 @@ web/      next: React app + scroll-craft product tour
 .claude/  agents/ (the team), skills/ (ponytail, ponytail-review, scroll-craft)
 ```
 - **New capability** = `modules/<x>.ts` + `test/<x>.test.ts` + one export line in `modules/index.ts`. Never edit the kernel to add a table (`p.table<T>('x')`) or a role (all requirement roles already exist in `Role`).
-- **Module talk**: reads via another module's exports, reactions via events (`p.on` in `createPlatform`). Imports are acyclic: intake→planning; sourcing→intake, suppliers; evaluation→sourcing; awards→evaluation, sourcing, intake; reporting reads all. Modules never import `server/` or `web/`.
+- **Module talk**: reads via another module's exports, reactions via events (`p.on` in `createPlatform`). Imports are acyclic: intake→planning; sourcing→intake, suppliers; evaluation→sourcing; awards→evaluation, sourcing, intake; insight→evaluation, intake, sourcing; reporting reads all. `insight` is async and advisory: no Flow or `actions` (exception to the `next()` step, plain role guards), commands `classifyRequisition` and `analyzeBids`, test seam in `modules/insight-seam.ts` (not indexed). The server `await`s every command. Modules never import `server/` or `web/`.
 - **Every state change**: `guard` → validate → `next(flow)` → mutate → `p.emit(user, 'entity.past_tense', id, data)`. `emit` writes the hash-chained audit trail and publishes the domain event.
 - **API surface** = each module's `export const commands = {...}`. Pure helpers are unreachable.
 - **Swap points** (marked `ponytail:`): in-memory Maps → Postgres (`kernel.table`); sync bus → outbox + Service Bus (`kernel.on`); `x-user-id` → Entra ID (`server`); keyword classifier → LLM (`intake.classify`, same `{category, confidence, evidence}` shape).
@@ -40,6 +40,7 @@ web/      next: React app + scroll-craft product tour
 | evaluation | `technical.opened/completed`, `conflict.declared`, `score.recorded/moderated`, `exclusion.loaded` | |
 | awards | `award.recommended`, `award.decision`, `award.approved` | contracts.draftFromAward |
 | contracts | `contract.drafted` | |
+| insight | `insight.generated` (kind, model, inputHash, subject), `insight.failed` (kind, model, inputHash, reason; only when data was sent) | |
 
 ### API contract
 Every module with a workflow has an `actions` command (intake, suppliers, sourcing, awards).
@@ -106,5 +107,6 @@ Update this file in the same commit as any change to: layout, conventions, the e
 ## Status
 - **Done**: Phase 1 capability core (intake, planning, suppliers, sourcing, two-envelope evaluation, award scenarios, DOA approvals, contract handoff, reporting, audit chain, CSV), RPC API, `actions` commands for engine-driven buttons, 10 tests.
 - **Done (extraction)**: `core/`, `modules/` and their tests now live in `SatishJag/Procurement_core` (`@satishjag/procurement-core`, compiled `.js` committed, installed via `github:SatishJag/Procurement_core#main`). This repo keeps `server/`, `sample/`, `web/`. Import from the package (`planning.schedule`, `/core` for types); the layout above describes the package contents. The package is a git dependency: pin a commit hash for releases, and keep core imports extensionless with `.js` added after build.
+- **Done (AI)**: `insight` built and QA-reviewed in Procurement_core branch `ai-insight` (16 tests; QA blocker on risk/supplier binding fixed, `insight.failed` audited). This repo pins commit `724bd59` and depends on `@anthropic-ai/sdk` directly (the product installs the core's optional peer; this is the exception to zero runtime dependencies). Not yet exercised against the live model (no API key here). Merge of `ai-insight` into Procurement_core `main` awaits the user's go-ahead (shared package, ConstructionAI also depends on it). Known QA leftovers: no per-user rate limit on paid calls; stored insight rows have no read path (any future reader must repeat the `evaluation.results` guards); real SDK path untested.
 - **Done (web base)**: design system and Dashboard merged (see agenda 2). `tsconfig.json` uses `moduleResolution: bundler` and `noEmit` (typecheck only). Package type imports come from `@satishjag/procurement-core/types`, the kernel from `/core`. Product tests (`test/flow.test.ts`, `test/server.test.ts`) live here and run with `npm test`; module tests live in Procurement_core.
 - **Next**: `insight` AI module (built on branch `ai-insight` in Procurement_core: 14 tests pass, awaiting qa-reviewer, then merge and pin the commit here), `web/` (design system → landing page → module screens), then the user's new capabilities, then Postgres and Entra ID.

@@ -18,6 +18,10 @@ test('api: lists commands, runs one as the header user, rejects unknown users an
     assert.equal((await call('constructor/assign', 'u-omar', [{}])).error, 'Unknown endpoint');  // prototype members
     assert.equal((await call('intake/constructor', 'u-omar', [])).error, 'Unknown endpoint');
     assert.match((await call('awards/decide', 'u-omar', ['AW-1', 'approved'])).error, /not found|needs one of/);
+    assert.ok(list.data.insight.includes('analyzeBids')); // async commands are exposed
+    const bad = await call('insight/classifyRequisition', 'u-omar', ['NOPE']); // async rejection becomes a 400 message, not a crash
+    assert.equal(bad.ok, false);
+    assert.ok(bad.error.length > 0);
   } finally {
     server.close();
   }
