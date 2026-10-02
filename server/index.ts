@@ -60,7 +60,7 @@ export function serve(p = modules.createPlatform(demoSeed()), port = Number(proc
     } catch (e) {
       send(400, { ok: false, error: (e as Error).message });
     }
-  }).listen(port, process.env.HOST ?? '127.0.0.1'); // set HOST=0.0.0.0 on a host like Railway
+  }).listen(port, process.env.HOST ?? (process.env.PORT ? '0.0.0.0' : '127.0.0.1')); // hosts like Railway set PORT and need all interfaces; local dev stays loopback
 }
 
 if (process.argv[1] === fileURLToPath(import.meta.url)) {
