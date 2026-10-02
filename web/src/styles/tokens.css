@@ -1,94 +1,67 @@
-/* Design tokens, declared once. Contrast (WCAG) checked for every text/fill pair used:
-   white on primary 12.2, on-accent on accent 8.2, accent on hero 8.9, ink-soft on card 6.8,
-   success on success-soft 4.6, warning on warning-soft 5.3, danger on danger-soft 5.5. */
+/* Design tokens, declared once. Direction: midnight-indigo stage, porcelain surfaces, champagne-gold hairlines,
+   one high-contrast amber for the single primary action.
+   Contrast (WCAG, computed): ink on porcelain 15.3, ink-soft on porcelain 6.4, gold-deep on porcelain 4.8,
+   on-night on night 15.6, on-night-soft on night 8.8, gold on night 8.9, on-accent on accent 9.9,
+   porcelain on primary 11.6, success 5.1 / warning 6.6 / danger 6.2 on porcelain, bright tones on night 8.7+.
+   Amber on porcelain is only 1.7, so amber primaries live on the night stage; on porcelain the primary is indigo. */
 @theme static {
   --color-*: initial; /* no default Tailwind palette, sizes or shadows: only ours */
   --text-*: initial;
   --shadow-*: initial;
   --color-white: #ffffff;
-  --color-primary: #2d2a7a;
+  --color-night: #14123f;
+  --color-night-deep: #0c0b2e;
+  --color-night-raised: #1f1c5c;
+  --color-on-night: #f4f0e8;
+  --color-on-night-soft: #b4b3d9;
+  --color-porcelain: #fbf9f5;
+  --color-porcelain-dim: #f2eee6;
+  --color-ink: #1a1d45;
+  --color-ink-soft: #56597a;
+  --color-gold: #d4b46a; /* hairlines and accents on night */
+  --color-gold-deep: #8a6a1e; /* gold text on porcelain */
+  --color-primary: #2d2a7a; /* the primary on porcelain */
   --color-primary-hover: #211f66;
-  --color-primary-soft: #e8e9f8;
-  --color-on-primary: #ffffff;
-  --color-accent: #f5b800;
+  --color-primary-soft: #eceaf7;
+  --color-on-primary: #fbf9f5;
+  --color-accent: #f5b800; /* the primary on night */
   --color-accent-hover: #ffc933;
-  --color-on-accent: #14284b;
-  --color-hero: #1b1858;
-  --color-on-hero-soft: #c9ccf0;
-  --color-ink: #14284b;
-  --color-ink-soft: #4a5b7c;
-  --color-surface: #f5f8fe;
-  --color-card: #ffffff;
-  --color-line: #dce4f2;
-  --color-control: #6b7b9e; /* borders of inputs: 3:1 on card */
+  --color-on-accent: #14123f;
+  --color-line: #e6e0d2; /* hairline on porcelain */
+  --color-control: #6a6f93; /* input borders: 4.6:1 on porcelain */
   --color-ring: #4a45b8;
   --color-success: #0b7a55;
-  --color-success-soft: #ddf3ea;
-  --color-warning: #8a5a00;
-  --color-warning-soft: #fff1c2;
+  --color-warning: #7a5200;
   --color-danger: #b3261e;
-  --color-danger-soft: #fde6e4;
-  --color-peri: #6b72d6; /* chart series, never text */
-  --color-success-bright: #5fe3b1; /* status dots on the dark hero only */
-  --color-danger-bright: #ff9a92;
+  --color-danger-soft: #fce7e4;
+  --color-peri: #6b72d6; /* chart series on porcelain, never text */
+  --color-peri-night: #8f94e0; /* chart series on night */
 
   --font-ui: 'IBM Plex Sans', system-ui, sans-serif;
   --font-dense: 'IBM Plex Sans Condensed', 'IBM Plex Sans', system-ui, sans-serif;
   --font-code: 'IBM Plex Mono', ui-monospace, monospace;
-  --font-doc: 'IBM Plex Serif', Georgia, serif;
-  --font-arabic: 'IBM Plex Sans Arabic', 'IBM Plex Sans', system-ui, sans-serif;
+  --font-doc: 'IBM Plex Serif', Georgia, serif; /* generated documents only; load @fontsource/ibm-plex-serif when one ships */
+  --font-arabic: 'IBM Plex Sans Arabic', 'IBM Plex Sans', system-ui, sans-serif; /* load @fontsource/ibm-plex-sans-arabic with the first RTL screen */
 
-  /* Three type levels (size and weight both differ) plus one display size for the deciding number. */
-  --text-title: 1.75rem;
-  --text-title--line-height: 2.125rem;
+  /* Three type levels (size and weight both differ): title 300, section 600, body/label 400-500.
+     The label is the body level in small caps tracking; display is the deciding number, light and tabular. */
+  --text-title: 2.25rem;
+  --text-title--line-height: 2.5rem;
   --text-section: 1.0625rem;
   --text-section--line-height: 1.5rem;
   --text-body: 0.875rem;
   --text-body--line-height: 1.375rem;
-  --text-display: 2.75rem;
+  --text-label: 0.75rem;
+  --text-label--line-height: 1rem;
+  --text-display: 4.25rem;
   --text-display--line-height: 1;
 
-  --radius-ctl: 0.75rem;
-  --radius-card: 1.25rem;
-  --radius-hero: 1.75rem;
+  --radius-ctl: 0.5rem;
+  --radius-card: 0.875rem;
+  --radius-hero: 1.25rem;
 
-  /* Tinted, layered elevation: 1 resting, 2 raised, 3 floating. */
-  --shadow-e1: 0 1px 2px rgb(45 42 122 / 0.06), 0 2px 8px rgb(45 42 122 / 0.05);
-  --shadow-e2: 0 2px 4px rgb(45 42 122 / 0.06), 0 8px 24px rgb(45 42 122 / 0.1);
-  --shadow-e3: 0 4px 8px rgb(27 24 88 / 0.1), 0 20px 48px rgb(27 24 88 / 0.22);
-}
-
-@layer base {
-  html { font-family: var(--font-ui); color: var(--color-ink); background: var(--color-surface); font-variant-numeric: tabular-nums; }
-  body { font-size: var(--text-body); line-height: var(--text-body--line-height); min-height: 100dvh; }
-  :focus-visible { outline: 3px solid var(--ring, var(--color-ring)); outline-offset: 3px; border-radius: 6px; }
-  /* One primary per region: indigo on light surfaces, amber on the dark page header. */
-  :root { --btn-bg: var(--color-primary); --btn-hover: var(--color-primary-hover); --btn-fg: var(--color-on-primary); --sec: var(--color-primary); --sec-hover: var(--color-primary-soft); --dot-ok: var(--color-success); --dot-bad: var(--color-danger); }
-  .on-dark { --ring: var(--color-accent); --btn-bg: var(--color-accent); --btn-hover: var(--color-accent-hover); --btn-fg: var(--color-on-accent); --sec: #fff; --sec-hover: rgb(255 255 255 / 0.14); --dot-ok: var(--color-success-bright); --dot-bad: var(--color-danger-bright); }
-}
-.on-dark .chip { background: rgb(255 255 255 / 0.14); color: #fff; }
-.canvas {
-  background:
-    radial-gradient(60rem 30rem at 88% -8%, rgb(107 114 214 / 0.2), transparent 60%),
-    radial-gradient(44rem 26rem at -6% 38%, rgb(245 184 0 / 0.1), transparent 60%),
-    radial-gradient(rgb(45 42 122 / 0.07) 1px, transparent 1px) 0 0 / 22px 22px,
-    var(--color-surface);
-}
-
-/* Motion: transform and opacity only. Hover lift swaps a pre-drawn shadow in via opacity. */
-@keyframes rise { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }
-@keyframes grow { from { transform: scaleX(0); } }
-@keyframes spin { to { transform: rotate(360deg); } }
-@layer utilities {
-  .rise { animation: rise 0.55s cubic-bezier(0.2, 0.7, 0.2, 1) both; animation-delay: calc(var(--i, 0) * 70ms); }
-  .lift { position: relative; transition: transform 0.25s cubic-bezier(0.2, 0.7, 0.2, 1); }
-  .lift::after { content: ''; position: absolute; inset: 0; border-radius: inherit; box-shadow: var(--shadow-e3); opacity: 0; transition: opacity 0.25s; pointer-events: none; }
-  .lift:hover { transform: translateY(-3px); }
-  .lift:hover::after { opacity: 1; }
-  .grow-x { animation: grow 0.9s cubic-bezier(0.2, 0.7, 0.2, 1) 0.2s both; }
-  .spin { animation: spin 0.8s linear infinite; }
-}
-@media (prefers-reduced-motion: reduce) {
-  *, *::before, *::after { animation-duration: 0.01ms !important; animation-delay: 0ms !important; transition-duration: 0.01ms !important; }
-  .lift:hover { transform: none; }
+  /* Layered, tinted elevation: 1 resting, 2 raised, 3 floating. Each carries a 1px inner highlight. */
+  --shadow-e1: 0 1px 0 rgb(255 255 255 / 0.7) inset, 0 1px 2px rgb(6 5 30 / 0.18), 0 6px 16px rgb(6 5 30 / 0.16);
+  --shadow-e2: 0 1px 0 rgb(255 255 255 / 0.7) inset, 0 2px 4px rgb(6 5 30 / 0.2), 0 14px 32px rgb(6 5 30 / 0.28);
+  --shadow-e3: 0 1px 0 rgb(255 255 255 / 0.6) inset, 0 4px 8px rgb(6 5 30 / 0.25), 0 28px 64px rgb(6 5 30 / 0.5);
 }
