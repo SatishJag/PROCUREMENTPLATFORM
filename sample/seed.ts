@@ -1,6 +1,6 @@
-import type { Seed } from '../core/kernel.ts';
-import type { Package, Project, Supplier, User } from '../core/types.ts';
-import { schedule } from '../modules/planning.ts';
+import type { Seed } from '@satishjag/procurement-core/core';
+import type { Package, Project, Supplier, User } from '@satishjag/procurement-core/core';
+import { planning } from '@satishjag/procurement-core';
 
 // Sample data: a fictional 24 MW data-centre programme. All names are invented.
 const SEEDED_ON = '2026-10-01';
@@ -45,7 +45,7 @@ const suppliers: Supplier[] = [
 
 const pkg = (p: Omit<Package, 'schedule' | 'longLead'> & { leadWeeks: number; prequal: boolean }): Package => {
   const { leadWeeks, prequal, ...rest } = p;
-  return { ...rest, longLead: leadWeeks >= 26, schedule: schedule(p.needBy, p.route, leadWeeks, prequal, SEEDED_ON) };
+  return { ...rest, longLead: leadWeeks >= 26, schedule: planning.schedule(p.needBy, p.route, leadWeeks, prequal, SEEDED_ON) };
 };
 
 const packages: Package[] = [
