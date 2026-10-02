@@ -1,4 +1,6 @@
+import { existsSync, readFileSync, statSync } from 'node:fs';
 import { createServer } from 'node:http';
+import { extname, join, normalize } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import * as modules from '@satishjag/procurement-core';
 import { run } from '../sample/demo.ts';
@@ -12,6 +14,18 @@ const registry = Object.fromEntries(Object.entries(modules)
   .map(([name, m]) => [name, (m as { commands: Record<string, Command> }).commands]));
 const MAX_BODY = 1_000_000;
 
+// Built web app (`npm run build`), served from the same origin so one URL shows UI and API.
+// ponytail: sync reads, no caching headers; put a CDN or static host in front for real traffic.
+const DIST = fileURLToPath(new URL('../web/dist/', import.meta.url));
+const MIME: Record<string, string> = { '.html': 'text/html; charset=utf-8', '.js': 'text/javascript', '.css': 'text/css', '.woff2': 'font/woff2', '.woff': 'font/woff', '.svg': 'image/svg+xml', '.png': 'image/png', '.json': 'application/json', '.ico': 'image/x-icon' };
+function staticFile(url: string) {
+  let path: string;
+  try { path = normalize(join(DIST, decodeURIComponent(url.split('?')[0]))); } catch { return undefined; }
+  if (!path.startsWith(DIST)) return undefined; // no escaping the dist folder
+  const file = existsSync(path) && statSync(path).isFile() ? path : join(DIST, 'index.html');
+  return existsSync(file) ? { file, type: MIME[extname(file)] ?? 'application/octet-stream' } : undefined;
+}
+
 export function serve(p = modules.createPlatform(demoSeed()), port = Number(process.env.PORT ?? 8787)) {
   return createServer(async (req, res) => {
     const send = (status: number, body: unknown) => {
@@ -20,6 +34,12 @@ export function serve(p = modules.createPlatform(demoSeed()), port = Number(proc
     };
     if (req.method === 'GET' && req.url === '/api') {
       return send(200, { ok: true, data: Object.fromEntries(Object.entries(registry).map(([m, c]) => [m, Object.keys(c)])) });
+    }
+    if (req.method === 'GET' && !req.url?.startsWith('/api')) {
+      const f = staticFile(req.url ?? '/');
+      if (!f) return send(404, { ok: false, error: 'Not found. Build the web app with `npm run build`.' });
+      res.writeHead(200, { 'content-type': f.type });
+      return res.end(readFileSync(f.file));
     }
     const route = req.url?.match(/^\/api\/(\w+)\/(\w+)$/);
     // Own-property lookups only: /api/constructor/assign must not reach Object.assign.

@@ -22,6 +22,10 @@ test('api: lists commands, runs one as the header user, rejects unknown users an
     const bad = await call('insight/classifyRequisition', 'u-omar', ['NOPE']); // async rejection becomes a 400 message, not a crash
     assert.equal(bad.ok, false);
     assert.ok(bad.error.length > 0);
+    const origin = base.replace(/\/api$/, '');
+    for (const evil of ['/..%2Fpackage.json', '/%2e%2e/%2e%2e/package.json', '/%E0%A4%A']) { // static files must stay inside web/dist
+      assert.ok(!(await fetch(origin + evil).then(r => r.text())).includes('"procurementplatform"'));
+    }
   } finally {
     server.close();
   }
