@@ -1,6 +1,7 @@
 -- =============================================================
 -- Procure.AI: Postgres schema for the shared procurement_core module
--- (Vendor PreQual, bid evaluation, BOQ to PO). See procurement_core/README.md.
+-- (Vendor PreQual, bid evaluation, BOQ to PO). Matches schema/procurement_core.sql in
+-- SatishJag/Procurement_core at the pinned commit; change both together.
 -- Master tables below are the minimum the module references; the vendor
 -- master stays in the ERP and is mapped through external_references.
 -- =============================================================

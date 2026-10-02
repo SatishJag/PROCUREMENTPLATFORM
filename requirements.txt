@@ -1,3 +1,5 @@
 fastapi>=0.115.0
 uvicorn[standard]>=0.32.0
 pydantic>=2.0.0
+# Shared Vendor PreQual, bid evaluation and BOQ to PO engines (private repo)
+procurement-core @ git+https://github.com/SatishJag/Procurement_core@61cff01a014595cb278f3abc79de6ec6a5b66194
