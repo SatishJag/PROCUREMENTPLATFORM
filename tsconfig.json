@@ -1,12 +1,18 @@
 {
   "compilerOptions": {
-    "target": "es2023",
-    "module": "nodenext",
+    "target": "ES2022",
+    "module": "ES2022",
+    "lib": ["ES2022", "DOM"],
+    "moduleResolution": "node",
     "strict": true,
-    "noEmit": true,
-    "allowImportingTsExtensions": true,
-    "verbatimModuleSyntax": true,
-    "types": ["node"]
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
+    "jsx": "react-jsx",
+    "paths": {
+      "@satishjag/procurement-core": ["node_modules/@satishjag/procurement-core"],
+      "@satishjag/procurement-core/*": ["node_modules/@satishjag/procurement-core/*"]
+    }
   },
-  "include": ["core", "modules", "sample", "server", "test"]
+  "include": ["server/**/*.ts", "web/**/*.ts", "web/**/*.tsx", "sample/**/*.ts"]
 }

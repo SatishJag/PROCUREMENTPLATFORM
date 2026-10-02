@@ -1,0 +1,18 @@
+{
+  "name": "procurement-platform",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=22.18"
+  },
+  "scripts": {
+    "test": "node --test test/*.test.ts",
+    "demo": "node sample/demo.ts",
+    "typecheck": "tsc",
+    "api": "node server/index.ts"
+  },
+  "devDependencies": {
+    "@types/node": "^22.18.0",
+    "typescript": "^5.9.0"
+  }
+}

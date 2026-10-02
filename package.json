@@ -1,18 +1,28 @@
 {
-  "name": "procurement-platform",
-  "private": true,
+  "name": "procurementplatform",
+  "version": "1.0.0",
+  "description": "Web UI, HTTP RPC API, and sample data for the procurement platform",
   "type": "module",
-  "engines": {
-    "node": ">=22.18"
-  },
   "scripts": {
     "test": "node --test test/*.test.ts",
-    "demo": "node sample/demo.ts",
     "typecheck": "tsc",
-    "api": "node server/index.ts"
+    "demo": "node sample/demo.ts",
+    "api": "node server/index.ts",
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "@satishjag/procurement-core": "github:SatishJag/Procurement_core#main"
   },
   "devDependencies": {
     "@types/node": "^22.18.0",
-    "typescript": "^5.9.0"
+    "typescript": "^5.7.2",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "vite": "^5.4.0",
+    "@vitejs/plugin-react": "^4.3.0",
+    "tailwindcss": "^4.0.0",
+    "@tanstack/react-query": "^5.59.0"
   }
 }

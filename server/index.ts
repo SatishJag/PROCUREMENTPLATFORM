@@ -1,6 +1,6 @@
 import { createServer } from 'node:http';
 import { fileURLToPath } from 'node:url';
-import * as modules from '../modules/index.ts';
+import * as modules from '@satishjag/procurement-core';
 import { demoSeed } from '../sample/seed.ts';
 
 // RPC over HTTP: POST /api/<module>/<command> { "args": [...] }. Only each module's

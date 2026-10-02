@@ -1,8 +1,8 @@
 // End-to-end walkthrough: intake → plan → ITT → bids → technical → commercial → award → audit.
 // Run: npm run demo. Every call is module.command(platform, user, ...args).
 import { fileURLToPath } from 'node:url';
-import { awards, createPlatform, evaluation, intake, reporting, sourcing } from '../modules/index.ts';
-import type { Contract } from '../core/types.ts';
+import { awards, createPlatform, evaluation, intake, reporting, sourcing } from '@satishjag/procurement-core';
+import type { Contract } from '@satishjag/procurement-core/core';
 import { demoSeed } from './seed.ts';
 
 export function run(print: (...a: unknown[]) => void = console.log) {
