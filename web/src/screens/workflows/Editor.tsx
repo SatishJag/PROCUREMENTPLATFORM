@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Button } from '../../ui/Button';
 import { StatusChip } from '../../ui/StatusChip';
-import { Ic, Lbl, useDesktop } from './bits';
+import { Ic, Lbl, useDesktop } from '../../ui/bits';
 import { Canvas, StageBody } from './Canvas';
 import type { Input as In, Issue } from './logic';
 import { edgeLabel, issues as check, simulate } from './logic';

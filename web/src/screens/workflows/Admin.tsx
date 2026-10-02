@@ -3,7 +3,7 @@ import { Card } from '../../ui/Card';
 import { Input } from '../../ui/Field';
 import { StatusChip } from '../../ui/StatusChip';
 import { Table } from '../../ui/Table';
-import { Check, Ic, Select, cell } from './bits';
+import { Check, Ic, Select, cell } from '../../ui/bits';
 import { DEMO_TODAY, PEOPLE, aed, type Delegation, type NoticeRow, type Store } from './fixtures';
 import { person } from './logic';
 

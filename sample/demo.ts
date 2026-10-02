@@ -5,7 +5,9 @@ import { awards, createPlatform, evaluation, intake, reporting, sourcing } from 
 import type { Contract } from '@satishjag/procurement-core/types';
 import { demoSeed } from './seed.ts';
 
-export function run(print: (...a: unknown[]) => void = console.log, stopAfterRecommend = false) {
+// stopAt returns the platform early so the UI can start in any workflow state (server env DEMO_STAGE).
+export type Stage = 'package' | 'draft' | 'bids' | 'technical' | 'commercial' | 'award';
+export function run(print: (...a: unknown[]) => void = console.log, stopAt?: Stage) {
   let now = '2026-10-01T09:00:00Z';
   const p = createPlatform(demoSeed(), () => now);
   const u = (id: string) => p.users.get(id)!;
@@ -28,6 +30,7 @@ export function run(print: (...a: unknown[]) => void = console.log, stopAfterRec
 
   step('Budget owner approval → package');
   const { package: pkg } = intake.decide(p, u('u-fatima'), req.id, 'approve');
+  if (stopAt === 'package') return { p } as never;
 
   step('Sourcing event (ITT, two lots, BOQ imported from Excel CSV)');
   const boq = sourcing.boqFromCsv([
@@ -53,6 +56,7 @@ export function run(print: (...a: unknown[]) => void = console.log, stopAfterRec
   };
   expectError(() => sourcing.create(p, u('u-priya'), pkg!.id, { ...setup, invite: ['SUP-FAL', 'SUP-NWD', 'SUP-MER', 'SUP-DUN'] }));
   const ev = sourcing.create(p, u('u-priya'), pkg!.id, { ...setup, invite: ['SUP-FAL', 'SUP-NWD', 'SUP-ALN', 'SUP-MER'] });
+  if (stopAt === 'draft') return { p } as never;
   sourcing.publish(p, u('u-priya'), ev.id);
   print(`  ${ev.id} published to ${ev.invited.map(name).join(', ')}`);
 
@@ -69,10 +73,12 @@ export function run(print: (...a: unknown[]) => void = console.log, stopAfterRec
   sourcing.submitBid(p, u('u-alnoor'), ev.id, { currency: 'AED', lines: [line('G1', 2_050_000, 12), line('G2', 1_100_000, 1), line('F1', 2_450_000, 1), line('F2', 480_000, 4)] });
   sourcing.submitBid(p, u('u-meridian'), ev.id, { currency: 'USD', lines: [line('G1', 690_000, 12), line('G2', 420_000, 1), line('F1', 760_000, 1), line('F2', 300_000, 4)] });
   expectError(() => evaluation.results(p, u('u-priya'), ev.id));
+  if (stopAt === 'bids') return { p } as never;
   now = '2027-01-05T12:00:01Z';
   sourcing.close(p, u('u-priya'), ev.id);
   evaluation.openTechnical(p, u('u-priya'), ev.id);
   print(`  Evaluators see: ${evaluation.technicalPack(p, u('u-hana'), ev.id).bidders.map(b => b.name).join(', ')}`);
+  if (stopAt === 'technical') return { p } as never;
 
   step('Technical evaluation (blind, conflict declared, consensus)');
   evaluation.declareConflicts(p, u('u-hana'), ev.id, []);
@@ -100,6 +106,7 @@ export function run(print: (...a: unknown[]) => void = console.log, stopAfterRec
   evaluation.score(p, u('u-hana'), ev.id, 'SUP-MER', 'C3', 9, 'Four comparable hyperscale references verified');
   evaluation.moderate(p, u('u-daniel'), ev.id, 'SUP-NWD', 'C2', 6, 'Committee agreed 6: factory slot letter covers 8 of 12 sets');
   for (const t of evaluation.completeTechnical(p, u('u-daniel'), ev.id)) print(`  ${name(t.supplierId)}: ${t.score} ${t.qualified ? 'qualified' : 'below threshold'}`);
+  if (stopAt === 'commercial') return { p } as never;
 
   step('Commercial evaluation (envelope opens)');
   evaluation.loadExclusion(p, u('u-tom'), ev.id, 'SUP-FAL', 0, 260_000);
@@ -118,7 +125,7 @@ export function run(print: (...a: unknown[]) => void = console.log, stopAfterRec
   const split = result.scenarios.find(s => s.id === 'split_by_lot')!;
   const award = awards.recommend(p, u('u-priya'), ev.id, 'split_by_lot', `Lot 1 to lowest compliant bidder, Lot 2 with best-value bidder: saves ${aed(best - split.value)} against a single best-value award`);
   print(`  ${award.id} ${aed(award.value)} routed to: ${award.steps.map(s => `${s.role} (${s.reason})`).join(' → ')}`);
-  if (stopAfterRecommend) return { p, ev, award, result }; // live state: an award waiting on its approvers
+  if (stopAt === 'award') return { p, ev, award, result }; // live state: an award waiting on its approvers
   expectError(() => awards.decide(p, u('u-rashid'), award.id, 'approved'));
   awards.decide(p, u('u-daniel'), award.id, 'approved', 'Endorsed');
   awards.decide(p, u('u-fatima'), award.id, 'approved', 'Within budget');

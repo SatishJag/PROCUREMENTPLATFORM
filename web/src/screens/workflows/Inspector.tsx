@@ -2,7 +2,7 @@ import { Button } from '../../ui/Button';
 import { Card } from '../../ui/Card';
 import { Field, Input } from '../../ui/Field';
 import { Section } from '../../ui/Section';
-import { Check, Ic, Lbl, Select, Tags } from './bits';
+import { Check, Ic, Lbl, Select, Tags } from '../../ui/bits';
 import { DESIGNATIONS, GROUPS, KINDS, PEOPLE, ROLES, aed, type ApproverKind, type Stage, type Workflow } from './fixtures';
 import { condText, limitOf, resolve, ruleName } from './logic';
 

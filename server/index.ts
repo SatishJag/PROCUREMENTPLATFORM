@@ -3,7 +3,7 @@ import { createServer } from 'node:http';
 import { extname, join, normalize } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import * as modules from '@satishjag/procurement-core';
-import { run } from '../sample/demo.ts';
+import { run, type Stage } from '../sample/demo.ts';
 import { demoSeed } from '../sample/seed.ts';
 
 // RPC over HTTP: POST /api/<module>/<command> { "args": [...] }. Only each module's
@@ -64,6 +64,8 @@ export function serve(p = modules.createPlatform(demoSeed()), port = Number(proc
 }
 
 if (process.argv[1] === fileURLToPath(import.meta.url)) {
-  const server = serve(run(() => {}, true).p); // ponytail: scripted mid-process state for the UI, swap for Postgres data
+  // ponytail: scripted state for the UI (DEMO_STAGE=start|package|draft|bids|technical|commercial|award, default award), swap for Postgres data.
+  const stage = process.env.DEMO_STAGE ?? 'award';
+  const server = serve(stage === 'start' ? undefined : run(() => {}, stage as Stage).p);
   server.on('listening', () => { const a = server.address() as { address: string; port: number }; console.log(`API on http://${a.address}:${a.port}/api`); });
 }

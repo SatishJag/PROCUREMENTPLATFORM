@@ -4,7 +4,7 @@ import { Card } from '../../ui/Card';
 import { Field, Input, control } from '../../ui/Field';
 import { Section } from '../../ui/Section';
 import { StatusChip } from '../../ui/StatusChip';
-import { Ic } from './bits';
+import { Ic } from '../../ui/bits';
 import { DEMO_TODAY, type Entry, type LogItem } from './fixtures';
 import type { Change, Issue } from './logic';
 

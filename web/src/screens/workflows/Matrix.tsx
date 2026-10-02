@@ -4,7 +4,7 @@ import { Card } from '../../ui/Card';
 import { Input } from '../../ui/Field';
 import { StatusChip } from '../../ui/StatusChip';
 import { Table } from '../../ui/Table';
-import { Check, Ic, IconBtn, Lbl, cell } from './bits';
+import { Check, Ic, IconBtn, Lbl, cell } from '../../ui/bits';
 import { CATEGORIES, COUNTRIES, DESIGNATIONS, PEOPLE, PROJECTS, type Rule, type Workflow } from './fixtures';
 import { coverage, issues, ruleName, type Sim } from './logic';
 

@@ -1,6 +1,6 @@
-// Small local controls this screen needs and the design system does not have yet (see the report: Select, Check, Tabs, Tags, Icon).
+// Shared form controls (Select, Check, Tags, Tabs, Ic icons, IconBtn, Lbl). Promoted from the Workflow Console.
 import { useState, useSyncExternalStore, type KeyboardEvent, type ReactNode } from 'react';
-import { control, Field } from '../../ui/Field';
+import { control, Field } from './Field';
 
 export const useMedia = (q: string) => useSyncExternalStore(
   cb => { const m = matchMedia(q); m.addEventListener('change', cb); return () => m.removeEventListener('change', cb); },

@@ -4,7 +4,7 @@ import { Button } from '../../ui/Button';
 import { Card } from '../../ui/Card';
 import { PageHeader } from '../../ui/PageHeader';
 import { StatusChip } from '../../ui/StatusChip';
-import { Select, Tabs } from './bits';
+import { Select, Tabs } from '../../ui/bits';
 import { Delegation, Notifications } from './Admin';
 import { Editor } from './Editor';
 import { DEMO_TODAY, seed, type Entry, type Rule, type Stage, type Store, type Workflow } from './fixtures';

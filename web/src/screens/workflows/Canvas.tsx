@@ -1,6 +1,6 @@
 import { useState, type CSSProperties } from 'react';
 import { Zoomable } from '../../ui/Zoomable';
-import { Ic } from './bits';
+import { Ic } from '../../ui/bits';
 import { aed } from './fixtures';
 import { columns, edgeLabel, kindLabel, limitOf, resolve, role } from './logic';
 import type { Stage, Workflow } from './fixtures';

@@ -1,7 +1,7 @@
 import { Card } from '../../ui/Card';
 import { Input, Field } from '../../ui/Field';
 import { StatusChip } from '../../ui/StatusChip';
-import { Check, Ic, Select } from './bits';
+import { Check, Ic, Select } from '../../ui/bits';
 import { CATEGORIES, COUNTRIES, PEOPLE, PROJECTS, aed, type Workflow } from './fixtures';
 import { resolve, ruleName, stageName, type Input as In, type Issue, type Sim } from './logic';
 
