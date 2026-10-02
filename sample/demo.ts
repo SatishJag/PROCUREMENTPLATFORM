@@ -5,7 +5,7 @@ import { awards, createPlatform, evaluation, intake, reporting, sourcing } from 
 import type { Contract } from '@satishjag/procurement-core/types';
 import { demoSeed } from './seed.ts';
 
-export function run(print: (...a: unknown[]) => void = console.log) {
+export function run(print: (...a: unknown[]) => void = console.log, stopAfterRecommend = false) {
   let now = '2026-10-01T09:00:00Z';
   const p = createPlatform(demoSeed(), () => now);
   const u = (id: string) => p.users.get(id)!;
@@ -118,6 +118,7 @@ export function run(print: (...a: unknown[]) => void = console.log) {
   const split = result.scenarios.find(s => s.id === 'split_by_lot')!;
   const award = awards.recommend(p, u('u-priya'), ev.id, 'split_by_lot', `Lot 1 to lowest compliant bidder, Lot 2 with best-value bidder: saves ${aed(best - split.value)} against a single best-value award`);
   print(`  ${award.id} ${aed(award.value)} routed to: ${award.steps.map(s => `${s.role} (${s.reason})`).join(' → ')}`);
+  if (stopAfterRecommend) return { p, ev, award, result }; // live state: an award waiting on its approvers
   expectError(() => awards.decide(p, u('u-rashid'), award.id, 'approved'));
   awards.decide(p, u('u-daniel'), award.id, 'approved', 'Endorsed');
   awards.decide(p, u('u-fatima'), award.id, 'approved', 'Within budget');
