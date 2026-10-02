@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Button } from '../../ui/Button';
 import { StatusChip } from '../../ui/StatusChip';
-import { Ic, useDesktop } from './bits';
+import { Ic, Lbl, useDesktop } from './bits';
 import { Canvas, StageBody } from './Canvas';
 import type { Input as In, Issue } from './logic';
 import { edgeLabel, issues as check, simulate } from './logic';
@@ -45,10 +45,10 @@ export function Editor({ wf, hasDraft, canEdit, why, back, edit, input, setInput
     <div className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_24rem] lg:items-start">
       <div className="grid min-w-0 gap-5">
         <div className="flex flex-wrap items-center gap-x-4 gap-y-3">
-          <Button variant="text" onClick={back}><Ic n="back" className="mr-1 size-4" />All workflows</Button>
+          <Button variant="text" onClick={back}><Lbl n="back">All workflows</Lbl></Button>
           <h2 className="text-section font-semibold">{wf.name}</h2>
           <StatusChip tone={hasDraft ? 'warning' : 'success'}>{hasDraft ? `Draft v${wf.version}` : `Published v${wf.version}`}</StatusChip>
-          <span className="ml-auto"><Button onClick={add} disabled={!canEdit}><Ic n="plus" className="mr-1.5 size-4" />Add stage</Button></span>
+          <span className="ml-auto"><Button onClick={add} disabled={!canEdit}><Lbl n="plus">Add stage</Lbl></Button></span>
         </div>
         {!canEdit && <p className="soft flex items-center gap-2"><Ic n="lock" />{why}</p>}
         {desktop ? <Canvas wf={wf} sel={s?.id ?? ''} onSel={setSel} route={route} /> : (
@@ -74,7 +74,7 @@ export function Editor({ wf, hasDraft, canEdit, why, back, edit, input, setInput
       </div>
       <div className="grid gap-5">
         {desktop && (inspector ?? <p className="soft">This workflow has no stages. Add one to start.</p>)}
-        <Safeguards list={list} onPick={pick} />
+        <Safeguards list={list} onPick={pick} kind={wf.kind} />
       </div>
     </div>
   );

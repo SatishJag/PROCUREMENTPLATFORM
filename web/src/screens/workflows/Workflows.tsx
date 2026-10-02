@@ -120,9 +120,9 @@ export function Workflows() {
         action={action || undefined}
       />
       <Tabs label="Workflow console" value={tab} onChange={setTab} tabs={[['workflows', 'Workflows'], ['matrix', 'Authority matrix'], ['delegation', 'Delegation'], ['notices', 'Notifications'], ['versions', 'Versions']]} />
-      <div id="tab-panel" role="tabpanel" aria-labelledby={`tab-${tab}`} className="grid gap-5">
+      <div id="tab-panel" role="tabpanel" aria-labelledby={`tab-${tab}`} className="grid grid-cols-[minmax(0,1fr)] gap-5">
         {(tab === 'matrix' || tab === 'versions') && (
-          <div className="max-w-sm"><Select label="Workflow" value={activeId} onChange={setActive} options={ids.map(i => [i, live(store.entries[i]).name])} /></div>
+          <Card as="div" className="max-w-sm !p-4"><Select label="Workflow" value={activeId} onChange={setActive} options={ids.map(i => [i, live(store.entries[i]).name])} /></Card>
         )}
         {inLibrary && (
           <>
@@ -138,7 +138,7 @@ export function Workflows() {
                     </div>
                     <h3 className="text-section font-semibold"><button type="button" onClick={() => open(id)} aria-label={`Open ${w.name}`} className="text-left after:absolute after:inset-0 after:rounded-card after:content-['']">{w.name}</button></h3>
                     <p className="text-ink-soft">{w.summary}</p>
-                    <Mini wf={w} />
+                    <div className="grid min-h-[4.75rem] items-center"><Mini wf={w} /></div>
                     <dl className="grid grid-cols-3 gap-3 border-t border-line pt-3">
                       {([['Effective', e.published?.effective || 'Not published'], ['Owner', w.owner], ['Last edited', w.edited]] as const).map(([k, v]) => <div key={k}><dt className="eyebrow">{k}</dt><dd className="mt-0.5 font-medium">{v}</dd></div>)}
                     </dl>

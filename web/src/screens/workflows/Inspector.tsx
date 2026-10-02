@@ -2,7 +2,7 @@ import { Button } from '../../ui/Button';
 import { Card } from '../../ui/Card';
 import { Field, Input } from '../../ui/Field';
 import { Section } from '../../ui/Section';
-import { Check, Ic, Select, Tags } from './bits';
+import { Check, Ic, Lbl, Select, Tags } from './bits';
 import { DESIGNATIONS, GROUPS, KINDS, PEOPLE, ROLES, aed, type ApproverKind, type Stage, type Workflow } from './fixtures';
 import { condText, limitOf, resolve, ruleName } from './logic';
 
@@ -72,8 +72,8 @@ export function Inspector({ wf, s, canEdit, why, patch, setRule, move, remove }:
           </div>
         </Section>
         <div className="flex flex-wrap items-center gap-2 border-t border-line pt-4">
-          <Button onClick={() => move(-1)} disabled={i === 0}><Ic n="up2" className="mr-1.5 size-4" />Move earlier</Button>
-          <Button onClick={() => move(1)} disabled={i === wf.stages.length - 1}><Ic n="down2" className="mr-1.5 size-4" />Move later</Button>
+          <Button onClick={() => move(-1)} disabled={i === 0}><Lbl n="up2">Move earlier</Lbl></Button>
+          <Button onClick={() => move(1)} disabled={i === wf.stages.length - 1}><Lbl n="down2">Move later</Lbl></Button>
           <Button variant="destructive" onReason={remove} className="ml-auto">Remove stage</Button>
         </div>
       </fieldset>

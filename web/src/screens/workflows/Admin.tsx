@@ -35,8 +35,8 @@ export function Delegation({ store, setStore, canEdit, why }: Common) {
           { key: 'to', header: 'Delegate', cell: d => <Select label="" aria="Delegate" value={d.to} onChange={v => set(d.id, { to: v })} options={approvers} className="min-w-52" /> },
           { key: 'start', header: 'From', cell: d => <input type="date" aria-label="From" value={d.start} onChange={e => set(d.id, { start: e.target.value })} className={cell} /> },
           { key: 'end', header: 'To', cell: d => <input type="date" aria-label="To" value={d.end} onChange={e => set(d.id, { end: e.target.value })} className={cell} /> },
-          { key: 'scope', header: 'Applies to', cell: d => <Input aria-label="Applies to" value={d.scope} onChange={e => set(d.id, { scope: e.target.value })} /> },
-          { key: 'check', header: 'Check', cell: d => { const p = problem(d); return <div className="grid max-w-64 gap-1"><span><StatusChip tone={p.tone}>{p.tone === 'success' ? 'Valid' : p.tone === 'warning' ? 'Capped' : 'Blocked'}</StatusChip></span><span className="text-ink-soft">{p.text}</span></div>; } },
+          { key: 'scope', header: 'Applies to', cell: d => <div className="min-w-56"><Input aria-label="Applies to" value={d.scope} onChange={e => set(d.id, { scope: e.target.value })} /></div> },
+          { key: 'check', header: 'Check', cell: d => { const p = problem(d); return <div className="grid w-72 gap-1"><span><StatusChip tone={p.tone}>{p.tone === 'success' ? 'Valid' : p.tone === 'warning' ? 'Capped' : 'Blocked'}</StatusChip></span><span className="text-ink-soft">{p.text}</span></div>; } },
           { key: 'x', header: '', cell: d => <Button variant="destructive" onReason={del(d)} className="!h-9 !px-3">Remove</Button> },
         ]} />
       </fieldset>
@@ -57,8 +57,8 @@ export function Notifications({ store, setStore, canEdit, why }: Common) {
         <Table caption="Notification events" rows={store.notices} rowKey={n => n.id} columns={[
           { key: 'event', header: 'Event', cell: n => <span className="font-medium">{n.event}</span> },
           { key: 'to', header: 'Sent to', cell: n => n.to },
-          { key: 'email', header: 'Email', cell: n => <Check label={<span className="sr-only">Email for {n.event}</span>} checked={n.email} onChange={email => set(n.id, { email })} /> },
-          { key: 'inApp', header: 'In-app', cell: n => <Check label={<span className="sr-only">In-app for {n.event}</span>} checked={n.inApp} onChange={inApp => set(n.id, { inApp })} /> },
+          { key: 'email', header: 'Email', cell: n => <Check aria={`Email for ${n.event}`} checked={n.email} onChange={email => set(n.id, { email })} /> },
+          { key: 'inApp', header: 'In-app', cell: n => <Check aria={`In-app for ${n.event}`} checked={n.inApp} onChange={inApp => set(n.id, { inApp })} /> },
           { key: 'subject', header: 'Subject template', cell: n => <Input aria-label={`Subject for ${n.event}`} value={n.subject} onChange={e => set(n.id, { subject: e.target.value })} className="min-w-72" /> },
           { key: 'preview', header: 'Preview with sample data', cell: n => <span className="text-ink-soft">{fill(n.subject)}</span> },
         ]} />

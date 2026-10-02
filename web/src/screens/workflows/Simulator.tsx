@@ -16,19 +16,19 @@ export function Simulator({ wf, input, set, sim, show, setShow }: SP) {
         <h3 className="text-section font-semibold">Test this workflow</h3>
         <Check label="Show the route on the canvas" checked={show} onChange={setShow} />
       </div>
-      <div className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]">
-        <div className="grid content-start gap-3 sm:grid-cols-2">
-          <Field label="Value (AED)" hint={aed(input.value)}><Input type="number" min={0} step={10000} inputMode="numeric" value={input.value} onChange={e => set({ value: Math.max(0, Number(e.target.value) || 0) })} /></Field>
+      <div className="grid gap-5">
+        <div className="grid content-start gap-3 sm:grid-cols-3">
+          <Field label="Value (AED)"><Input type="number" min={0} step={10000} inputMode="numeric" value={input.value} onChange={e => set({ value: Math.max(0, Number(e.target.value) || 0) })} /></Field>
           <Select label="Category" value={input.category} onChange={category => set({ category })} options={CATEGORIES.map(c => [c, c])} />
-          <Select label="Project" value={input.project} onChange={project => set({ project })} options={PROJECTS.map(c => [c, c])} />
           <Select label="Requester" value={input.requester} onChange={requester => set({ requester })} options={PEOPLE.map(p => [p.id, p.name])} />
+          <Select label="Project" value={input.project} onChange={project => set({ project })} options={PROJECTS.map(c => [c, c])} />
           <Select label="Country or entity" value={input.country} onChange={country => set({ country })} options={COUNTRIES.map(c => [c, c])} />
-          <div className="grid content-end">
+          <div className="grid content-end sm:col-span-1">
             <Check label="Over budget" checked={input.overBudget} onChange={overBudget => set({ overBudget })} />
-            <Check label="Deviates from best-value ranking" checked={input.deviation} onChange={deviation => set({ deviation })} />
+            <Check label="Deviates from ranking" checked={input.deviation} onChange={deviation => set({ deviation })} />
           </div>
         </div>
-        <div className="grid content-start gap-4" aria-live="polite">
+        <div className="grid content-start gap-4 border-t border-line pt-5" aria-live="polite">
           <div className="flex items-end gap-6">
             <div>
               <p className="eyebrow">{route ? 'Route chosen' : 'Approval steps'}</p>
@@ -62,7 +62,7 @@ export function Simulator({ wf, input, set, sim, show, setShow }: SP) {
 }
 
 /** Blocking errors and warnings from the safeguards, plus the controls the engine always enforces. */
-export function Safeguards({ list, onPick }: { list: Issue[]; onPick: (i: Issue) => void }) {
+export function Safeguards({ list, onPick, kind }: { list: Issue[]; onPick: (i: Issue) => void; kind: Workflow['kind'] }) {
   const errors = list.filter(i => i.level === 'error'), warns = list.filter(i => i.level === 'warning');
   const row = (i: Issue, tone: 'danger' | 'warning') => (
     <li key={i.text}>
@@ -81,7 +81,7 @@ export function Safeguards({ list, onPick }: { list: Issue[]; onPick: (i: Issue)
       </div>
       {list.length > 0 && <ul className="grid gap-0.5">{errors.map(i => row(i, 'danger'))}{warns.map(i => row(i, 'warning'))}</ul>}
       <ul className="grid gap-1.5 border-t border-line pt-3 text-ink-soft">
-        {['A requester can never approve their own request.', 'The same person can never approve twice in one route.', 'Every route must reach an approver whose limit covers the value.'].map(t => <li key={t} className="flex items-start gap-2.5"><span className="mt-0.5 text-success"><Ic n="check" /></span>{t}</li>)}
+        {['A requester can never approve their own request.', 'The same person can never approve twice in one route.', ...(kind === 'approval' ? ['Every route must reach an approver whose limit covers the value.'] : [])].map(t => <li key={t} className="flex items-start gap-2.5"><span className="mt-0.5 text-success"><Ic n="check" /></span>{t}</li>)}
       </ul>
     </Card>
   );

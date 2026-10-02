@@ -8,9 +8,9 @@ export const useMedia = (q: string) => useSyncExternalStore(
 );
 export const useDesktop = () => useMedia('(min-width: 768px)');
 
-export const sel = 'h-11 md:h-10 ' + control;
+export const sel = 'h-11 md:h-10 [color-scheme:light] ' + control;
 /** Compact variants for table cells. */
-export const cell = 'h-9 rounded-ctl border border-control bg-white px-2 text-ink hover:border-primary disabled:cursor-not-allowed disabled:opacity-50';
+export const cell = 'h-9 [color-scheme:light] rounded-ctl border border-control bg-white px-2 text-ink hover:border-primary disabled:cursor-not-allowed disabled:opacity-50';
 
 export function Select({ label, value, onChange, options, placeholder, hint, error, aria, className = '' }: { aria?: string; label: string; value: string; onChange: (v: string) => void; options: [string, string][]; placeholder?: string; hint?: string; error?: string; className?: string }) {
   return (
@@ -23,11 +23,11 @@ export function Select({ label, value, onChange, options, placeholder, hint, err
   );
 }
 
-export function Check({ label, checked, onChange, hint, disabled }: { label: ReactNode; checked: boolean; onChange: (v: boolean) => void; hint?: string; disabled?: boolean }) {
+export function Check({ label, aria, checked, onChange, hint, disabled }: { label?: ReactNode; aria?: string; checked: boolean; onChange: (v: boolean) => void; hint?: string; disabled?: boolean }) {
   return (
     <label className="on-light flex min-h-11 cursor-pointer items-start gap-3 py-1.5 text-ink has-[:disabled]:cursor-not-allowed has-[:disabled]:opacity-60">
-      <input type="checkbox" checked={checked} disabled={disabled} onChange={e => onChange(e.target.checked)} className="mt-0.5 size-5 shrink-0 cursor-pointer rounded-[4px] accent-(--color-primary)" />
-      <span className="grid"><span className="font-medium">{label}</span>{hint && <span className="text-ink-soft">{hint}</span>}</span>
+      <input type="checkbox" aria-label={aria} checked={checked} disabled={disabled} onChange={e => onChange(e.target.checked)} className="mt-0.5 size-5 shrink-0 cursor-pointer rounded-[4px] [color-scheme:light] accent-(--color-primary)" />
+      {(label || hint) && <span className="grid"><span className="font-medium">{label}</span>{hint && <span className="text-ink-soft">{hint}</span>}</span>}
     </label>
   );
 }
@@ -94,3 +94,6 @@ export const Ic = ({ n, className = 'size-4' }: { n: keyof typeof paths; classNa
 export function IconBtn({ label, n, onClick, disabled }: { label: string; n: keyof typeof paths; onClick: () => void; disabled?: boolean }) {
   return <button type="button" aria-label={label} title={label} disabled={disabled} onClick={onClick} className="grid size-11 place-items-center rounded-ctl border border-control text-primary transition-transform hover:bg-primary-soft active:scale-[0.97] disabled:cursor-not-allowed disabled:opacity-40 md:size-10"><Ic n={n} /></button>;
 }
+
+/** Button label with a leading icon (preflight makes svg block, so the pair needs its own flex row). */
+export const Lbl = ({ n, children }: { n: keyof typeof paths; children: ReactNode }) => <span className="inline-flex items-center gap-1.5"><Ic n={n} />{children}</span>;

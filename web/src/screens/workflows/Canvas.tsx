@@ -1,20 +1,21 @@
-import { useState } from 'react';
+import { useState, type CSSProperties } from 'react';
 import { Zoomable } from '../../ui/Zoomable';
 import { Ic } from './bits';
 import { aed } from './fixtures';
 import { columns, edgeLabel, kindLabel, limitOf, resolve, role } from './logic';
 import type { Stage, Workflow } from './fixtures';
 
-const W = 208, H = 152, GX = 112, GY = 28, PAD = 28, D = 40; // node, column gap, row gap, padding, start/end disc
+const H = 128, GAP0 = 68, GX = 24, PAD = 24, PH = 30; // node height, vertical gap between steps, gap between parallel nodes, padding, start/end pill height
 
 /** Level of detail from the live zoom scale: the same node shows more as you zoom in. */
-const level = (k: number) => (k < 0.8 ? 0 : k < 1.4 ? 1 : 2);
+const level = (k: number) => (k < 0.6 ? 0 : k < 1.2 ? 1 : 2);
 
 /** What a stage node says, by level. Shared by the canvas node and the mobile stage card. */
-export function StageBody({ s, wf, lv, step }: { s: Stage; wf: Workflow; lv: number; step?: number }) {
+export function StageBody({ s, wf, lv, step, tag }: { s: Stage; wf: Workflow; lv: number; step?: number; tag?: string }) {
   const lim = limitOf(s), a = resolve(s.approver), chip = 'inline-flex items-center gap-1 rounded-full bg-white/10 px-2 py-0.5 text-label text-on-night-soft';
   return (
     <>
+      {tag && <span className="eyebrow !text-(--gold) !leading-none">{tag}</span>}
       <span className="flex items-start gap-2">
         {step != null && <span aria-label={`Step ${step}`} className="grid size-6 shrink-0 place-items-center rounded-full bg-gold text-label font-semibold text-night">{step}</span>}
         <span className={`font-semibold leading-tight tracking-[-0.005em] ${lv === 0 ? 'text-[1.2rem]' : 'text-[0.95rem]'}`}>{s.name}</span>
@@ -43,69 +44,61 @@ export function StageBody({ s, wf, lv, step }: { s: Stage; wf: Workflow; lv: num
 
 type Props = { wf: Workflow; sel: string; onSel: (id: string) => void; route: Set<string> | null };
 
+/** Top-to-bottom flow: one row per step, parallel stages side by side, conditions on the connectors. */
 export function Canvas({ wf, sel, onSel, route }: Props) {
   const [k, setK] = useState(1), lv = level(k);
-  const cols = columns(wf), tall = Math.max(1, ...cols.map(c => c.length)), height = PAD * 2 + 22 + tall * H + (tall - 1) * GY, mid = height / 2 + 11;
-  const colX = (j: number) => PAD + D + GX + j * (W + GX), endX = colX(cols.length) - 0;
+  const rows = columns(wf), wide = Math.max(1, ...rows.map(r => r.length)), W = wide > 2 ? 196 : 320, GAP = wide > 2 ? 100 : GAP0;
+  const width = PAD * 2 + wide * W + (wide - 1) * GX, cx = width / 2;
+  const rowY = (j: number) => PAD + PH + GAP + j * (H + GAP), endY = rowY(rows.length), height = endY + PH + PAD;
   const pos = new Map<string, { x: number; y: number }>();
-  cols.forEach((c, j) => c.forEach((s, i) => pos.set(s.id, { x: colX(j), y: mid - (c.length * H + (c.length - 1) * GY) / 2 + i * (H + GY) })));
-  const width = endX + D + PAD, sig = wf.stages.map(s => s.id + s.parallelWithPrev).join();
-  const live = (id: string) => !route || route.has(id);
+  rows.forEach((r, j) => r.forEach((s, i) => pos.set(s.id, { x: cx - (r.length * W + (r.length - 1) * GX) / 2 + i * (W + GX), y: rowY(j) })));
+  const live = (id: string) => !route || route.has(id), sig = wf.stages.map(s => s.id + s.parallelWithPrev).join();
   const steps = new Map<string, number>(); let n = 0;
-  if (route) cols.forEach(c => { const hit = c.filter(s => route.has(s.id)); if (hit.length) { n++; hit.forEach(s => steps.set(s.id, n)); } });
+  if (route) rows.forEach(r => { const hit = r.filter(s => route.has(s.id)); if (hit.length) { n++; hit.forEach(s => steps.set(s.id, n)); } });
 
-  // Edges: disc to first column, column to next column (all pairs), last column to the end disc. A route that skips a column gets a bypass edge.
-  type E = { x1: number; y1: number; x2: number; y2: number; to?: string; on: boolean; cond: boolean };
-  const edges: E[] = [], sx = PAD + D, ex = endX;
-  const lastLive = (j: number) => { for (let i = j; i >= 0; i--) if (cols[i].some(s => live(s.id))) return i; return -1; };
-  const link = (from: { x: number; y: number; id?: string }[] | null, j: number) => {
-    const tos = j < cols.length ? cols[j].map(s => ({ ...pos.get(s.id)!, id: s.id })) : [{ x: ex, y: mid - H / 2, id: undefined }];
-    const srcs: { x: number; y: number; id?: string }[] = from ?? [{ x: sx - W, y: mid - H / 2 }];
-    for (const t of tos) for (const f of srcs) edges.push({ x1: from ? f.x + W : sx, y1: f.y + H / 2, x2: t.x, y2: t.y + H / 2, to: t.id, on: !route || ((f.id ? route.has(f.id) : true) && (t.id ? route.has(t.id) : true)), cond: !!(t.id && edgeLabel(wf, t.id)) });
-  };
-  for (let j = 0; j <= cols.length; j++) link(j ? cols[j - 1].map(s => ({ ...pos.get(s.id)!, id: s.id })) : null, j);
-  const pills = cols.flat().map(s => ({ s, label: edgeLabel(wf, s.id), ...pos.get(s.id)! }));
-  const bypass = route ? cols.flatMap((c, j) => { const p = lastLive(j - 1); return c.some(s => route.has(s.id)) && p < j - 1 && p >= 0 ? [{ p, j }] : []; }) : [];
+  // Connectors: start to the first row, row to next row (all pairs), last row to the end. A route that skips a row gets a dotted bypass.
+  type P = { x: number; y: number; id?: string };
+  type E = { a: P; b: P; on: boolean; cond: boolean };
+  const edges: E[] = [], at = (id: string): P => ({ ...pos.get(id)!, id });
+  const start: P = { x: cx - W / 2, y: PAD - H + PH }, end: P = { x: cx - W / 2, y: endY };
+  for (let j = 0; j <= rows.length; j++) {
+    const from = j ? rows[j - 1].map(s => at(s.id)) : [start], to = j < rows.length ? rows[j].map(s => at(s.id)) : [end];
+    for (const b of to) for (const a of from) edges.push({ a, b, on: !route || ((a.id ? route.has(a.id) : true) && (b.id ? route.has(b.id) : true)), cond: !!(b.id && edgeLabel(wf, b.id)) });
+  }
+  const lastLive = (j: number) => { for (let i = j; i >= 0; i--) if (rows[i].some(s => live(s.id))) return i; return -1; };
+  const bypass = route ? rows.flatMap((r, j) => { const p = lastLive(j - 1); return r.some(s => route.has(s.id)) && p >= 0 && p < j - 1 ? [{ p, j }] : []; }) : [];
+  const pills = rows.flat().map(s => ({ s, label: edgeLabel(wf, s.id), ...pos.get(s.id)! })).filter(p => p.label);
 
-  const body = (
-    <div className="relative" style={{ width, height }}>
-      <svg width={width} height={height} className="pointer-events-none absolute inset-0" aria-hidden>
-        <defs><marker id="ah" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0l8 4-8 4z" fill="currentColor" /></marker></defs>
-        {edges.map((e, i) => {
-          const dx = (e.x2 - e.x1) * 0.5;
-          return <path key={i} d={`M${e.x1} ${e.y1}C${e.x1 + dx} ${e.y1} ${e.x2 - dx} ${e.y2} ${e.x2 - 2} ${e.y2}`} fill="none" markerEnd="url(#ah)" strokeWidth={route && e.on ? 2.5 : 1.5} strokeDasharray={e.cond ? '5 5' : undefined} className={route && e.on ? 'text-gold' : 'text-on-night-soft'} stroke="currentColor" opacity={route && !e.on ? 0.25 : route ? 1 : 0.6} />;
-        })}
-        {bypass.map(b => <path key={b.j} d={`M${colX(b.p) + W} ${mid}H${colX(b.j) - 2}`} stroke="currentColor" strokeWidth="2.5" strokeDasharray="2 6" strokeLinecap="round" className="text-gold" fill="none" />)}
-      </svg>
-      {[[PAD, 'Request'], [ex, 'Approved']].map(([x, t]) => (
-        <span key={t} className="absolute grid place-items-center gap-1 text-center" style={{ left: x as number, top: mid - D / 2, width: D }}>
-          <span aria-hidden className="size-10 rounded-full border border-gold/70 bg-night-raised shadow-[0_0_24px_rgb(212_180_106/0.2)]"><Ic n={t === 'Request' ? 'branch' : 'check'} className="m-2.5 size-5 text-gold" /></span>
-          <span className="eyebrow whitespace-nowrap">{t}</span>
-        </span>
-      ))}
-      {cols.map((c, j) => c.length > 1 && (
-        <span key={j} className="eyebrow absolute whitespace-nowrap !text-(--gold)" style={{ left: colX(j), top: pos.get(c[0].id)!.y - 22 }}>
-          {wf.kind === 'route' ? 'Choose one route' : c.some(s => s.quorum === 'all') ? 'Parallel, all must approve' : 'Parallel, any one approves'}
-        </span>
-      ))}
-      {pills.filter(p => p.label).map(p => (
-        <span key={p.s.id} className={`absolute max-w-[7.75rem] -translate-x-1/2 -translate-y-1/2 rounded-full border bg-night-deep px-2.5 py-1 text-center text-[0.6875rem] leading-tight transition-opacity ${live(p.s.id) ? 'border-gold/60 text-on-night' : 'border-white/10 text-on-night-soft opacity-40'}`} style={{ left: p.x - GX / 2, top: p.y + H / 2 }}>{p.label}</span>
-      ))}
-      {cols.flat().map(s => {
-        const p = pos.get(s.id)!, on = live(s.id), picked = s.id === sel;
-        return (
-          <button key={s.id} type="button" aria-pressed={picked} aria-label={`${s.name}, ${resolve(s.approver).label || 'no approver'}`} onClick={() => onSel(s.id)} style={{ left: p.x, top: p.y, width: W, height: H }}
-            className={`absolute grid content-start gap-2 overflow-hidden rounded-card border p-3 text-left transition-[transform,opacity] duration-300 hover:-translate-y-0.5 active:scale-[0.98] ${picked ? 'border-accent bg-night-raised shadow-[0_0_0_2px_rgb(245_184_0/0.55),0_18px_40px_rgb(6_5_30/0.5)]' : route && on ? 'border-gold bg-night-raised shadow-[0_0_0_1px_rgb(212_180_106/0.6),0_0_36px_rgb(212_180_106/0.22)]' : 'border-white/15 bg-gradient-to-b from-night-raised to-night shadow-[0_14px_30px_rgb(6_5_30/0.45)] hover:border-gold/60'} ${route && !on ? 'opacity-45' : ''}`}>
-            <StageBody s={s} wf={wf} lv={lv} step={steps.get(s.id)} />
-          </button>
-        );
-      })}
+  return (
+    <div style={{ '--ch': `${Math.max(320, Math.min(height + 8, 880))}px` } as CSSProperties}>
+    <Zoomable key={sig} label={`${wf.name} flow`} min={0.3} max={2.4} onScale={setK} className="h-(--ch) bg-gradient-to-b from-night to-night-deep">
+      <div className="relative" style={{ width, height }}>
+        <svg width={width} height={height} className="pointer-events-none absolute inset-0" aria-hidden>
+          <defs><marker id="ah" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0l8 4-8 4z" fill="currentColor" /></marker></defs>
+          {edges.map((e, i) => {
+            const x1 = e.a.x + W / 2, y1 = e.a.y + H, x2 = e.b.x + W / 2, dy = (e.b.y - y1) * 0.5;
+            return <path key={i} d={`M${x1} ${y1}C${x1} ${y1 + dy} ${x2} ${e.b.y - dy} ${x2} ${e.b.y - 3}`} fill="none" markerEnd="url(#ah)" stroke="currentColor" strokeWidth={route && e.on ? 2.5 : 1.5} strokeDasharray={e.cond ? '5 5' : undefined} className={route && e.on ? 'text-gold' : 'text-on-night-soft'} opacity={route ? (e.on ? 1 : 0.25) : 0.6} />;
+          })}
+          {bypass.map(b => <path key={b.j} d={`M${cx - W / 2 - 14} ${rowY(b.p) + H}V${rowY(b.j)}`} stroke="currentColor" strokeWidth="2.5" strokeDasharray="2 6" strokeLinecap="round" className="text-gold" fill="none" />)}
+        </svg>
+        {([[PAD, 'Request submitted', 'branch'], [endY, 'Approved', 'check']] as const).map(([y, t, ic]) => (
+          <span key={t} className="eyebrow absolute flex items-center gap-2 whitespace-nowrap rounded-full border border-gold/60 bg-night-raised px-3 !text-on-night" style={{ left: cx, top: y, height: PH, transform: 'translateX(-50%)' }}><Ic n={ic} className="size-3.5 text-gold" />{t}</span>
+        ))}
+        {pills.map(p => (
+          <span key={p.s.id} className={`absolute max-w-[21rem] -translate-x-1/2 -translate-y-1/2 rounded-full border bg-night-deep px-3 py-1 text-center text-label leading-tight transition-opacity ${live(p.s.id) ? 'border-gold/60 text-on-night' : 'border-white/10 text-on-night-soft opacity-40'}`} style={{ left: p.x + W / 2, top: p.y - GAP / 2, maxWidth: wide > 2 ? W : undefined }}>{p.label}</span>
+        ))}
+        {rows.flatMap(r => r.map(s => {
+          const p = pos.get(s.id)!, on = live(s.id), picked = s.id === sel;
+          const tag = r.length > 1 ? (wf.kind === 'route' ? 'Choose one route' : s.quorum === 'all' || r.some(x => x.quorum === 'all') ? 'Parallel, all approve' : 'Parallel, any one') : undefined;
+          return (
+            <button key={s.id} type="button" aria-pressed={picked} aria-label={`${s.name}, ${resolve(s.approver).label || 'no approver'}`} onClick={() => onSel(s.id)} style={{ left: p.x, top: p.y, width: W, height: H }}
+              className={`absolute grid content-start gap-1.5 overflow-hidden rounded-card border p-3 text-left transition-[transform,opacity] duration-300 hover:-translate-y-0.5 active:scale-[0.98] ${picked ? 'border-accent bg-night-raised shadow-[0_0_0_2px_rgb(245_184_0/0.55),0_18px_40px_rgb(6_5_30/0.5)]' : route && on ? 'border-gold bg-night-raised shadow-[0_0_0_1px_rgb(212_180_106/0.6),0_0_36px_rgb(212_180_106/0.22)]' : 'border-white/15 bg-gradient-to-b from-night-raised to-night shadow-[0_14px_30px_rgb(6_5_30/0.45)] hover:border-gold/60'} ${route && !on ? 'opacity-45' : ''}`}>
+              <StageBody s={s} wf={wf} lv={lv} step={steps.get(s.id)} tag={tag} />
+            </button>
+          );
+        }))}
+      </div>
+    </Zoomable>
     </div>
   );
-  return (
-    <Zoomable key={sig} label={`${wf.name} flow`} min={0.3} max={2.4} onScale={setK} className="h-[28rem] bg-gradient-to-b from-night to-night-deep">
-      {body}
-    </Zoomable>
-  );
 }
-
