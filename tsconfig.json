@@ -3,16 +3,14 @@
     "target": "ES2022",
     "module": "ES2022",
     "lib": ["ES2022", "DOM"],
-    "moduleResolution": "node",
+    "moduleResolution": "bundler",
+    "allowImportingTsExtensions": true,
+    "noEmit": true,
     "strict": true,
     "esModuleInterop": true,
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
-    "jsx": "react-jsx",
-    "paths": {
-      "@satishjag/procurement-core": ["node_modules/@satishjag/procurement-core"],
-      "@satishjag/procurement-core/*": ["node_modules/@satishjag/procurement-core/*"]
-    }
+    "jsx": "react-jsx"
   },
   "include": ["server/**/*.ts", "web/**/*.ts", "web/**/*.tsx", "sample/**/*.ts"]
 }

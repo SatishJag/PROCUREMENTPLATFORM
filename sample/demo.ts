@@ -2,7 +2,7 @@
 // Run: npm run demo. Every call is module.command(platform, user, ...args).
 import { fileURLToPath } from 'node:url';
 import { awards, createPlatform, evaluation, intake, reporting, sourcing } from '@satishjag/procurement-core';
-import type { Contract } from '@satishjag/procurement-core/core';
+import type { Contract } from '@satishjag/procurement-core/types';
 import { demoSeed } from './seed.ts';
 
 export function run(print: (...a: unknown[]) => void = console.log) {

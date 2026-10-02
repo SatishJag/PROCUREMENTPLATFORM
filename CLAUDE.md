@@ -78,7 +78,7 @@ The measurable rules are in `.claude/agents/frontend-engineer.md`, and `qa-revie
 
 ## Next session agenda (user's notes, start here)
 1. ~~Colour and UI inspiration~~ done (see Decisions: indigo + amber, tilted live UI).
-2. Design system (frontend-engineer, `web/src/ui/`, `tokens.css`, `api.ts`), applying all four design principles. In progress.
+2. ~~Design system~~ merged: `web/` (Vite + React + Tailwind v4 `@theme` tokens in `web/src/styles/tokens.css`, `web/src/ui/` primitives, `web/src/api.ts`, hash routes registered in `web/src/main.tsx`, Dashboard proof screen). Setup: `npm i --legacy-peer-deps` in `web/`, then `npm --prefix web run dev|build`. Known gaps for the next pass: the Dashboard primary ("Review actions") renders dim when nothing is waiting, so give it a live alternative or hide it; `AppShell.tsx` hardcodes the seed users (no users endpoint); requested primitives: Table (Plex Condensed), collapsible Section, Field/Input. Module nav entries are disabled ("soon").
 3. Landing page (scroll-craft, tilted live UI, 5 beats) once the design system lands. Needs `BRIEF.md` first.
 4. Then the user's new procurement capabilities (domain-engineer per capability).
 
@@ -106,4 +106,5 @@ Update this file in the same commit as any change to: layout, conventions, the e
 ## Status
 - **Done**: Phase 1 capability core (intake, planning, suppliers, sourcing, two-envelope evaluation, award scenarios, DOA approvals, contract handoff, reporting, audit chain, CSV), RPC API, `actions` commands for engine-driven buttons, 10 tests.
 - **Done (extraction)**: `core/`, `modules/` and their tests now live in `SatishJag/Procurement_core` (`@satishjag/procurement-core`, compiled `.js` committed, installed via `github:SatishJag/Procurement_core#main`). This repo keeps `server/`, `sample/`, `web/`. Import from the package (`planning.schedule`, `/core` for types); the layout above describes the package contents. The package is a git dependency: pin a commit hash for releases, and keep core imports extensionless with `.js` added after build.
-- **Next**: `insight` AI module (in progress, branch `ai-insight` in Procurement_core), `web/` (design system → landing page → module screens), then the user's new capabilities, then Postgres and Entra ID.
+- **Done (web base)**: design system and Dashboard merged (see agenda 2). `tsconfig.json` uses `moduleResolution: bundler` and `noEmit` (typecheck only). Package type imports come from `@satishjag/procurement-core/types`, the kernel from `/core`. Product tests (`test/flow.test.ts`, `test/server.test.ts`) live here and run with `npm test`; module tests live in Procurement_core.
+- **Next**: `insight` AI module (built on branch `ai-insight` in Procurement_core: 14 tests pass, awaiting qa-reviewer, then merge and pin the commit here), `web/` (design system → landing page → module screens), then the user's new capabilities, then Postgres and Entra ID.

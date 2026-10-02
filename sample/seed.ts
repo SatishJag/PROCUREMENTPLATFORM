@@ -1,5 +1,5 @@
 import type { Seed } from '@satishjag/procurement-core/core';
-import type { Package, Project, Supplier, User } from '@satishjag/procurement-core/core';
+import type { Package, Project, Supplier, User } from '@satishjag/procurement-core/types';
 import { planning } from '@satishjag/procurement-core';
 
 // Sample data: a fictional 24 MW data-centre programme. All names are invented.

@@ -1,0 +1,94 @@
+/* Design tokens, declared once. Contrast (WCAG) checked for every text/fill pair used:
+   white on primary 12.2, on-accent on accent 8.2, accent on hero 8.9, ink-soft on card 6.8,
+   success on success-soft 4.6, warning on warning-soft 5.3, danger on danger-soft 5.5. */
+@theme static {
+  --color-*: initial; /* no default Tailwind palette, sizes or shadows: only ours */
+  --text-*: initial;
+  --shadow-*: initial;
+  --color-white: #ffffff;
+  --color-primary: #2d2a7a;
+  --color-primary-hover: #211f66;
+  --color-primary-soft: #e8e9f8;
+  --color-on-primary: #ffffff;
+  --color-accent: #f5b800;
+  --color-accent-hover: #ffc933;
+  --color-on-accent: #14284b;
+  --color-hero: #1b1858;
+  --color-on-hero-soft: #c9ccf0;
+  --color-ink: #14284b;
+  --color-ink-soft: #4a5b7c;
+  --color-surface: #f5f8fe;
+  --color-card: #ffffff;
+  --color-line: #dce4f2;
+  --color-control: #6b7b9e; /* borders of inputs: 3:1 on card */
+  --color-ring: #4a45b8;
+  --color-success: #0b7a55;
+  --color-success-soft: #ddf3ea;
+  --color-warning: #8a5a00;
+  --color-warning-soft: #fff1c2;
+  --color-danger: #b3261e;
+  --color-danger-soft: #fde6e4;
+  --color-peri: #6b72d6; /* chart series, never text */
+  --color-success-bright: #5fe3b1; /* status dots on the dark hero only */
+  --color-danger-bright: #ff9a92;
+
+  --font-ui: 'IBM Plex Sans', system-ui, sans-serif;
+  --font-dense: 'IBM Plex Sans Condensed', 'IBM Plex Sans', system-ui, sans-serif;
+  --font-code: 'IBM Plex Mono', ui-monospace, monospace;
+  --font-doc: 'IBM Plex Serif', Georgia, serif;
+  --font-arabic: 'IBM Plex Sans Arabic', 'IBM Plex Sans', system-ui, sans-serif;
+
+  /* Three type levels (size and weight both differ) plus one display size for the deciding number. */
+  --text-title: 1.75rem;
+  --text-title--line-height: 2.125rem;
+  --text-section: 1.0625rem;
+  --text-section--line-height: 1.5rem;
+  --text-body: 0.875rem;
+  --text-body--line-height: 1.375rem;
+  --text-display: 2.75rem;
+  --text-display--line-height: 1;
+
+  --radius-ctl: 0.75rem;
+  --radius-card: 1.25rem;
+  --radius-hero: 1.75rem;
+
+  /* Tinted, layered elevation: 1 resting, 2 raised, 3 floating. */
+  --shadow-e1: 0 1px 2px rgb(45 42 122 / 0.06), 0 2px 8px rgb(45 42 122 / 0.05);
+  --shadow-e2: 0 2px 4px rgb(45 42 122 / 0.06), 0 8px 24px rgb(45 42 122 / 0.1);
+  --shadow-e3: 0 4px 8px rgb(27 24 88 / 0.1), 0 20px 48px rgb(27 24 88 / 0.22);
+}
+
+@layer base {
+  html { font-family: var(--font-ui); color: var(--color-ink); background: var(--color-surface); font-variant-numeric: tabular-nums; }
+  body { font-size: var(--text-body); line-height: var(--text-body--line-height); min-height: 100dvh; }
+  :focus-visible { outline: 3px solid var(--ring, var(--color-ring)); outline-offset: 3px; border-radius: 6px; }
+  /* One primary per region: indigo on light surfaces, amber on the dark page header. */
+  :root { --btn-bg: var(--color-primary); --btn-hover: var(--color-primary-hover); --btn-fg: var(--color-on-primary); --sec: var(--color-primary); --sec-hover: var(--color-primary-soft); --dot-ok: var(--color-success); --dot-bad: var(--color-danger); }
+  .on-dark { --ring: var(--color-accent); --btn-bg: var(--color-accent); --btn-hover: var(--color-accent-hover); --btn-fg: var(--color-on-accent); --sec: #fff; --sec-hover: rgb(255 255 255 / 0.14); --dot-ok: var(--color-success-bright); --dot-bad: var(--color-danger-bright); }
+}
+.on-dark .chip { background: rgb(255 255 255 / 0.14); color: #fff; }
+.canvas {
+  background:
+    radial-gradient(60rem 30rem at 88% -8%, rgb(107 114 214 / 0.2), transparent 60%),
+    radial-gradient(44rem 26rem at -6% 38%, rgb(245 184 0 / 0.1), transparent 60%),
+    radial-gradient(rgb(45 42 122 / 0.07) 1px, transparent 1px) 0 0 / 22px 22px,
+    var(--color-surface);
+}
+
+/* Motion: transform and opacity only. Hover lift swaps a pre-drawn shadow in via opacity. */
+@keyframes rise { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }
+@keyframes grow { from { transform: scaleX(0); } }
+@keyframes spin { to { transform: rotate(360deg); } }
+@layer utilities {
+  .rise { animation: rise 0.55s cubic-bezier(0.2, 0.7, 0.2, 1) both; animation-delay: calc(var(--i, 0) * 70ms); }
+  .lift { position: relative; transition: transform 0.25s cubic-bezier(0.2, 0.7, 0.2, 1); }
+  .lift::after { content: ''; position: absolute; inset: 0; border-radius: inherit; box-shadow: var(--shadow-e3); opacity: 0; transition: opacity 0.25s; pointer-events: none; }
+  .lift:hover { transform: translateY(-3px); }
+  .lift:hover::after { opacity: 1; }
+  .grow-x { animation: grow 0.9s cubic-bezier(0.2, 0.7, 0.2, 1) 0.2s both; }
+  .spin { animation: spin 0.8s linear infinite; }
+}
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: 0.01ms !important; animation-delay: 0ms !important; transition-duration: 0.01ms !important; }
+  .lift:hover { transform: none; }
+}
