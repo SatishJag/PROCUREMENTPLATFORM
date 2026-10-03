@@ -104,7 +104,7 @@ export function Workflows() {
   return (
     <>
       <p className="glass flex flex-wrap items-center gap-x-4 gap-y-1 !rounded-ctl py-2 pl-4 pr-2 md:pr-3" role="note">
-        <span aria-hidden className="size-2 shrink-0 rounded-full bg-gold" />
+        <span aria-hidden className="size-2 shrink-0 rounded-full bg-(--gold)" />
         <span className="soft min-w-0 flex-1">Preview: sample configuration, not connected to the engine.</span>
         <Button variant="text" onClick={reset}>Reset demo</Button>
       </p>
@@ -153,7 +153,7 @@ export function Workflows() {
               </div>
               <dl className="grid gap-3 md:grid-cols-3">
                 {([['Super user', 'View, edit, publish and roll back every workflow.', 'super'], ['Process owner', 'View every workflow. Edit, publish and roll back the workflows they own.', 'owner'], ['Approvers and auditors', 'View only. They cannot change a workflow.', 'viewer']] as const).map(([k, v, p]) => (
-                  <div key={k} className={`rounded-card border p-4 ${persona === p ? 'border-primary bg-primary-soft' : 'border-line bg-white'}`}><dt className="font-semibold">{k}</dt><dd className="mt-1 text-ink-soft">{v}</dd></div>
+                  <div key={k} className={`rounded-card border p-4 ${persona === p ? 'border-primary bg-primary-soft' : 'border-line bg-card'}`}><dt className="font-semibold">{k}</dt><dd className="mt-1 text-ink-soft">{v}</dd></div>
                 ))}
               </dl>
             </Card>

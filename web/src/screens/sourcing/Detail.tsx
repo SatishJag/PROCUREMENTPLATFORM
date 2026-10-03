@@ -142,7 +142,7 @@ function Answer({ ev, open, preset, open_, onClose }: { ev: EventRow; open: bool
           ? <Select label="Question" value={chosen} onChange={setId} options={open_.map(c => [c, c])} />
           : <Field label="Clarification reference" hint="For example CL-0001. Your role cannot list the questions."><Input required value={chosen} onChange={e => setId(e.target.value)} placeholder="CL-0001" className="font-code" /></Field>}
         <Field label="Answer"><textarea required rows={3} value={text} onChange={e => setText(e.target.value)} className={control} /></Field>
-        <Field label="New closing time (optional, UTC)" hint="Issues an addendum to every invited bidder."><Input type="datetime-local" value={ext} onChange={e => setExt(e.target.value)} className="[color-scheme:light]" /></Field>
+        <Field label="New closing time (optional, UTC)" hint="Issues an addendum to every invited bidder."><Input type="datetime-local" value={ext} onChange={e => setExt(e.target.value)} /></Field>
         {m.error && <ErrorNote>{(m.error as Error).message}</ErrorNote>}
         <div className="flex justify-end gap-3"><Button variant="text" onClick={onClose}>Cancel</Button>
           <Button variant="primary" loading={m.isPending} onClick={() => (document.getElementById('answer-form') as HTMLFormElement).requestSubmit()}>Send answer</Button></div>

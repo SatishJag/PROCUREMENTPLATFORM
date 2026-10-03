@@ -19,11 +19,11 @@ export function Versions({ entry, changes, canEdit, why, log, discard, rollback 
     <div className="grid gap-5">
       <Card as="div" className="grid gap-5" aria-label="Draft compared with published">
         <div className="grid gap-4 md:grid-cols-2">
-          <div className="grid gap-1 rounded-card border border-line bg-white p-4">
+          <div className="grid gap-1 rounded-card border border-line bg-card p-4">
             <p className="eyebrow">Published</p>
             {pub ? <><p className="numeral text-[2rem] leading-none">v{pub.version}</p><p className="text-ink-soft">Effective {pub.effective}, owner {pub.owner}</p></> : <p className="text-ink-soft">Never published. This workflow is not live.</p>}
           </div>
-          <div className={`grid gap-1 rounded-card border p-4 ${draft ? 'border-gold-deep/40 bg-[#fbf3e0]' : 'border-line bg-white'}`}>
+          <div className={`grid gap-1 rounded-card border p-4 ${draft ? 'border-gold-deep/40 bg-warning-soft' : 'border-line bg-card'}`}>
             <p className="eyebrow">Draft</p>
             {draft ? <><p className="numeral text-[2rem] leading-none">v{draft.version}</p><p className="text-ink-soft">Edited {draft.edited} by {draft.editedBy}</p></> : <p className="text-ink-soft">No draft. Change a stage or a rule in the editor to start one.</p>}
           </div>
@@ -54,7 +54,7 @@ export function Versions({ entry, changes, canEdit, why, log, discard, rollback 
         {history.length === 0 && <p className="text-ink-soft">No published versions yet.</p>}
         <ol className="grid gap-3">
           {history.map((h, i) => (
-            <li key={h.v} className="grid gap-2 rounded-card border border-line bg-white p-4 md:grid-cols-[5rem_1fr_auto] md:items-center">
+            <li key={h.v} className="grid gap-2 rounded-card border border-line bg-card p-4 md:grid-cols-[5rem_1fr_auto] md:items-center">
               <p className="numeral text-[1.75rem] leading-none">v{h.v}</p>
               <div><p className="font-medium">{h.reason}</p><p className="text-ink-soft">Effective {h.effective}. Published by {h.by} on {h.at}.</p></div>
               <div className="flex items-center gap-2">

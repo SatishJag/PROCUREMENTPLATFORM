@@ -190,7 +190,7 @@ export function Wizard({ twin, pkgId, onBack, onDone }: { twin: Twin; pkgId?: st
         <div className="grid gap-6 lg:grid-cols-[2fr_3fr]">
           <Card className="grid content-start gap-4">
             <h2 className="text-section font-semibold">Closing time</h2>
-            <Field label="Bids close (UTC)" hint="Publishing needs a closing time in the future."><Input type="datetime-local" value={closes} onChange={e => setCloses(e.target.value)} className="[color-scheme:light]" /></Field>
+            <Field label="Bids close (UTC)" hint="Publishing needs a closing time in the future."><Input type="datetime-local" value={closes} onChange={e => setCloses(e.target.value)} /></Field>
           </Card>
           <Card>
             <h2 className="text-section font-semibold">Review</h2>

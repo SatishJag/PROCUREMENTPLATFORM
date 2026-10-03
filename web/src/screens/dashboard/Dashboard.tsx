@@ -43,7 +43,7 @@ export function Dashboard() {
   const first = q.data?.myApprovals[0];
   const audit = useAudit(first?.id);
   if (q.error) return <Card glass className="text-(--bad)" role="alert">{(q.error as Error).message}</Card>;
-  if (!q.data) return <div aria-busy className="h-96 animate-pulse rounded-hero bg-white/5" />;
+  if (!q.data) return <div aria-busy className="h-96 animate-pulse rounded-hero bg-(--wash)/5" />;
   const d = q.data;
   const waiting = d.myApprovals.length;
   const head = audit.data?.at(-1);

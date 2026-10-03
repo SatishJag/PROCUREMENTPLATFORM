@@ -60,7 +60,7 @@ export function Editor({ wf, hasDraft, canEdit, why, back, edit, input, setInput
                   <div className="relative ml-4 border-l border-gold/40 pb-4 pl-5">
                     <span className="absolute -left-[0.4rem] top-0 h-3 w-3 rounded-full border border-gold bg-night" aria-hidden />
                     <span className="eyebrow !text-(--gold) block pb-2">{x.parallelWithPrev && i ? 'Parallel with the previous stage' : label ? `When ${label}` : 'Always'}</span>
-                    <button type="button" aria-pressed={x.id === s?.id} onClick={() => setSel(x.id)} className={`grid w-full gap-2 rounded-card border p-4 text-left transition-[transform,opacity] active:scale-[0.99] ${x.id === s?.id ? 'border-accent bg-night-raised shadow-[0_0_0_2px_rgb(245_184_0/0.5)]' : on && route ? 'border-gold bg-night-raised' : 'border-white/15 bg-gradient-to-b from-night-raised to-night'} ${on ? '' : 'opacity-45'}`}>
+                    <button type="button" aria-pressed={x.id === s?.id} onClick={() => setSel(x.id)} className={`grid w-full gap-2 rounded-card border p-4 text-left transition-[transform,opacity] active:scale-[0.99] ${x.id === s?.id ? 'border-accent bg-night-raised ring-2 ring-accent/50' : on && route ? 'border-gold bg-night-raised' : 'border-(--hair) bg-gradient-to-b from-night-raised to-night'} ${on ? '' : 'opacity-45'}`}>
                       <StageBody s={x} wf={wf} lv={2} step={route && on ? sim.chain.indexOf(x.id) + 1 : undefined} />
                     </button>
                   </div>

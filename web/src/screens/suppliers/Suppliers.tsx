@@ -48,7 +48,7 @@ export function Suppliers() {
       </Card>
     </>
   );
-  if (!q.data) return <div aria-busy className="h-96 animate-pulse rounded-hero bg-white/5" />;
+  if (!q.data) return <div aria-busy className="h-96 animate-pulse rounded-hero bg-(--wash)/5" />;
 
   const d = q.data;
   const docAlerts = d.suppliers.reduce((n, s) => n + alerts(s), 0);
@@ -117,7 +117,7 @@ export function Suppliers() {
 
 function Watch({ f, onShow }: { f: DocFlag; onShow: () => void }) {
   return (
-    <li className="grid gap-1.5 rounded-ctl border border-(--hair) bg-white/[0.04] px-4 py-3">
+    <li className="grid gap-1.5 rounded-ctl border border-(--hair) bg-(--wash)/[0.04] px-4 py-3">
       <p className="flex items-baseline justify-between gap-3"><span className="min-w-0 truncate font-medium">{f.supplier}</span><Button variant="text" onClick={onShow} aria-label={`Show ${f.supplier}`} className="shrink-0 !px-1">Show</Button></p>
       <p className="flex flex-wrap items-center gap-x-3 gap-y-1">
         <StatusChip tone={f.expired ? 'danger' : 'warning'}>{f.expired ? 'Expired' : 'Expiring'}</StatusChip>
@@ -138,7 +138,7 @@ function Mix({ suppliers }: { suppliers: Sup[] }) {
         {risks.map(([r, n]) => (
           <li key={r} className="grid grid-cols-[4.5rem_1fr_1.5rem] items-center gap-3">
             <span className="soft">{words(r)}</span>
-            <span role="img" aria-label={`${n} of ${suppliers.length}`} className="h-2 overflow-hidden rounded-full bg-white/10"><span className={`grow-x block h-full origin-left rounded-full ${tone[r]}`} style={{ transform: `scaleX(${n / (suppliers.length || 1)})` }} /></span>
+            <span role="img" aria-label={`${n} of ${suppliers.length}`} className="h-2 overflow-hidden rounded-full bg-(--wash)/10"><span className={`grow-x block h-full origin-left rounded-full ${tone[r]}`} style={{ transform: `scaleX(${n / (suppliers.length || 1)})` }} /></span>
             <span className="numeral text-right text-section">{n}</span>
           </li>
         ))}

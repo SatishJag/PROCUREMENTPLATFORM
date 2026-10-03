@@ -50,7 +50,7 @@ function Body({ nodes, twinError }: { nodes: TwinNode[]; twinError?: string }) {
       {twinError && (
         <form className="flex min-w-0 flex-1 flex-wrap items-end gap-3" onSubmit={e => { e.preventDefault(); if (typed.trim()) pick(typed.trim()); }}>
           <label className="grid min-w-0 flex-1 gap-1.5 md:max-w-sm"><span className="eyebrow">Event reference</span>
-            <input value={typed} onChange={e => setTyped(e.target.value)} placeholder="EV-0003" className="h-11 w-full rounded-ctl border border-(--soft) bg-stage px-3 font-code text-(--fg) [color-scheme:dark] placeholder:text-(--soft) hover:border-(--gold) md:h-10" /></label>
+            <input value={typed} onChange={e => setTyped(e.target.value)} placeholder="EV-0003" className="h-11 w-full rounded-ctl border border-(--soft) bg-stage px-3 font-code text-(--fg) placeholder:text-(--soft) hover:border-(--gold) md:h-10" /></label>
           <Button variant="secondary" onClick={() => typed.trim() && pick(typed.trim())}>Open event</Button>
           <p className="soft basis-full">Your role cannot list events: {twinError}</p>
         </form>

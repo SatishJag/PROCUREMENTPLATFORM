@@ -54,7 +54,7 @@ export function Boq({ budgets, projectId }: { budgets: Budget[]; projectId: stri
                   <Select label="Cost code" value={pkg.costCode} onChange={set('costCode')} placeholder="Choose" options={budgets.filter(b => b.project === boq.projectId).map(b => [b.costCode, b.costCode])} />
                   <Field label="Category"><Input value={pkg.category} onChange={e => set('category')(e.target.value)} placeholder="Electrical / Generators" /></Field>
                   <Field label="Estimate (AED)" hint={Number(pkg.estimate.replace(/,/g, '')) > 0 ? undefined : 'Package value'}><Input inputMode="decimal" value={pkg.estimate} onChange={e => set('estimate')(e.target.value)} /></Field>
-                  <Field label="Need-by date"><Input type="date" value={pkg.needBy} onChange={e => set('needBy')(e.target.value)} className="[color-scheme:light]" /></Field>
+                  <Field label="Need-by date"><Input type="date" value={pkg.needBy} onChange={e => set('needBy')(e.target.value)} /></Field>
                   <Select label="Route" value={pkg.route} onChange={set('route')} options={ROUTES} />
                   <Check label="Long lead" checked={pkg.longLead} onChange={set('longLead')} />
                 </div>

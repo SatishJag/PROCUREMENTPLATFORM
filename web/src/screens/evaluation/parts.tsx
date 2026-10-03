@@ -13,7 +13,7 @@ export function DarkSelect({ label, value, onChange, options }: { label: string;
   return (
     <label className="grid min-w-0 gap-1.5">
       <span className="eyebrow">{label}</span>
-      <select value={value} onChange={e => onChange(e.target.value)} className="h-11 w-full min-w-0 rounded-ctl border border-(--soft) bg-stage px-3 text-(--fg) [color-scheme:dark] hover:border-(--gold) md:h-10">
+      <select value={value} onChange={e => onChange(e.target.value)} className="h-11 w-full min-w-0 rounded-ctl border border-(--soft) bg-stage px-3 text-(--fg) hover:border-(--gold) md:h-10">
         {options.map(([v, l]) => <option key={v} value={v}>{l}</option>)}
       </select>
     </label>

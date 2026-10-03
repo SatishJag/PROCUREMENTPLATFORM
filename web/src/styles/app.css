@@ -1,10 +1,21 @@
 @import 'tailwindcss';
 @import './tokens.css';
 
-/* Two surface contexts. `.on-dark` is the midnight stage, `.on-light` the porcelain card; both set the same variables,
-   so a button, chip or rule reads the context it sits in. Never hard-code a colour in a primitive. */
+/* Three surface contexts. Each sets the same variables, so a button, chip, rule or table reads the context it sits in and
+   never hard-codes a colour. `.on-dark` = the canvas (page and shell), `.on-light` = a card, `.glass` / `.on-stage` = a panel.
+   Which of these is dark is the theme's decision (tokens.css): in Midnight canvas and panel are dark and cards light, in
+   Periwinkle only the panels are dark, in Coral and Indigo nothing is. */
+@utility on-stage {
+  --fg: var(--color-stage-ink); --soft: var(--color-stage-soft); --hair: var(--color-stage-line); --gold: var(--color-stage-mark); --ring: var(--color-stage-accent);
+  --btn-bg: var(--color-stage-accent); --btn-hover: var(--color-stage-accent-hover); --btn-fg: var(--color-on-stage-accent);
+  --sec: var(--color-stage-sec); --sec-hover: color-mix(in srgb, var(--wash) 12%, transparent);
+  --bad: var(--color-stage-danger); --bad-hover: color-mix(in srgb, var(--bad) 14%, transparent);
+  --ok: var(--color-stage-success); --warn: var(--color-stage-warning); --neutral: var(--color-stage-neutral); --series: var(--color-series-1);
+  --wash: var(--color-stage-wash); --head: var(--color-stage-raised); --on-bg: var(--stage-on-bg); --on-fg: var(--stage-on-fg);
+  color: var(--fg); color-scheme: var(--scheme-panel);
+}
 @layer base {
-  html { font-family: var(--font-ui); font-weight: 400; font-variant-numeric: tabular-nums; background: var(--color-night-deep); color-scheme: dark; }
+  html { font-family: var(--font-ui); font-weight: 400; font-variant-numeric: tabular-nums; background: var(--color-night-deep); color-scheme: var(--scheme-canvas); }
   body { font-size: var(--text-body); line-height: var(--text-body--line-height); min-height: 100dvh; letter-spacing: 0.005em; -webkit-font-smoothing: antialiased; }
   :focus-visible { outline: 3px solid var(--ring); outline-offset: 3px; border-radius: 6px; }
   .on-light {
@@ -12,37 +23,33 @@
     --btn-bg: var(--color-primary); --btn-hover: var(--color-primary-hover); --btn-fg: var(--color-on-primary);
     --sec: var(--color-primary); --sec-hover: var(--color-primary-soft); --bad: var(--color-danger); --bad-hover: var(--color-danger-soft);
     --ok: var(--color-success); --warn: var(--color-warning); --neutral: var(--color-primary); --series: var(--color-peri);
-    color: var(--fg);
+    --wash: var(--color-ink); --head: var(--color-porcelain-dim); --on-bg: var(--color-primary-soft); --on-fg: var(--color-primary);
+    color: var(--fg); color-scheme: light;
   }
   .on-dark {
-    --fg: var(--color-on-night); --soft: var(--color-on-night-soft); --hair: rgb(255 255 255 / 0.12); --gold: var(--color-gold); --ring: var(--color-accent);
+    --fg: var(--color-on-night); --soft: var(--color-on-night-soft); --hair: var(--color-night-line); --gold: var(--color-gold); --ring: var(--color-accent);
     --btn-bg: var(--color-accent); --btn-hover: var(--color-accent-hover); --btn-fg: var(--color-on-accent);
-    --sec: var(--color-on-night); --sec-hover: rgb(255 255 255 / 0.12); --bad: #ff9a92; --bad-hover: rgb(255 154 146 / 0.14);
-    --ok: #5fe3b1; --warn: #f5c84a; --neutral: #c9ccf5; --series: var(--color-peri-night);
-    color: var(--fg);
+    --sec: var(--color-night-sec); --sec-hover: color-mix(in srgb, var(--wash) 12%, transparent);
+    --bad: var(--color-night-danger); --bad-hover: color-mix(in srgb, var(--bad) 14%, transparent);
+    --ok: var(--color-night-success); --warn: var(--color-night-warning); --neutral: var(--color-night-neutral); --series: var(--color-peri-night);
+    --wash: var(--color-wash); --head: var(--color-night-raised); --on-bg: var(--nav-on-bg); --on-fg: var(--nav-on-fg);
+    color: var(--fg); color-scheme: var(--scheme-canvas);
   }
   ::selection { background: var(--color-accent); color: var(--color-on-accent); }
 }
 
 @layer components {
-  /* Midnight stage: two soft glows, a vertical depth gradient and a static grain. */
-  .stage {
-    background:
-      url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='180' height='180'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 .22 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>") 0 0 / 180px 180px,
-      radial-gradient(52rem 30rem at 92% -6%, rgb(98 92 224 / 0.34), transparent 62%),
-      radial-gradient(40rem 26rem at 4% 22%, rgb(212 180 106 / 0.1), transparent 62%),
-      linear-gradient(180deg, var(--color-night) 0%, var(--color-night-deep) 100%);
-  }
-  /* Porcelain card with a champagne hairline along the top edge. */
+  /* The canvas: each theme sets --canvas-bg (Midnight: grain, two glows and a depth gradient). */
+  .stage { background: var(--canvas-bg); }
+  /* Card with an optional hairline along the top edge (--card-rule). */
   .card {
     border-radius: var(--radius-card); border: 1px solid var(--hair); box-shadow: var(--shadow-e1);
-    background: linear-gradient(90deg, transparent, var(--color-gold) 50%, transparent) top / 100% 1px no-repeat, linear-gradient(180deg, #fff, var(--color-porcelain) 36%);
+    background: linear-gradient(90deg, transparent, var(--card-rule) 50%, transparent) top / 100% 1px no-repeat, var(--card-bg);
   }
-  /* Glass card on the stage. */
+  /* Panel on the canvas: glass in Midnight, a white card in Coral and Indigo, a near-black stage card in Periwinkle. */
   .glass {
-    border-radius: var(--radius-card); border: 1px solid rgb(255 255 255 / 0.13);
-    background: linear-gradient(180deg, rgb(255 255 255 / 0.09), rgb(255 255 255 / 0.03));
-    box-shadow: 0 1px 0 rgb(255 255 255 / 0.12) inset, 0 20px 40px rgb(6 5 30 / 0.35); backdrop-filter: blur(14px);
+    @apply on-stage;
+    border-radius: var(--radius-card); border: 1px solid var(--glass-border); background: var(--glass-bg); box-shadow: var(--glass-shadow); backdrop-filter: var(--glass-blur);
   }
   .gold-rule { height: 1px; background: linear-gradient(90deg, var(--color-gold), transparent 80%); opacity: 0.55; }
   .eyebrow { font-size: var(--text-label); line-height: var(--text-label--line-height); font-weight: 500; letter-spacing: 0.14em; text-transform: uppercase; color: var(--soft); }
@@ -54,10 +61,9 @@
   }
   .chip > i { width: 0.5rem; height: 0.5rem; border-radius: 99px; background: var(--tone); }
   .tone-success { --tone: var(--ok); } .tone-warning { --tone: var(--warn); } .tone-danger { --tone: var(--bad); } .tone-neutral { --tone: var(--neutral); }
-  /* Mobile: the page action becomes a sticky bottom bar of dark glass, so amber sits on night. */
+  /* Mobile: the page action becomes a sticky bottom bar (it reads the panel kit). */
   @media (max-width: 767px) {
-    .bar-sticky { position: fixed; inset: auto 0 0 0; z-index: 30; flex-wrap: nowrap; padding: 0.75rem 1rem calc(0.75rem + env(safe-area-inset-bottom)); border-top: 1px solid rgb(212 180 106 / 0.35); background: rgb(12 11 46 / 0.88); backdrop-filter: blur(16px); }
-    .bar-sticky { --ring: var(--color-accent); --btn-bg: var(--color-accent); --btn-hover: var(--color-accent-hover); --btn-fg: var(--color-on-accent); --sec: var(--color-on-night); --sec-hover: rgb(255 255 255 / 0.12); --bad: #ff9a92; --bad-hover: rgb(255 154 146 / 0.14); --soft: var(--color-on-night-soft); color: var(--color-on-night); }
+    .bar-sticky { @apply on-stage; position: fixed; inset: auto 0 0 0; z-index: 30; flex-wrap: nowrap; padding: 0.75rem 1rem calc(0.75rem + env(safe-area-inset-bottom)); border-top: 1px solid var(--bar-line); background: var(--bar-bg); backdrop-filter: blur(16px); }
   }
 }
 
@@ -70,7 +76,7 @@
   .rise { animation: rise 0.9s cubic-bezier(0.16, 0.8, 0.2, 1) backwards; animation-delay: calc(var(--i, 0) * 90ms); }
   .enter { animation: enter 0.6s cubic-bezier(0.16, 0.8, 0.2, 1) backwards; }
   .lift { position: relative; transition: transform 0.45s cubic-bezier(0.16, 0.8, 0.2, 1); }
-  .lift::after { content: ''; position: absolute; inset: 0; border-radius: inherit; box-shadow: var(--shadow-e3), 0 0 0 1px rgb(212 180 106 / 0.55); opacity: 0; transition: opacity 0.45s; pointer-events: none; }
+  .lift::after { content: ''; position: absolute; inset: 0; border-radius: inherit; box-shadow: var(--shadow-e3), var(--lift-ring); opacity: 0; transition: opacity 0.45s; pointer-events: none; }
   .lift:hover, .lift:focus-within { transform: translateY(-3px); }
   .lift:hover::after, .lift:focus-within::after { opacity: 1; }
   .grow-x { animation: grow 1.4s cubic-bezier(0.16, 0.8, 0.2, 1) 0.3s both; }
@@ -78,7 +84,7 @@
 }
 /* Focus cards zoom through the View Transitions API: slow, one eased curve. */
 ::view-transition-group(*) { animation-duration: 0.6s; animation-timing-function: cubic-bezier(0.16, 0.8, 0.2, 1); }
-dialog.zoom-panel::backdrop { background: rgb(8 7 34 / 0.72); backdrop-filter: blur(6px); }
+dialog.zoom-panel::backdrop { background: var(--scrim); backdrop-filter: blur(6px); }
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation-duration: 0.01ms !important; animation-delay: 0ms !important; transition-duration: 0.01ms !important; }
   .lift:hover, .lift:focus-within { transform: none; }

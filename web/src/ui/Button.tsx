@@ -11,9 +11,9 @@ type Props = Omit<ButtonHTMLAttributes<HTMLButtonElement>, 'onClick'> & {
 };
 
 // Colour changes are instant; only transform animates. Height 44 on touch, 40 from md.
-const base = 'relative inline-flex h-11 md:h-10 items-center justify-center whitespace-nowrap rounded-ctl px-5 font-semibold tracking-[0.01em] transition-transform duration-200 active:scale-[0.97] disabled:cursor-not-allowed disabled:opacity-45 disabled:active:scale-100';
+const base = 'relative inline-flex h-11 md:h-10 items-center justify-center whitespace-nowrap rounded-btn px-5 font-semibold tracking-[0.01em] transition-transform duration-200 active:scale-[0.97] disabled:cursor-not-allowed disabled:opacity-45 disabled:active:scale-100';
 const look: Record<Variant, string> = {
-  primary: 'bg-(--btn-bg) text-(--btn-fg) shadow-[0_1px_0_rgb(255_255_255/0.4)_inset,0_8px_24px_rgb(6_5_30/0.3)] hover:bg-(--btn-hover)',
+  primary: 'bg-(--btn-bg) text-(--btn-fg) shadow-btn hover:bg-(--btn-hover)',
   secondary: 'border border-(--sec) text-(--sec) hover:bg-(--sec-hover)',
   destructive: 'border border-(--bad) text-(--bad) hover:bg-(--bad-hover)',
   text: 'px-2 text-(--sec) underline underline-offset-4 hover:bg-(--sec-hover)',

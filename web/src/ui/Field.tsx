@@ -1,7 +1,7 @@
 import type { InputHTMLAttributes, ReactNode } from 'react';
 
 /** Shared look for native controls: 4.6:1 border, visible hover, focus-visible ring from the global rule. */
-export const control = 'w-full rounded-ctl border border-control bg-white px-3 py-2 text-ink placeholder:text-ink-soft hover:border-primary disabled:cursor-not-allowed disabled:opacity-50 aria-[invalid=true]:border-danger';
+export const control = 'w-full rounded-ctl border border-control bg-card [color-scheme:light] px-3 py-2 text-ink placeholder:text-ink-soft hover:border-primary disabled:cursor-not-allowed disabled:opacity-50 aria-[invalid=true]:border-danger';
 
 /** Label above, hint or error below. Pass the control as children, with `className={control}`. The error is announced. */
 export function Field({ label, hint, error, children }: { label: string; hint?: string; error?: string; children: ReactNode }) {

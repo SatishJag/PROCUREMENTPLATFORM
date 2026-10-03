@@ -1,41 +1,82 @@
-/* Design tokens, declared once. Direction: midnight-indigo stage, porcelain surfaces, champagne-gold hairlines,
-   one high-contrast amber for the single primary action.
-   Contrast (WCAG, computed): ink on porcelain 15.3, ink-soft on porcelain 6.4, gold-deep on porcelain 4.8,
-   on-night on night 15.6, on-night-soft on night 8.8, gold on night 8.9, on-accent on accent 9.9,
-   porcelain on primary 11.6, success 5.1 / warning 6.6 / danger 6.2 on porcelain, bright tones on night 8.7+.
-   Amber on porcelain is only 1.7, so amber primaries live on the night stage; on porcelain the primary is indigo. */
+/* Design tokens, declared once. Themes are blocks of custom properties on <html data-theme="...">: `midnight` is the
+   default (this file's @theme and :root), the others override the same names at the bottom. Screens never hard-code a colour.
+
+   Three surface ramps, each with its own context kit in app.css:
+     canvas  = the page and shell      : night, night-deep, night-raised, on-night, on-night-soft, night-line, gold, accent, night-sec, night-danger/success/warning/neutral, peri-night
+     card    = white cards and dialogs : card, porcelain, porcelain-dim, ink, ink-soft, line, gold-deep, primary, primary-soft, success/warning/danger (+soft), peri
+     panel   = `.glass` and `.on-stage`: stage, stage-raised, stage-ink, stage-soft, stage-line, stage-mark, stage-accent, stage-sec, stage-danger/success/warning/neutral, series-1..6
+   The names are roles, not literal colours: in a light theme `night` is the light canvas. Contrast is checked by theme (see the report). */
 @theme static {
   --color-*: initial; /* no default Tailwind palette, sizes or shadows: only ours */
   --text-*: initial;
   --shadow-*: initial;
   --color-white: #ffffff;
+
+  /* canvas ramp (midnight stage) */
   --color-night: #14123f;
   --color-night-deep: #0c0b2e;
   --color-night-raised: #1f1c5c;
+  --color-night-line: rgb(255 255 255 / 0.12);
   --color-on-night: #f4f0e8;
   --color-on-night-soft: #b4b3d9;
+  --color-wash: #ffffff; /* tint for hover and fills on the canvas: white on dark themes, ink on light ones */
+  --color-gold: #d4b46a; /* hairlines and accents on night */
+  --color-accent: #f5b800; /* the primary on night */
+  --color-accent-hover: #ffc933;
+  --color-on-accent: #14123f;
+  --color-night-sec: #f4f0e8; /* secondary button outline and text on the canvas */
+  --color-night-danger: #ff9a92;
+  --color-night-success: #5fe3b1;
+  --color-night-warning: #f5c84a;
+  --color-night-neutral: #c9ccf5;
+  --color-peri-night: #8f94e0; /* chart series on night */
+
+  /* card ramp (porcelain) */
+  --color-card: #ffffff; /* card, input and dialog fill */
   --color-porcelain: #fbf9f5;
   --color-porcelain-dim: #f2eee6;
   --color-ink: #1a1d45;
   --color-ink-soft: #56597a;
-  --color-gold: #d4b46a; /* hairlines and accents on night */
-  --color-gold-deep: #8a6a1e; /* gold text on porcelain */
+  --color-gold-deep: #836419; /* gold text on porcelain */
   --color-primary: #2d2a7a; /* the primary on porcelain */
   --color-primary-hover: #211f66;
   --color-primary-soft: #eceaf7;
   --color-on-primary: #fbf9f5;
-  --color-accent: #f5b800; /* the primary on night */
-  --color-accent-hover: #ffc933;
-  --color-on-accent: #14123f;
   --color-line: #e6e0d2; /* hairline on porcelain */
-  --color-control: #6a6f93; /* input borders: 4.6:1 on porcelain */
+  --color-control: #6a6f93; /* input borders */
   --color-ring: #4a45b8;
-  --color-success: #0b7a55;
+  --color-success: #09724f;
+  --color-success-soft: #e3f3ec;
   --color-warning: #7a5200;
+  --color-warning-soft: #fbf1d9;
   --color-danger: #b3261e;
   --color-danger-soft: #fce7e4;
   --color-peri: #6b72d6; /* chart series on porcelain, never text */
-  --color-peri-night: #8f94e0; /* chart series on night */
+  --color-award: #a8822e; /* the awarded stage in a funnel on porcelain */
+
+  /* panel ramp (stage): aliases the canvas in midnight, so a theme that restyles the stage restyles every chart */
+  --color-stage: var(--color-night-deep); /* chart canvas and control fill on the stage */
+  --color-stage-raised: var(--color-night-raised);
+  --color-stage-ink: var(--color-on-night); /* grid lines (at low opacity) and chart text on the stage */
+  --color-stage-soft: var(--color-on-night-soft);
+  --color-stage-line: var(--color-night-line);
+  --color-stage-mark: var(--color-gold); /* hairlines, highlights, glow */
+  --color-stage-wash: var(--color-wash);
+  --color-stage-accent: var(--color-accent);
+  --color-stage-accent-hover: var(--color-accent-hover);
+  --color-on-stage-accent: var(--color-on-accent);
+  --color-stage-sec: var(--color-night-sec);
+  --color-stage-danger: var(--color-night-danger);
+  --color-stage-success: var(--color-night-success);
+  --color-stage-warning: var(--color-night-warning);
+  --color-stage-neutral: var(--color-night-neutral);
+  --color-on-series: var(--color-night); /* text on a series fill */
+  --color-series-1: var(--color-peri-night);
+  --color-series-2: var(--color-gold);
+  --color-series-3: #5fe3b1;
+  --color-series-4: #e39ad1;
+  --color-series-5: #7cc4ea;
+  --color-series-6: #f0a36b;
 
   --font-ui: 'IBM Plex Sans', system-ui, sans-serif;
   --font-dense: 'IBM Plex Sans Condensed', 'IBM Plex Sans', system-ui, sans-serif;
@@ -56,7 +97,9 @@
   --text-display: 4.25rem;
   --text-display--line-height: 1;
 
+  /* Radius scale: control (inputs, menus), button, card, hero (the largest panels). */
   --radius-ctl: 0.5rem;
+  --radius-btn: 0.5rem;
   --radius-card: 0.875rem;
   --radius-hero: 1.25rem;
 
@@ -64,22 +107,140 @@
   --shadow-e1: 0 1px 0 rgb(255 255 255 / 0.7) inset, 0 1px 2px rgb(6 5 30 / 0.18), 0 6px 16px rgb(6 5 30 / 0.16);
   --shadow-e2: 0 1px 0 rgb(255 255 255 / 0.7) inset, 0 2px 4px rgb(6 5 30 / 0.2), 0 14px 32px rgb(6 5 30 / 0.28);
   --shadow-e3: 0 1px 0 rgb(255 255 255 / 0.6) inset, 0 4px 8px rgb(6 5 30 / 0.25), 0 28px 64px rgb(6 5 30 / 0.5);
+  --shadow-btn: 0 1px 0 rgb(255 255 255 / 0.4) inset, 0 8px 24px rgb(6 5 30 / 0.3);
 }
 
-/* ---- Stage and series tokens (Evaluation War Room and any dark command-room chart). Theme-driven: they alias the
-   core tokens, so a theme that restyles the night stage restyles these. series-3..6 are extra chart hues for bidders;
-   a theme must keep each at 3:1 against --color-stage and against porcelain surfaces. ---- */
-@theme static {
-  --color-stage: var(--color-night-deep); /* chart canvas and control fill on the stage */
-  --color-stage-raised: var(--color-night-raised);
-  --color-stage-ink: var(--color-on-night); /* grid lines (at low opacity) and chart text on the stage */
-  --color-stage-soft: var(--color-on-night-soft);
-  --color-stage-mark: var(--color-gold); /* hairlines, highlights, glow */
-  --color-on-series: var(--color-night); /* text on a series fill */
-  --color-series-1: var(--color-peri-night);
-  --color-series-2: var(--color-gold);
-  --color-series-3: #5fe3b1;
-  --color-series-4: #e39ad1;
-  --color-series-5: #7cc4ea;
-  --color-series-6: #f0a36b;
+/* Non-utility theme properties: surfaces, backgrounds and native-control schemes. */
+:root {
+  --scheme-canvas: dark; /* native selects, checkboxes and scrollbars on the canvas */
+  --scheme-panel: dark; /* ... and inside .glass and .on-stage */
+  --grain: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='180' height='180'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 .22 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>") 0 0 / 180px 180px;
+  /* Midnight stage: grain, two soft glows and a vertical depth gradient. */
+  --canvas-bg: var(--grain), radial-gradient(52rem 30rem at 92% -6%, rgb(98 92 224 / 0.34), transparent 62%), radial-gradient(40rem 26rem at 4% 22%, rgb(212 180 106 / 0.1), transparent 62%), linear-gradient(180deg, var(--color-night) 0%, var(--color-night-deep) 100%);
+  --glass-bg: linear-gradient(180deg, rgb(255 255 255 / 0.09), rgb(255 255 255 / 0.03));
+  --glass-border: rgb(255 255 255 / 0.13);
+  --glass-shadow: 0 1px 0 rgb(255 255 255 / 0.12) inset, 0 20px 40px rgb(6 5 30 / 0.35);
+  --glass-blur: blur(14px);
+  --card-rule: var(--color-gold); /* the hairline along the top edge of a card */
+  --card-bg: linear-gradient(180deg, var(--color-card), var(--color-porcelain) 36%);
+  --lift-ring: 0 0 0 1px rgb(212 180 106 / 0.55);
+  --nav-on-bg: rgb(255 255 255 / 0.1); /* the current nav item */
+  --nav-on-fg: var(--color-on-night);
+  --stage-on-bg: rgb(255 255 255 / 0.12); /* the current tab or nav item inside a panel */
+  --stage-on-fg: var(--color-stage-ink);
+  --bar-bg: rgb(12 11 46 / 0.88); /* the sticky action bar on mobile */
+  --bar-line: rgb(212 180 106 / 0.35);
+  --scrim: rgb(8 7 34 / 0.72); /* behind dialogs */
+  --chrome: #0c0b2e; /* browser theme-color */
+}
+
+/* ---- Indigo and amber: light blue-white canvas, white cards, deep indigo primary, a small amber accent. ---- */
+[data-theme='indigo'] {
+  --color-night: #f5f8fe; --color-night-deep: #e9effb; --color-night-raised: #ffffff; --color-night-line: rgb(20 40 75 / 0.13);
+  --color-on-night: #14284b; --color-on-night-soft: #4e5f7f; --color-wash: #14284b;
+  --color-gold: #8a5a00; --color-accent: #2d2a7a; --color-accent-hover: #211f66; --color-on-accent: #ffffff; --color-night-sec: #2d2a7a;
+  --color-night-danger: #b3261e; --color-night-success: #08694a; --color-night-warning: #7a5200; --color-night-neutral: #2d2a7a; --color-peri-night: #4b55c9;
+  --color-card: #ffffff; --color-porcelain: #fbfcff; --color-porcelain-dim: #edf2fb; --color-ink: #14284b; --color-ink-soft: #4e5f7f; --color-gold-deep: #8a5a00;
+  --color-primary: #2d2a7a; --color-primary-hover: #211f66; --color-primary-soft: #e9e8f8; --color-on-primary: #ffffff;
+  --color-line: #dde5f4; --color-control: #66749a; --color-ring: #4a45b8;
+  --color-success: #09724f; --color-success-soft: #ddf2e8; --color-warning: #7a5200; --color-warning-soft: #fdf1d3; --color-danger: #b3261e; --color-danger-soft: #fce8e5;
+  --color-peri: #4b55c9; --color-award: #b27500;
+  --color-stage: #edf2fb; --color-stage-raised: #ffffff; --color-stage-ink: #14284b; --color-stage-soft: #4e5f7f; --color-stage-line: rgb(20 40 75 / 0.13); --color-stage-mark: #8a5a00;
+  --color-stage-wash: #14284b; --color-stage-accent: #2d2a7a; --color-stage-accent-hover: #211f66; --color-on-stage-accent: #ffffff; --color-stage-sec: #2d2a7a;
+  --color-stage-danger: #b3261e; --color-stage-success: #08694a; --color-stage-warning: #7a5200; --color-stage-neutral: #2d2a7a;
+  --color-on-series: #ffffff; --color-series-1: #4b55c9; --color-series-2: #8a5a00; --color-series-3: #0b7a55; --color-series-4: #a8307f; --color-series-5: #1a6fa3; --color-series-6: #b04a14;
+  --radius-ctl: 0.5rem; --radius-btn: 0.5rem; --radius-card: 1rem; --radius-hero: 1.5rem;
+  --shadow-e1: 0 1px 0 rgb(255 255 255 / 0.9) inset, 0 1px 2px rgb(45 42 122 / 0.08), 0 8px 22px rgb(45 42 122 / 0.08);
+  --shadow-e2: 0 1px 0 rgb(255 255 255 / 0.9) inset, 0 2px 4px rgb(45 42 122 / 0.1), 0 16px 36px rgb(45 42 122 / 0.14);
+  --shadow-e3: 0 1px 0 rgb(255 255 255 / 0.9) inset, 0 4px 10px rgb(45 42 122 / 0.14), 0 30px 64px rgb(45 42 122 / 0.24);
+  --shadow-btn: 0 1px 0 rgb(255 255 255 / 0.25) inset, 0 8px 20px rgb(45 42 122 / 0.28);
+  --scheme-canvas: light; --scheme-panel: light;
+  --grain: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='180' height='180'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 .08 0 0 0 0 .15 0 0 0 0 .3 0 0 0 .05 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>") 0 0 / 180px 180px;
+  --canvas-bg: var(--grain), radial-gradient(52rem 30rem at 92% -8%, rgb(98 92 224 / 0.14), transparent 62%), radial-gradient(36rem 24rem at 0% 18%, rgb(245 184 0 / 0.09), transparent 62%), linear-gradient(180deg, var(--color-night) 0%, var(--color-night-deep) 100%);
+  --glass-bg: linear-gradient(180deg, #ffffff, #fbfcff); --glass-border: rgb(20 40 75 / 0.1); --glass-shadow: var(--shadow-e1); --glass-blur: none;
+  --card-rule: #f5b800; --card-bg: linear-gradient(180deg, var(--color-card), var(--color-porcelain) 60%);
+  --lift-ring: 0 0 0 1px rgb(245 184 0 / 0.7);
+  --nav-on-bg: #e9e8f8; --nav-on-fg: #2d2a7a; --stage-on-bg: #e9e8f8; --stage-on-fg: #2d2a7a;
+  --bar-bg: rgb(255 255 255 / 0.92); --bar-line: rgb(20 40 75 / 0.14); --scrim: rgb(20 40 75 / 0.45); --chrome: #f5f8fe;
+}
+
+/* ---- Coral: warm grey canvas, white very rounded cards, coral as the single accent, pill buttons. The reference coral
+   (#f44) gives white text only 3.6:1, so the fill is darkened to #d03333 (5.0:1) and stays recognisably coral. ---- */
+[data-theme='coral'] {
+  --color-night: #f0efeb; --color-night-deep: #e7e5df; --color-night-raised: #ffffff; --color-night-line: rgb(28 27 26 / 0.11);
+  --color-on-night: #1c1b1a; --color-on-night-soft: #5b5754; --color-wash: #1c1b1a;
+  --color-gold: #b3262b; --color-accent: #d03333; --color-accent-hover: #b92b2b; --color-on-accent: #ffffff; --color-night-sec: #b3262b;
+  --color-night-danger: #8e1b2d; --color-night-success: #065f40; --color-night-warning: #7a5200; --color-night-neutral: #5b5754; --color-peri-night: #8c8680;
+  --color-card: #ffffff; --color-porcelain: #fbfaf8; --color-porcelain-dim: #f3f1ed; --color-ink: #1c1b1a; --color-ink-soft: #5b5754; --color-gold-deep: #b3262b;
+  --color-primary: #d03333; --color-primary-hover: #b92b2b; --color-primary-soft: #fef5f3; --color-on-primary: #ffffff;
+  --color-line: #e8e4dd; --color-control: #7a746e; --color-ring: #b92b2b;
+  --color-success: #09724f; --color-success-soft: #dff2e9; --color-warning: #7a5200; --color-warning-soft: #fbf0d6; --color-danger: #8e1b2d; --color-danger-soft: #fbe4e8;
+  --color-peri: #8c8680; --color-award: #1c1b1a;
+  --color-stage: #f6f4f0; --color-stage-raised: #ffffff; --color-stage-ink: #1c1b1a; --color-stage-soft: #5b5754; --color-stage-line: rgb(28 27 26 / 0.11); --color-stage-mark: #b3262b;
+  --color-stage-wash: #1c1b1a; --color-stage-accent: #d03333; --color-stage-accent-hover: #b92b2b; --color-on-stage-accent: #ffffff; --color-stage-sec: #b3262b;
+  --color-stage-danger: #8e1b2d; --color-stage-success: #065f40; --color-stage-warning: #7a5200; --color-stage-neutral: #5b5754;
+  --color-on-series: #ffffff; --color-series-1: #b92b2b; --color-series-2: #8a5a00; --color-series-3: #0b7a55; --color-series-4: #a8307f; --color-series-5: #1a6fa3; --color-series-6: #5b5754;
+  --radius-ctl: 0.75rem; --radius-btn: 999px; --radius-card: 1.375rem; --radius-hero: 1.75rem;
+  --shadow-e1: 0 1px 0 rgb(255 255 255 / 0.9) inset, 0 1px 2px rgb(60 40 30 / 0.06), 0 10px 28px rgb(60 40 30 / 0.07);
+  --shadow-e2: 0 1px 0 rgb(255 255 255 / 0.9) inset, 0 2px 4px rgb(60 40 30 / 0.08), 0 18px 40px rgb(60 40 30 / 0.12);
+  --shadow-e3: 0 1px 0 rgb(255 255 255 / 0.9) inset, 0 4px 10px rgb(60 40 30 / 0.12), 0 30px 64px rgb(60 40 30 / 0.22);
+  --shadow-btn: 0 1px 0 rgb(255 255 255 / 0.25) inset, 0 8px 20px rgb(200 47 47 / 0.32);
+  --scheme-canvas: light; --scheme-panel: light;
+  --grain: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='180' height='180'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 .1 0 0 0 0 .08 0 0 0 0 .07 0 0 0 .04 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>") 0 0 / 180px 180px;
+  --canvas-bg: var(--grain), radial-gradient(46rem 28rem at 96% -10%, rgb(208 51 51 / 0.07), transparent 62%), linear-gradient(180deg, var(--color-night) 0%, var(--color-night-deep) 100%);
+  --glass-bg: #ffffff; --glass-border: rgb(28 27 26 / 0.07); --glass-shadow: var(--shadow-e1); --glass-blur: none;
+  --card-rule: transparent; --card-bg: #ffffff;
+  --lift-ring: 0 0 0 1px rgb(208 51 51 / 0.55);
+  --nav-on-bg: #d03333; --nav-on-fg: #ffffff; --stage-on-bg: #d03333; --stage-on-fg: #ffffff;
+  --bar-bg: rgb(255 255 255 / 0.94); --bar-line: rgb(28 27 26 / 0.12); --scrim: rgb(28 27 26 / 0.5); --chrome: #f0efeb;
+}
+
+/* ---- Periwinkle and ink: periwinkle canvas, near-black stage panels with white numerals, black pill buttons, hairlines. ---- */
+[data-theme='periwinkle'] {
+  --color-night: #dde3fb; --color-night-deep: #ced6f6; --color-night-raised: #eef1fe; --color-night-line: rgb(14 16 32 / 0.14);
+  --color-on-night: #0e1020; --color-on-night-soft: #444a6e; --color-wash: #0e1020;
+  --color-gold: #3841b0; --color-accent: #0e1020; --color-accent-hover: #262a44; --color-on-accent: #ffffff; --color-night-sec: #0e1020;
+  --color-night-danger: #92201a; --color-night-success: #06583b; --color-night-warning: #6b4700; --color-night-neutral: #0e1020; --color-peri-night: #3841b0;
+  --color-card: #f8f9ff; --color-porcelain: #f1f4ff; --color-porcelain-dim: #e5eafc; --color-ink: #0e1020; --color-ink-soft: #444a6e; --color-gold-deep: #3841b0;
+  --color-primary: #0e1020; --color-primary-hover: #262a44; --color-primary-soft: #e2e7fb; --color-on-primary: #ffffff;
+  --color-line: #c9d1f1; --color-control: #5e6590; --color-ring: #3841b0;
+  --color-success: #08694a; --color-success-soft: #dcf2e8; --color-warning: #7a5200; --color-warning-soft: #f9efd3; --color-danger: #a3231b; --color-danger-soft: #fbe5e2;
+  --color-peri: #5d68d6; --color-award: #3841b0;
+  --color-stage: #0b0c12; --color-stage-raised: #181a25; --color-stage-ink: #ffffff; --color-stage-soft: #b9bdd6; --color-stage-line: rgb(255 255 255 / 0.15); --color-stage-mark: #a9b4ff;
+  --color-stage-wash: #ffffff; --color-stage-accent: #ffffff; --color-stage-accent-hover: #dde3fb; --color-on-stage-accent: #0e1020; --color-stage-sec: #ffffff;
+  --color-stage-danger: #ff9a92; --color-stage-success: #5fe3b1; --color-stage-warning: #f5c84a; --color-stage-neutral: #c9ccf5;
+  --color-on-series: #0b0c12; --color-series-1: #a9b4ff; --color-series-2: #f5c84a; --color-series-3: #5fe3b1; --color-series-4: #e39ad1; --color-series-5: #7cc4ea; --color-series-6: #f0a36b;
+  --radius-ctl: 1rem; --radius-btn: 999px; --radius-card: 1.75rem; --radius-hero: 2rem;
+  --shadow-e1: 0 1px 0 rgb(255 255 255 / 0.8) inset, 0 1px 2px rgb(40 50 130 / 0.1), 0 10px 26px rgb(40 50 130 / 0.1);
+  --shadow-e2: 0 1px 0 rgb(255 255 255 / 0.8) inset, 0 2px 4px rgb(40 50 130 / 0.12), 0 18px 40px rgb(40 50 130 / 0.18);
+  --shadow-e3: 0 1px 0 rgb(255 255 255 / 0.8) inset, 0 4px 10px rgb(40 50 130 / 0.18), 0 30px 64px rgb(40 50 130 / 0.3);
+  --shadow-btn: 0 1px 0 rgb(255 255 255 / 0.18) inset, 0 8px 20px rgb(14 16 32 / 0.3);
+  --scheme-canvas: light; --scheme-panel: dark;
+  --grain: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='180' height='180'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 .05 0 0 0 0 .06 0 0 0 0 .2 0 0 0 .05 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>") 0 0 / 180px 180px;
+  --canvas-bg: var(--grain), radial-gradient(50rem 30rem at 94% -10%, rgb(255 255 255 / 0.55), transparent 62%), linear-gradient(180deg, var(--color-night) 0%, var(--color-night-deep) 100%);
+  --glass-bg: linear-gradient(180deg, #181a25, #0e0f16); --glass-border: rgb(255 255 255 / 0.1); --glass-shadow: 0 1px 0 rgb(255 255 255 / 0.1) inset, 0 18px 40px rgb(14 16 40 / 0.35); --glass-blur: none;
+  --card-rule: transparent; --card-bg: linear-gradient(180deg, var(--color-card), var(--color-porcelain) 80%);
+  --lift-ring: 0 0 0 1px rgb(14 16 32 / 0.55);
+  --nav-on-bg: #0e1020; --nav-on-fg: #ffffff; --stage-on-bg: #ffffff; --stage-on-fg: #0e1020;
+  --bar-bg: rgb(11 12 18 / 0.92); --bar-line: rgb(255 255 255 / 0.15); --scrim: rgb(14 16 32 / 0.6); --chrome: #dde3fb;
+}
+
+/* Theme picker swatches (ui/ThemePicker.tsx): each swatch element carries data-theme and shows canvas, panel, card and accent.
+   Midnight has no override block (its values are the defaults), so its four swatch colours are literal. */
+[data-theme='midnight'] { --sw-canvas: #14123f; --sw-panel: #1f1c5c; --sw-card: #fbf9f5; --sw-accent: #f5b800; }
+[data-theme='indigo'], [data-theme='coral'], [data-theme='periwinkle'] { --sw-canvas: var(--color-night); --sw-panel: var(--color-stage-raised); --sw-card: var(--color-card); --sw-accent: var(--color-accent); }
+
+/* `.feature` marks one stand-out panel (the dashboard hero visual). It is glass everywhere except where a theme sets it:
+   a solid coral card in Coral, a deep indigo card with amber marks in Indigo. It restates the panel kit for that element only. */
+[data-theme='coral'] .feature {
+  --glass-bg: linear-gradient(160deg, #c22d2d, #b02626); --glass-border: transparent; --glass-shadow: 0 24px 48px rgb(200 47 47 / 0.32);
+  --color-stage-ink: #ffffff; --color-stage-soft: #fff1ef; --color-stage-line: rgb(255 255 255 / 0.4); --color-stage-mark: #ffffff; --color-stage-wash: #ffffff;
+  --color-stage-accent: #ffffff; --color-stage-accent-hover: #fff1ef; --color-on-stage-accent: #b02626; --color-stage-sec: #ffffff;
+  --color-stage-danger: #ffffff; --color-stage-success: #ffffff; --color-stage-warning: #ffffff; --color-stage-neutral: #ffffff; --color-series-1: #ffffff;
+}
+[data-theme='indigo'] .feature {
+  --glass-bg: linear-gradient(160deg, #2d2a7a, #221f66); --glass-border: transparent; --glass-shadow: 0 24px 48px rgb(45 42 122 / 0.3);
+  --color-stage-ink: #ffffff; --color-stage-soft: #cfd2f7; --color-stage-line: rgb(255 255 255 / 0.22); --color-stage-mark: #f5b800; --color-stage-wash: #ffffff;
+  --color-stage-accent: #f5b800; --color-stage-accent-hover: #ffc933; --color-on-stage-accent: #14123f; --color-stage-sec: #ffffff;
+  --color-stage-danger: #ffb4ad; --color-stage-success: #5fe3b1; --color-stage-warning: #f5c84a; --color-stage-neutral: #e0e2fb; --color-series-1: #a9b4ff;
 }

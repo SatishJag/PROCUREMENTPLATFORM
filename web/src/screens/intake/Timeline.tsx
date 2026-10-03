@@ -35,7 +35,7 @@ function Chart({ s, k }: { s: Schedule; k: number }) {
           <g key={m.name}>
             {i > 0 && k >= 1 && <text x={(sx(i - 1) + x) / 2} y={STEP_Y - 10} textAnchor="middle" fontSize="13" className="fill-(--soft)">{`+${days(ms[i - 1].date, m.date)} d`}</text>}
             <path d={`M${x} ${STEP_Y + 9}C${x} ${(STEP_Y + RULER_Y) / 2 + 12} ${rx(Date.parse(m.date))} ${(STEP_Y + RULER_Y) / 2 - 12} ${rx(Date.parse(m.date))} ${RULER_Y - 5}`} fill="none" stroke="var(--gold)" strokeOpacity=".28" />
-            <circle cx={x} cy={STEP_Y} r="8" className={last ? undefined : 'fill-night-deep'} fill={last ? 'var(--gold)' : undefined} stroke="var(--gold)" strokeWidth="1.5" />
+            <circle cx={x} cy={STEP_Y} r="8" className={last ? undefined : 'fill-stage'} fill={last ? 'var(--gold)' : undefined} stroke="var(--gold)" strokeWidth="1.5" />
             {first && late && <circle cx={x} cy={STEP_Y} r="12" fill="none" stroke="var(--bad)" strokeWidth="1.5" />}
             <text x={x} y={STEP_Y - 30} textAnchor="middle" fontSize="15" fontWeight="500" className="fill-(--fg)">{m.name}</text>
             <text x={x} y={STEP_Y + 32} textAnchor="middle" fontSize="13.5" className="fill-(--soft)" style={mono}>{m.date}</text>

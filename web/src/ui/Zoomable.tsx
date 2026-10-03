@@ -101,7 +101,7 @@ export function Zoomable({ children, label, min = 0.25, max = 4, onScale, classN
       onPointerUp={up}
       onPointerCancel={up}
       onClickCapture={e => { if (moved.current) { e.stopPropagation(); moved.current = false; } }}
-      className={`on-dark relative min-h-72 cursor-grab touch-none select-none overflow-hidden rounded-card border border-(--hair) bg-night-deep/80 active:cursor-grabbing ${className}`}
+      className={`on-stage relative min-h-72 cursor-grab touch-none select-none overflow-hidden rounded-card border border-(--hair) bg-stage active:cursor-grabbing ${className}`}
     >
       <div ref={layer} className="absolute left-0 top-0 w-max origin-top-left" style={{ transform: `translate(${v.x}px, ${v.y}px) scale(${v.k})`, transition: glide ? 'transform 0.4s cubic-bezier(0.16, 0.8, 0.2, 1)' : 'none' }}>
         {typeof children === 'function' ? children(v.k) : children}

@@ -28,7 +28,7 @@ export function Gauge({ value, max, label }: { value: number; max: number; label
   );
 }
 
-const stages = [["Planned", "var(--color-peri)"], ["Sourcing", "var(--color-primary)"], ["Awarded", "#a8822e"]] as const;
+const stages = [["Planned", "var(--color-peri)"], ["Sourcing", "var(--color-primary)"], ["Awarded", "var(--color-award)"]] as const;
 
 /** Funnel: each level is how many packages reached that stage or beyond. */
 export function Funnel({ planned, sourcing, awarded, bare }: Dash['pipeline'] & { bare?: boolean }) {
@@ -84,8 +84,8 @@ export function GlassBudget({ d }: { d: Dash }) {
   return (
     <div aria-hidden className="h-72 [perspective:1200px]" onPointerMove={lean} onPointerLeave={() => tilt.current && (tilt.current.style.transform = rest)}>
       <div ref={tilt} className="relative h-full transition-transform duration-500 ease-out [transform-style:preserve-3d]" style={{ transform: rest }}>
-        <div className="glass absolute inset-x-8 top-0 h-56 [transform:translateZ(-60px)_translate(30px,-12px)]" />
-        <div className="glass absolute inset-x-0 bottom-0 grid gap-4 p-5 [transform:translateZ(30px)]">
+        <div className="glass feature absolute inset-x-8 top-0 h-56 [transform:translateZ(-60px)_translate(30px,-12px)]" />
+        <div className="glass feature absolute inset-x-0 bottom-0 grid gap-4 p-5 [transform:translateZ(30px)]">
           <div className="flex items-baseline justify-between"><span className="eyebrow">Budget committed</span><span className="eyebrow !text-(--gold)">DC1</span></div>
           {top.map(b => (
             <div key={b.costCode} className="grid gap-1">
@@ -115,16 +115,16 @@ export function Timeline({ pkgs, atRisk, k }: { pkgs: Pkg[]; atRisk: Dash['atRis
   return (
     <div className="relative" style={{ width: W, height: rows.length * H + 56 }}>
       {ticks.map(m => (
-        <div key={m} className="absolute top-0 bottom-0 border-l border-dashed border-white/10" style={{ left: x(m) }}>
+        <div key={m} className="absolute top-0 bottom-0 border-l border-dashed border-(--hair)" style={{ left: x(m) }}>
           {quarter(m) && <span className="eyebrow absolute left-2 top-3 whitespace-nowrap">{month.format(m)}</span>}
         </div>
       ))}
       {rows.map((p, i) => {
-        const r = atRisk.find(a => a.id === p.id), px = x(t(p.needBy)), left = px > 620, color = p.status === 'awarded' ? 'var(--color-gold)' : r ? '#ff9a92' : 'var(--color-on-night)';
+        const r = atRisk.find(a => a.id === p.id), px = x(t(p.needBy)), left = px > 620, color = p.status === 'awarded' ? 'var(--gold)' : r ? 'var(--bad)' : 'var(--fg)';
         return (
           <div key={p.id} className="absolute inset-x-0" style={{ top: 48 + i * H, height: H }}>
             <div className="absolute top-8 h-px" style={{ left: X0, width: px - X0, backgroundImage: `linear-gradient(90deg, transparent, ${color})`, opacity: 0.7 }} />
-            <span className="absolute top-8 size-3 -translate-x-1/2 -translate-y-1/2 rounded-full ring-4 ring-white/10" style={{ left: px, background: color }} />
+            <span className="absolute top-8 size-3 -translate-x-1/2 -translate-y-1/2 rounded-full ring-4 ring-(--hair)" style={{ left: px, background: color }} />
             <div className={`absolute top-1 grid w-60 gap-0.5 ${left ? 'text-right' : ''}`} style={left ? { right: W - px + 14 } : { left: px + 14 }}>
               <span className="font-code text-label">{p.id}<span className="soft"> · {p.needBy}</span></span>
               {k >= 0.9 && <span className="font-medium leading-snug">{p.title}</span>}

@@ -21,7 +21,7 @@ function Coverage({ wf }: { wf: Workflow }) {
         const bad = !s.rules.length, over = s.rules.length > 1;
         return (
           <li key={s.from} className="grid min-w-[7.5rem] gap-1.5">
-            <span className={`grid min-h-12 content-center rounded-ctl border px-2 py-1.5 text-label font-medium leading-tight ${bad ? 'border-danger bg-danger-soft text-danger [background-image:repeating-linear-gradient(135deg,transparent_0_6px,rgb(179_38_30/0.14)_6px_8px)]' : over ? 'border-warning bg-[#fbefd3] text-warning' : 'border-primary/30 bg-primary-soft text-primary'}`}>
+            <span className={`grid min-h-12 content-center rounded-ctl border px-2 py-1.5 text-label font-medium leading-tight ${bad ? 'border-danger bg-danger-soft text-danger [background-image:repeating-linear-gradient(135deg,transparent_0_6px,color-mix(in_srgb,var(--color-danger)_14%,transparent)_6px_8px)]' : over ? 'border-warning bg-warning-soft text-warning' : 'border-primary/30 bg-primary-soft text-primary'}`}>
               {bad ? 'Gap: no rule' : over ? `Overlap: ${s.rules.length} rules` : ruleName(wf, s.rules[0])}
             </span>
             <span className="text-label text-ink-soft">{s.to == null ? `above ${s.from.toLocaleString('en')}` : `${s.from.toLocaleString('en')} to ${s.to.toLocaleString('en')}`}</span>
@@ -97,7 +97,7 @@ export function Matrix({ wf, canEdit, why, sim, edit }: Props) {
             {wf.rules.map((r, i) => {
               const f = fields(r, i);
               return (
-                <li key={r.id} className="grid gap-3 rounded-card border border-line bg-white p-4">
+                <li key={r.id} className="grid gap-3 rounded-card border border-line bg-card p-4">
                   <div className="flex items-center justify-between gap-2"><span className="eyebrow !text-(--gold)">Priority {i + 1}</span><div className="flex gap-2">{f.on}{f.n}</div></div>
                   {f.name}{f.effect}
                   <div className="grid grid-cols-2 gap-3"><label className="grid gap-1.5 font-medium">Above (AED){f.min}</label><label className="grid gap-1.5 font-medium">Up to (AED){f.max}</label></div>

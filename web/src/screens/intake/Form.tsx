@@ -49,7 +49,7 @@ export function Form({ draft, set, errors, budgets, names, onSubmit }: Props) {
             {amount > 0 && <span className="text-ink-soft"><Money value={amount} /></span>}
           </Field>
           <Field label="Need-by date" error={errors.needBy} hint="Required on site. The engine plans the sourcing calendar backwards from it.">
-            <Input type="date" value={draft.needBy} onChange={e => up('needBy')(e.target.value)} aria-invalid={!!errors.needBy || undefined} className="[color-scheme:light]" />
+            <Input type="date" value={draft.needBy} onChange={e => up('needBy')(e.target.value)} aria-invalid={!!errors.needBy || undefined} />
           </Field>
         </div>
         <Field label="Title" error={errors.title}>

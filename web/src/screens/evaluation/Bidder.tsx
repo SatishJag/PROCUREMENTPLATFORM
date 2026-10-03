@@ -42,7 +42,7 @@ export function ExclusionForm({ c, n, x, inline }: { c: Ctx; n: Norm; x: ReturnT
           {inline && <span className="flex items-center gap-2"><Badge i={i} size="size-6" /><span className="font-medium">{c.names(n.supplierId)}</span></span>}
           <span className="flex flex-wrap items-center gap-2"><span className={inline ? '' : 'font-medium'}>Excluded: {x.desc}</span><StatusChip tone={x.value ? 'success' : 'warning'}>{x.value ? 'Priced' : 'Not priced'}</StatusChip></span>
         </div>
-        <div className="w-full min-w-40 sm:w-56"><Field label="Add-back, AED"><input type="number" min={0} step="any" inputMode="decimal" value={v} onChange={e => setV(e.target.value)} className={`h-11 md:h-10 ${control} text-right [color-scheme:light]`} /></Field></div>
+        <div className="w-full min-w-40 sm:w-56"><Field label="Add-back, AED"><input type="number" min={0} step="any" inputMode="decimal" value={v} onChange={e => setV(e.target.value)} className={`h-11 md:h-10 ${control} text-right`} /></Field></div>
         <Button variant="secondary" loading={busy} disabled={v === ''} onClick={run}>{x.value ? 'Reprice add-back' : 'Load add-back'}</Button>
       </div>
       {err && <Reason>{err}</Reason>}

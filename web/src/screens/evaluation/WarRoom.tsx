@@ -229,7 +229,7 @@ export function RecommendDialog({ open, onClose, eventId, scenarios, scn, onDone
       <div className="grid gap-4">
         <h2 className="text-section font-semibold">Recommend award</h2>
         <p className="soft">This starts the approval route. The engine checks open exclusions, budget and deviation, and sets the approvers.</p>
-        <Field label="Scenario"><select value={pick} onChange={e => setPick(e.target.value)} className={`h-11 md:h-10 ${control} [color-scheme:light]`}>{scenarios.map(x => <option key={x.id} value={x.id}>{x.label}</option>)}</select></Field>
+        <Field label="Scenario"><select value={pick} onChange={e => setPick(e.target.value)} className={`h-11 md:h-10 ${control}`}>{scenarios.map(x => <option key={x.id} value={x.id}>{x.label}</option>)}</select></Field>
         {s && <p className="flex flex-wrap items-center gap-2"><Money value={s.value} className="numeral text-section" />{s.deviation && <StatusChip tone="warning">Deviation, justification needed</StatusChip>}</p>}
         <Field label="Justification" hint="Required when the scenario deviates from the best-value ranking."><textarea rows={3} value={why} onChange={e => setWhy(e.target.value)} className={control} /></Field>
         {err && <Reason>{err}</Reason>}

@@ -12,15 +12,15 @@ const level = (k: number) => (k < 0.6 ? 0 : k < 1.2 ? 1 : 2);
 
 /** What a stage node says, by level. Shared by the canvas node and the mobile stage card. */
 export function StageBody({ s, wf, lv, step, tag }: { s: Stage; wf: Workflow; lv: number; step?: number; tag?: string }) {
-  const lim = limitOf(s), a = resolve(s.approver), chip = 'inline-flex items-center gap-1 rounded-full bg-white/10 px-2 py-0.5 text-label text-on-night-soft';
+  const lim = limitOf(s), a = resolve(s.approver), chip = 'inline-flex items-center gap-1 rounded-full bg-(--wash)/10 px-2 py-0.5 text-label text-(--soft)';
   return (
     <>
       {tag && <span className="eyebrow !text-(--gold) !leading-none">{tag}</span>}
       <span className="flex items-start gap-2">
-        {step != null && <span aria-label={`Step ${step}`} className="grid size-6 shrink-0 place-items-center rounded-full bg-gold text-label font-semibold text-night">{step}</span>}
+        {step != null && <span aria-label={`Step ${step}`} className="grid size-6 shrink-0 place-items-center rounded-full bg-stage-mark text-label font-semibold text-on-series">{step}</span>}
         <span className={`font-semibold leading-tight tracking-[-0.005em] ${lv === 0 ? 'text-[1.2rem]' : 'text-[0.95rem]'}`}>{s.name}</span>
       </span>
-      <span className={`block truncate text-on-night-soft ${lv === 0 ? 'text-[0.95rem]' : 'text-body'}`}>{kindLabel(s.approver.kind)}: {a.label || <b className="font-semibold text-(--bad)">none chosen</b>}</span>
+      <span className={`block truncate text-(--soft) ${lv === 0 ? 'text-[0.95rem]' : 'text-body'}`}>{kindLabel(s.approver.kind)}: {a.label || <b className="font-semibold text-(--bad)">none chosen</b>}</span>
       {lv >= 1 && (
         <span className="flex flex-wrap gap-1">
           {s.slaHours > 0 && <span className={chip}><Ic n="clock" className="size-3" />{s.slaHours}h SLA</span>}
@@ -71,28 +71,28 @@ export function Canvas({ wf, sel, onSel, route }: Props) {
 
   return (
     <div style={{ '--ch': `${Math.max(320, Math.min(height + 8, 880))}px` } as CSSProperties}>
-    <Zoomable key={sig} label={`${wf.name} flow`} min={0.3} max={2.4} onScale={setK} className="h-(--ch) bg-gradient-to-b from-night to-night-deep">
+    <Zoomable key={sig} label={`${wf.name} flow`} min={0.3} max={2.4} onScale={setK} className="h-(--ch) bg-gradient-to-b from-stage-raised/40 to-stage">
       <div className="relative" style={{ width, height }}>
         <svg width={width} height={height} className="pointer-events-none absolute inset-0" aria-hidden>
           <defs><marker id="ah" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0l8 4-8 4z" fill="currentColor" /></marker></defs>
           {edges.map((e, i) => {
             const x1 = e.a.x + W / 2, y1 = e.a.y + H, x2 = e.b.x + W / 2, dy = (e.b.y - y1) * 0.5;
-            return <path key={i} d={`M${x1} ${y1}C${x1} ${y1 + dy} ${x2} ${e.b.y - dy} ${x2} ${e.b.y - 3}`} fill="none" markerEnd="url(#ah)" stroke="currentColor" strokeWidth={route && e.on ? 2.5 : 1.5} strokeDasharray={e.cond ? '5 5' : undefined} className={route && e.on ? 'text-gold' : 'text-on-night-soft'} opacity={route ? (e.on ? 1 : 0.25) : 0.6} />;
+            return <path key={i} d={`M${x1} ${y1}C${x1} ${y1 + dy} ${x2} ${e.b.y - dy} ${x2} ${e.b.y - 3}`} fill="none" markerEnd="url(#ah)" stroke="currentColor" strokeWidth={route && e.on ? 2.5 : 1.5} strokeDasharray={e.cond ? '5 5' : undefined} className={route && e.on ? 'text-stage-mark' : 'text-(--soft)'} opacity={route ? (e.on ? 1 : 0.25) : 0.6} />;
           })}
-          {bypass.map(b => <path key={b.j} d={`M${cx - W / 2 - 14} ${rowY(b.p) + H}V${rowY(b.j)}`} stroke="currentColor" strokeWidth="2.5" strokeDasharray="2 6" strokeLinecap="round" className="text-gold" fill="none" />)}
+          {bypass.map(b => <path key={b.j} d={`M${cx - W / 2 - 14} ${rowY(b.p) + H}V${rowY(b.j)}`} stroke="currentColor" strokeWidth="2.5" strokeDasharray="2 6" strokeLinecap="round" className="text-stage-mark" fill="none" />)}
         </svg>
         {([[PAD, 'Request submitted', 'branch'], [endY, 'Approved', 'check']] as const).map(([y, t, ic]) => (
-          <span key={t} className="eyebrow absolute flex items-center gap-2 whitespace-nowrap rounded-full border border-gold/60 bg-night-raised px-3 !text-on-night" style={{ left: cx, top: y, height: PH, transform: 'translateX(-50%)' }}><Ic n={ic} className="size-3.5 text-gold" />{t}</span>
+          <span key={t} className="eyebrow absolute flex items-center gap-2 whitespace-nowrap rounded-full border border-stage-mark/60 bg-stage-raised px-3 !text-(--fg)" style={{ left: cx, top: y, height: PH, transform: 'translateX(-50%)' }}><Ic n={ic} className="size-3.5 text-stage-mark" />{t}</span>
         ))}
         {pills.map(p => (
-          <span key={p.s.id} className={`absolute max-w-[21rem] -translate-x-1/2 -translate-y-1/2 rounded-full border bg-night-deep px-3 py-1 text-center text-label leading-tight transition-opacity ${live(p.s.id) ? 'border-gold/60 text-on-night' : 'border-white/10 text-on-night-soft opacity-40'}`} style={{ left: p.x + W / 2, top: p.y - GAP / 2, maxWidth: wide > 2 ? W : undefined }}>{p.label}</span>
+          <span key={p.s.id} className={`absolute max-w-[21rem] -translate-x-1/2 -translate-y-1/2 rounded-full border bg-stage px-3 py-1 text-center text-label leading-tight transition-opacity ${live(p.s.id) ? 'border-stage-mark/60 text-(--fg)' : 'border-(--hair) text-(--soft) opacity-40'}`} style={{ left: p.x + W / 2, top: p.y - GAP / 2, maxWidth: wide > 2 ? W : undefined }}>{p.label}</span>
         ))}
         {rows.flatMap(r => r.map(s => {
           const p = pos.get(s.id)!, on = live(s.id), picked = s.id === sel;
           const tag = r.length > 1 ? (wf.kind === 'route' ? 'Choose one route' : s.quorum === 'all' || r.some(x => x.quorum === 'all') ? 'Parallel, all approve' : 'Parallel, any one') : undefined;
           return (
             <button key={s.id} type="button" aria-pressed={picked} aria-label={`${s.name}, ${resolve(s.approver).label || 'no approver'}`} onClick={() => onSel(s.id)} style={{ left: p.x, top: p.y, width: W, height: H }}
-              className={`absolute grid content-start gap-1.5 overflow-hidden rounded-card border p-3 text-left transition-[transform,opacity] duration-300 hover:-translate-y-0.5 active:scale-[0.98] ${picked ? 'border-accent bg-night-raised shadow-[0_0_0_2px_rgb(245_184_0/0.55),0_18px_40px_rgb(6_5_30/0.5)]' : route && on ? 'border-gold bg-night-raised shadow-[0_0_0_1px_rgb(212_180_106/0.6),0_0_36px_rgb(212_180_106/0.22)]' : 'border-white/15 bg-gradient-to-b from-night-raised to-night shadow-[0_14px_30px_rgb(6_5_30/0.45)] hover:border-gold/60'} ${route && !on ? 'opacity-45' : ''}`}>
+              className={`absolute grid content-start gap-1.5 overflow-hidden rounded-card border p-3 text-left transition-[transform,opacity] duration-300 hover:-translate-y-0.5 active:scale-[0.98] ${picked ? 'border-(--ring) bg-stage-raised shadow-e2 ring-2 ring-(--ring)/55' : route && on ? 'border-stage-mark bg-stage-raised shadow-e2 ring-1 ring-stage-mark/60' : 'border-(--hair) bg-gradient-to-b from-stage-raised to-stage shadow-e2 hover:border-stage-mark/60'} ${route && !on ? 'opacity-45' : ''}`}>
               <StageBody s={s} wf={wf} lv={lv} step={steps.get(s.id)} tag={tag} />
             </button>
           );

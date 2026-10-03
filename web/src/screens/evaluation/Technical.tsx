@@ -64,7 +64,7 @@ export function useScoring(id: string) {
 }
 export type Scoring = ReturnType<typeof useScoring>;
 
-const input = `h-11 md:h-10 ${control} [color-scheme:light]`;
+const input = `h-11 md:h-10 ${control}`;
 
 function Pack({ pack, error }: { pack?: Pack; error?: string }) {
   if (error) return <Card glass i={1} className="flex items-start gap-4"><Ic n="lock" className="mt-0.5 size-6 text-(--gold)" /><div className="grid gap-1"><h2 className="text-section font-semibold">Technical envelope is closed to you</h2><Reason>{error}</Reason></div></Card>;

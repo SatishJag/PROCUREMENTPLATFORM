@@ -65,7 +65,7 @@ export function Intake() {
   const actions = useQuery({ queryKey: ['actions', getUser(), 'intake', active], enabled: !!entry, queryFn: () => call<string[]>('intake', 'actions', active) });
 
   if (dash.error) return <Card glass className="text-(--bad)" role="alert">{(dash.error as Error).message}</Card>;
-  if (!dash.data) return <div aria-busy className="h-96 animate-pulse rounded-hero bg-white/5" />;
+  if (!dash.data) return <div aria-busy className="h-96 animate-pulse rounded-hero bg-(--wash)/5" />;
 
   const r = entry?.req, status = r?.status ?? 'submitted';
   const line = budgets.find(b => b.project === draft.projectId && b.costCode === draft.costCode);
@@ -114,9 +114,9 @@ export function Intake() {
       {header}
 
       <nav aria-label="Requests" className="glass on-dark flex items-center gap-2 overflow-x-auto p-2">
-        <button type="button" aria-current={active === 'new' ? 'page' : undefined} onClick={() => show('new')} className={`inline-flex h-11 shrink-0 items-center gap-2 whitespace-nowrap rounded-full border px-4 font-medium transition-transform active:scale-[0.97] ${active === 'new' ? 'border-(--gold) bg-white/10' : 'border-(--hair) hover:bg-white/[0.07]'}`}><Ic n="plus" />New request</button>
+        <button type="button" aria-current={active === 'new' ? 'page' : undefined} onClick={() => show('new')} className={`inline-flex h-11 shrink-0 items-center gap-2 whitespace-nowrap rounded-full border px-4 font-medium transition-transform active:scale-[0.97] ${active === 'new' ? 'border-(--gold) bg-(--wash)/10' : 'border-(--hair) hover:bg-(--wash)/[0.07]'}`}><Ic n="plus" />New request</button>
         {queue.map(e => (
-          <button key={e.id} type="button" aria-current={active === e.id ? 'page' : undefined} onClick={() => show(e.id)} className={`inline-flex h-11 shrink-0 items-center gap-2 whitespace-nowrap rounded-full border px-4 transition-transform active:scale-[0.97] ${active === e.id ? 'border-(--gold) bg-white/10' : 'border-(--hair) hover:bg-white/[0.07]'}`}>
+          <button key={e.id} type="button" aria-current={active === e.id ? 'page' : undefined} onClick={() => show(e.id)} className={`inline-flex h-11 shrink-0 items-center gap-2 whitespace-nowrap rounded-full border px-4 transition-transform active:scale-[0.97] ${active === e.id ? 'border-(--gold) bg-(--wash)/10' : 'border-(--hair) hover:bg-(--wash)/[0.07]'}`}>
             <span className="font-code text-label">{e.id}</span>
             {e.value > 0 && <span className="numeral"><Money value={e.value} /></span>}
             <span className="soft">{waiting.some(w => w.id === e.id) ? 'waiting on you' : decided[e.req?.status ?? 'submitted'][1].toLowerCase()}</span>

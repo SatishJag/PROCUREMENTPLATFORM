@@ -8,9 +8,9 @@ export const useMedia = (q: string) => useSyncExternalStore(
 );
 export const useDesktop = () => useMedia('(min-width: 768px)');
 
-export const sel = 'h-11 md:h-10 [color-scheme:light] ' + control;
+export const sel = 'h-11 md:h-10 ' + control;
 /** Compact variants for table cells. */
-export const cell = 'h-9 [color-scheme:light] rounded-ctl border border-control bg-white px-2 text-ink hover:border-primary disabled:cursor-not-allowed disabled:opacity-50';
+export const cell = 'h-9 rounded-ctl border border-control bg-card px-2 text-ink hover:border-primary disabled:cursor-not-allowed disabled:opacity-50';
 
 export function Select({ label, value, onChange, options, placeholder, hint, error, aria, className = '' }: { aria?: string; label: string; value: string; onChange: (v: string) => void; options: [string, string][]; placeholder?: string; hint?: string; error?: string; className?: string }) {
   return (
@@ -26,7 +26,7 @@ export function Select({ label, value, onChange, options, placeholder, hint, err
 export function Check({ label, aria, checked, onChange, hint, disabled }: { label?: ReactNode; aria?: string; checked: boolean; onChange: (v: boolean) => void; hint?: string; disabled?: boolean }) {
   return (
     <label className="on-light flex min-h-11 cursor-pointer items-start gap-3 py-1.5 text-ink has-[:disabled]:cursor-not-allowed has-[:disabled]:opacity-60">
-      <input type="checkbox" aria-label={aria} checked={checked} disabled={disabled} onChange={e => onChange(e.target.checked)} className="mt-0.5 size-5 shrink-0 cursor-pointer rounded-[4px] [color-scheme:light] accent-(--color-primary)" />
+      <input type="checkbox" aria-label={aria} checked={checked} disabled={disabled} onChange={e => onChange(e.target.checked)} className="mt-0.5 size-5 shrink-0 cursor-pointer rounded-[4px] accent-(--color-primary)" />
       {(label || hint) && <span className="grid"><span className="font-medium">{label}</span>{hint && <span className="text-ink-soft">{hint}</span>}</span>}
     </label>
   );
@@ -44,7 +44,7 @@ export function Tags({ label, values, onChange, hint }: { label: string; values:
           {values.map(v => (
             <li key={v} className="flex items-center gap-1 rounded-full border border-line bg-primary-soft py-0.5 pl-3 pr-1">
               {v}
-              <button type="button" aria-label={`Remove ${v}`} onClick={() => onChange(values.filter(x => x !== v))} className="grid size-7 place-items-center rounded-full text-ink-soft transition-transform hover:bg-white hover:text-ink active:scale-[0.97] disabled:cursor-not-allowed disabled:opacity-50">
+              <button type="button" aria-label={`Remove ${v}`} onClick={() => onChange(values.filter(x => x !== v))} className="grid size-7 place-items-center rounded-full text-ink-soft transition-transform hover:bg-card hover:text-ink active:scale-[0.97] disabled:cursor-not-allowed disabled:opacity-50">
                 <svg aria-hidden viewBox="0 0 24 24" className="size-3.5" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M6 6l12 12M18 6L6 18" /></svg>
               </button>
             </li>
@@ -71,9 +71,9 @@ export function Tabs<T extends string>({ tabs, value, onChange, label }: { tabs:
     <div role="tablist" aria-label={label} onKeyDown={key} className="glass on-dark flex gap-1 overflow-x-auto p-1">
       {tabs.map(([id, text]) => (
         <button key={id} id={`tab-${id}`} type="button" role="tab" aria-selected={id === value} aria-controls="tab-panel" tabIndex={id === value ? 0 : -1} onClick={() => onChange(id)}
-          className={`relative h-11 shrink-0 whitespace-nowrap rounded-ctl px-4 font-medium tracking-[0.01em] transition-transform duration-200 active:scale-[0.97] ${id === value ? 'bg-white/12 text-on-night' : 'text-on-night-soft hover:bg-white/[0.07] hover:text-on-night'}`}>
+          className={`relative h-11 shrink-0 whitespace-nowrap rounded-ctl px-4 font-medium tracking-[0.01em] transition-transform duration-200 active:scale-[0.97] ${id === value ? 'bg-(--on-bg) text-(--on-fg)' : 'text-(--soft) hover:bg-(--wash)/[0.07] hover:text-(--fg)'}`}>
           {text}
-          {id === value && <span aria-hidden className="absolute inset-x-4 bottom-1 h-px bg-gold" />}
+          {id === value && <span aria-hidden className="absolute inset-x-4 bottom-1 h-px bg-(--gold)" />}
         </button>
       ))}
     </div>
