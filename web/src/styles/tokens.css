@@ -65,3 +65,21 @@
   --shadow-e2: 0 1px 0 rgb(255 255 255 / 0.7) inset, 0 2px 4px rgb(6 5 30 / 0.2), 0 14px 32px rgb(6 5 30 / 0.28);
   --shadow-e3: 0 1px 0 rgb(255 255 255 / 0.6) inset, 0 4px 8px rgb(6 5 30 / 0.25), 0 28px 64px rgb(6 5 30 / 0.5);
 }
+
+/* ---- Stage and series tokens (Evaluation War Room and any dark command-room chart). Theme-driven: they alias the
+   core tokens, so a theme that restyles the night stage restyles these. series-3..6 are extra chart hues for bidders;
+   a theme must keep each at 3:1 against --color-stage and against porcelain surfaces. ---- */
+@theme static {
+  --color-stage: var(--color-night-deep); /* chart canvas and control fill on the stage */
+  --color-stage-raised: var(--color-night-raised);
+  --color-stage-ink: var(--color-on-night); /* grid lines (at low opacity) and chart text on the stage */
+  --color-stage-soft: var(--color-on-night-soft);
+  --color-stage-mark: var(--color-gold); /* hairlines, highlights, glow */
+  --color-on-series: var(--color-night); /* text on a series fill */
+  --color-series-1: var(--color-peri-night);
+  --color-series-2: var(--color-gold);
+  --color-series-3: #5fe3b1;
+  --color-series-4: #e39ad1;
+  --color-series-5: #7cc4ea;
+  --color-series-6: #f0a36b;
+}

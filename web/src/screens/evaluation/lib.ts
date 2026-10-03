@@ -20,9 +20,9 @@ export type Insight =
 export const letter = (i: number) => String.fromCharCode(65 + i);
 // ponytail: the engine's alias is "Bidder " + letter of the bid's position; results come back in that order. Display only.
 export const aliasAt = (i: number) => `Bidder ${letter(i)}`;
-/** One colour per bidder on night and porcelain; identity is also carried by the letter and name, never colour alone. */
-export const SERIES = ['#8f94e0', '#d4b46a', '#5fe3b1', '#e39ad1', '#7cc4ea', '#f0a36b'];
-export const NIGHT = '#14123f';
+/** One colour per bidder (tokens --color-series-1..6, defined with the stage tokens); identity is also carried by the letter and name, never colour alone. */
+export const series = (i: number) => `var(--color-series-${(i % 6) + 1})`;
+export const ON_SERIES = 'var(--color-on-series)';
 
 export const n2 = (v: number) => v.toLocaleString('en', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 export const mil = (v: number) => `${(v / 1e6).toLocaleString('en', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} M`;

@@ -16,7 +16,7 @@ export type Portal = {
   myBid: null | { id: string; currency: string; lines: unknown[]; exclusions: unknown[]; deviations: string[]; version: number; submittedAt: string }; // prices are never rendered
 };
 export type Setup = { title?: string; lots: Lot[]; boq: BoqLine[]; criteria: Criterion[]; techWeight: number; techThreshold: number; quorum: number; blind: boolean; evaluators: string[]; invite: string[]; closesAt: string };
-export type Created = Setup & { id: string }; // sourcing.create returns the whole event
+export type Created = Omit<Setup, 'invite'> & { id: string; invited: string[] }; // sourcing.create returns the whole event
 export type EventRow = { id: string; title: string; status: string; type: string; bids?: number; pkg?: TwinNode; invited: TwinNode[]; award?: TwinNode };
 
 // The sourcing lifecycle in order (engine: eventFlow). Labels are presentation only.

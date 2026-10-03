@@ -13,7 +13,7 @@ import { Table } from '../../ui/Table';
 import { Zoomable } from '../../ui/Zoomable';
 import { BidderDetail, ExclusionForm, exclusionsOf, idxOf, rankOf, techOf, TileFace, whyNot, type Ctx } from './Bidder';
 import { Insight } from './Insight';
-import { aliasAt, mil, n2, NIGHT, SERIES, short, weighting, type Scenario } from './lib';
+import { aliasAt, mil, n2, ON_SERIES, series, short, weighting, type Scenario } from './lib';
 import { Badge, Reason } from './parts';
 
 const Panel = ({ i, title, note, children, className = '' }: { i: number; title: string; note?: string; children: React.ReactNode; className?: string }) => (
@@ -39,14 +39,14 @@ function ValueMap({ c, sel, onSel }: { c: Ctx; sel: string; onSel: (id: string) 
     <Zoomable label="Value map of bidders" min={0.5} max={3} className="h-[29rem]">
       {k => (
         <div className="relative" style={{ width: W, height: H }}>
-          <svg width={W} height={H} aria-hidden className="absolute inset-0">
-            <defs><radialGradient id="vm-glow" cx="100%" cy="0%" r="90%"><stop offset="0" stopColor="#d4b46a" stopOpacity="0.2" /><stop offset="1" stopColor="#d4b46a" stopOpacity="0" /></radialGradient></defs>
+          <svg width={W} height={H} aria-hidden className="absolute inset-0 text-stage-ink">
+            <defs><radialGradient id="vm-glow" cx="100%" cy="0%" r="90%"><stop offset="0" style={{ stopColor: 'var(--color-stage-mark)' }} stopOpacity="0.2" /><stop offset="1" style={{ stopColor: 'var(--color-stage-mark)' }} stopOpacity="0" /></radialGradient></defs>
             <rect x={L} y={T} width={W - L - R} height={H - T - B} fill="url(#vm-glow)" />
-            {xt.map(t => <g key={t}><line x1={px(t)} x2={px(t)} y1={T} y2={H - B} stroke="#fff" strokeOpacity="0.1" /><text x={px(t)} y={H - B + 22} textAnchor="middle" fill="#b4b3d9" fontSize="12" className="font-code">{t}</text></g>)}
-            {yt.map(v => <g key={v}><line x1={L} x2={W - R} y1={py(v)} y2={py(v)} stroke="#fff" strokeOpacity="0.1" /><text x={L - 12} y={py(v) + 4} textAnchor="end" fill="#b4b3d9" fontSize="12" className="font-code">{(v / 1e6).toFixed(ystep >= 1e6 ? 0 : 1)}</text></g>)}
-            <text x={(L + W - R) / 2} y={H - 10} textAnchor="middle" fill="#b4b3d9" fontSize="11" letterSpacing="1.4">TECHNICAL SCORE</text>
-            <text transform={`translate(14 ${(T + H - B) / 2}) rotate(-90)`} textAnchor="middle" fill="#b4b3d9" fontSize="11" letterSpacing="1.4">PRICE, AED M (CHEAPER IS HIGHER)</text>
-            <text x={W - R - 8} y={T + 20} textAnchor="end" fill="#d4b46a" fontSize="11" letterSpacing="1.4">STRONGER AND CHEAPER</text>
+            {xt.map(t => <g key={t}><line x1={px(t)} x2={px(t)} y1={T} y2={H - B} stroke="currentColor" strokeOpacity="0.1" /><text x={px(t)} y={H - B + 22} textAnchor="middle" fontSize="12" className="fill-stage-soft font-code">{t}</text></g>)}
+            {yt.map(v => <g key={v}><line x1={L} x2={W - R} y1={py(v)} y2={py(v)} stroke="currentColor" strokeOpacity="0.1" /><text x={L - 12} y={py(v) + 4} textAnchor="end" fontSize="12" className="fill-stage-soft font-code">{(v / 1e6).toFixed(ystep >= 1e6 ? 0 : 1)}</text></g>)}
+            <text x={(L + W - R) / 2} y={H - 10} textAnchor="middle" fontSize="11" className="fill-stage-soft" letterSpacing="1.4">TECHNICAL SCORE</text>
+            <text transform={`translate(14 ${(T + H - B) / 2}) rotate(-90)`} textAnchor="middle" fontSize="11" className="fill-stage-soft" letterSpacing="1.4">PRICE, AED M (CHEAPER IS HIGHER)</text>
+            <text x={W - R - 8} y={T + 20} textAnchor="end" fontSize="11" className="fill-stage-mark" letterSpacing="1.4">STRONGER AND CHEAPER</text>
           </svg>
           {pts.map(p => {
             const x = px(p.t), y = py(p.n.total), on = sel === p.n.supplierId, right = x < W - 200, show = on || k > 1.35;
@@ -54,8 +54,8 @@ function ValueMap({ c, sel, onSel }: { c: Ctx; sel: string; onSel: (id: string) 
             return (
               <div key={p.n.supplierId} className="absolute" style={{ left: x, top: y, transform: `scale(${1 / k})`, transformOrigin: '0 0', zIndex: on ? 2 : 1 }}>
                 <button type="button" onClick={() => onSel(p.n.supplierId)} aria-pressed={on} aria-label={`${aliasAt(p.i)}, ${c.names(p.n.supplierId)}: technical ${n2(p.t)}, AED ${mil(p.n.total)}, ${p.rk ? 'ranked' : 'not ranked'}`}
-                  className={`absolute -left-[22px] -top-[22px] grid size-11 place-items-center rounded-full text-body font-semibold transition-transform duration-200 hover:scale-110 active:scale-95 ${p.rk ? '' : 'border-2 border-dashed border-on-night-soft !bg-night-deep text-on-night-soft'}`}
-                  style={{ ...(p.rk ? { background: SERIES[p.i % SERIES.length], color: NIGHT } : {}), boxShadow: on ? '0 0 0 3px #14123f, 0 0 0 5px #d4b46a, 0 0 28px 6px rgb(212 180 106 / 0.45)' : '0 6px 18px rgb(6 5 30 / 0.5)' }}>
+                  className={`absolute -left-[22px] -top-[22px] grid size-11 place-items-center rounded-full text-body font-semibold transition-transform duration-200 hover:scale-110 active:scale-95 ${p.rk ? '' : 'border-2 border-dashed border-(--soft) !bg-stage text-(--soft)'}`}
+                  style={{ ...(p.rk ? { background: series(p.i), color: ON_SERIES } : {}), boxShadow: on ? '0 0 0 3px var(--color-stage), 0 0 0 5px var(--color-stage-mark), 0 0 28px 6px color-mix(in srgb, var(--color-stage-mark) 45%, transparent)' : 'var(--shadow-e1)' }}>
                   {String.fromCharCode(65 + p.i)}
                 </button>
                 {show && (
@@ -63,7 +63,7 @@ function ValueMap({ c, sel, onSel }: { c: Ctx; sel: string; onSel: (id: string) 
                     <p className="truncate font-medium">{short(c.names(p.n.supplierId))}{p.n.supplierId === lead && <span className="eyebrow ml-2 !text-(--gold)">Leader</span>}</p>
                     <p className="numeral text-section leading-5">AED {mil(p.n.total)}</p>
                     {k > 1.35 && <p className="soft">{p.rk ? `Combined ${n2(p.rk.combined)}` : 'Not ranked'}</p>}
-                    {k > 1.35 && <p className="soft">{p.n.adjustments.length} adjustments, {p.n.anomalies.length} anomalies</p>}
+                    {k > 1.35 && <p className="soft">{p.n.adjustments.length} adjustment{p.n.adjustments.length === 1 ? '' : 's'}, {p.n.anomalies.length} anomal{p.n.anomalies.length === 1 ? 'y' : 'ies'}</p>}
                     {k > 1.35 && !p.rk && <p className="text-(--warn)">{whyNot(techOf(c, p.n.supplierId))}</p>}
                   </div>
                 )}
@@ -101,7 +101,7 @@ function Ranking({ c, sel, onSel }: { c: Ctx; sel: string; onSel: (id: string) =
           const i = idxOf(c, x.supplierId), on = sel === x.supplierId;
           return (
             <li key={x.supplierId}><button type="button" onClick={() => onSel(x.supplierId)} aria-pressed={on}
-              className={`grid w-full grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-x-3 gap-y-2 rounded-card border p-3 text-left transition-transform duration-200 hover:bg-white/[0.06] active:scale-[0.99] ${on ? 'border-gold bg-white/[0.08]' : 'border-white/10'}`}>
+              className={`grid w-full grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-x-3 gap-y-2 rounded-card border p-3 text-left transition-transform duration-200 hover:bg-(--sec-hover) active:scale-[0.99] ${on ? 'border-(--gold) bg-(--sec-hover)' : 'border-(--hair)'}`}>
               <span className="numeral w-6 text-section text-(--gold)">{k + 1}</span>
               <span className="flex min-w-0 items-center gap-2"><Badge i={i} size="size-7" /><span className="truncate font-medium">{c.names(x.supplierId)}</span></span>
               <span className="numeral text-[1.75rem] leading-none">{n2(x.combined)}</span>
@@ -109,7 +109,7 @@ function Ranking({ c, sel, onSel }: { c: Ctx; sel: string; onSel: (id: string) =
               <span className="grid gap-1.5">
                 {([['Technical', x.technical], ['Commercial', x.commercial]] as const).map(([k2, v]) => (
                   <span key={k2} className="grid grid-cols-[5.5rem_1fr_3.25rem] items-center gap-2"><span className="soft">{k2}</span>
-                    <span aria-hidden className="h-1.5 overflow-hidden rounded-full bg-white/10"><span className="grow-x block h-full origin-left rounded-full" style={{ transform: `scaleX(${v / 100})`, background: SERIES[i % SERIES.length] }} /></span>
+                    <span aria-hidden className="h-1.5 overflow-hidden rounded-full bg-(--hair)"><span className="grow-x block h-full origin-left rounded-full" style={{ transform: `scaleX(${v / 100})`, background: series(i) }} /></span>
                     <span className="numeral text-right">{n2(v)}</span></span>))}
               </span>
               <span className="soft self-end text-right">combined</span>
@@ -120,7 +120,7 @@ function Ranking({ c, sel, onSel }: { c: Ctx; sel: string; onSel: (id: string) =
       {rest.map(n => {
         const i = idxOf(c, n.supplierId), on = sel === n.supplierId;
         return (
-          <button key={n.supplierId} type="button" onClick={() => onSel(n.supplierId)} aria-pressed={on} className={`grid gap-1.5 rounded-card border border-dashed p-3 text-left transition-transform duration-200 hover:bg-white/[0.06] active:scale-[0.99] ${on ? 'border-gold' : 'border-white/25'}`}>
+          <button key={n.supplierId} type="button" onClick={() => onSel(n.supplierId)} aria-pressed={on} className={`grid gap-1.5 rounded-card border border-dashed p-3 text-left transition-transform duration-200 hover:bg-(--sec-hover) active:scale-[0.99] ${on ? 'border-(--gold)' : 'border-(--soft)'}`}>
             <span className="flex items-center gap-2"><Badge i={i} size="size-7" dim /><span className="truncate font-medium">{c.names(n.supplierId)}</span><span className="ml-auto"><StatusChip tone="danger">Not ranked</StatusChip></span></span>
             <span className="soft">{whyNot(techOf(c, n.supplierId))}: technical {n2(techOf(c, n.supplierId)?.score ?? 0)}.{n.total === cheapest ? ' It carries the lowest price, but price cannot lift a bid that failed technical.' : ''}</span>
           </button>
@@ -138,10 +138,10 @@ function Ladder({ c, onSel }: { c: Ctx; onSel: (id: string) => void }) {
       {rows.map(n => {
         const i = idxOf(c, n.supplierId), rk = rankOf(c, n.supplierId);
         return (
-          <li key={n.supplierId}><button type="button" onClick={() => onSel(n.supplierId)} className="grid w-full gap-2 rounded-ctl py-1 text-left transition-transform duration-200 hover:bg-white/[0.05] active:scale-[0.995]">
+          <li key={n.supplierId}><button type="button" onClick={() => onSel(n.supplierId)} className="grid w-full gap-2 rounded-ctl py-1 text-left transition-transform duration-200 hover:bg-(--sec-hover) active:scale-[0.995]">
             <span className="flex items-center gap-2"><Badge i={i} size="size-6" dim={!rk} /><span className="min-w-0 flex-1 truncate font-medium">{c.names(n.supplierId)}</span><Money value={n.total} className="numeral text-section" /></span>
-            <span aria-hidden className="block h-3 overflow-hidden rounded-full bg-white/10">
-              <span className="grow-x block h-full origin-left rounded-full" style={{ transform: `scaleX(${n.total / max})`, background: rk ? SERIES[i % SERIES.length] : `repeating-linear-gradient(135deg, ${SERIES[i % SERIES.length]}55 0 6px, transparent 6px 12px)` }} />
+            <span aria-hidden className="block h-3 overflow-hidden rounded-full bg-(--hair)">
+              <span className="grow-x block h-full origin-left rounded-full" style={{ transform: `scaleX(${n.total / max})`, background: rk ? series(i) : `repeating-linear-gradient(135deg, color-mix(in srgb, ${series(i)} 35%, transparent) 0 6px, transparent 6px 12px)` }} />
             </span>
             <span className="flex flex-wrap items-center gap-x-4 gap-y-1 soft">
               {n.currency !== 'AED' && <span>{n.currency} {n.submitted.toLocaleString('en')} submitted, converted to AED</span>}
@@ -163,10 +163,10 @@ function Sensitivity({ c }: { c: Ctx }) {
   return (
     <div className="grid gap-4">
       <div className="relative pb-6 pt-8">
-        <div role="img" aria-label={b.map(x => `${c.names(x.winner)} wins from ${x.from} to ${x.to} percent technical weight`).join('. ')} className="flex h-9 overflow-hidden rounded-ctl border border-white/15">
-          {b.map((x, k) => <span key={x.winner + x.from} className="grid min-w-0 place-items-center overflow-hidden text-label font-semibold" style={{ width: `${edge(k) - start(k)}%`, background: SERIES[idxOf(c, x.winner) % SERIES.length], color: NIGHT }}>{edge(k) - start(k) > 14 ? String.fromCharCode(65 + idxOf(c, x.winner)) : ''}</span>)}
+        <div role="img" aria-label={b.map(x => `${c.names(x.winner)} wins from ${x.from} to ${x.to} percent technical weight`).join('. ')} className="flex h-9 overflow-hidden rounded-ctl border border-(--hair)">
+          {b.map((x, k) => <span key={x.winner + x.from} className="grid min-w-0 place-items-center overflow-hidden text-label font-semibold" style={{ width: `${edge(k) - start(k)}%`, background: series(idxOf(c, x.winner)), color: ON_SERIES }}>{edge(k) - start(k) > 14 ? String.fromCharCode(65 + idxOf(c, x.winner)) : ''}</span>)}
         </div>
-        {w !== undefined && <span className="absolute top-0 grid -translate-x-1/2 justify-items-center" style={{ left: `${w}%` }}><span className="eyebrow !text-(--gold)">This event {w}%</span><span aria-hidden className="h-8 w-px bg-gold" /></span>}
+        {w !== undefined && <span className="absolute top-0 grid -translate-x-1/2 justify-items-center" style={{ left: `${w}%` }}><span className="eyebrow !text-(--gold)">This event {w}%</span><span aria-hidden className="h-8 w-px bg-(--gold)" /></span>}
         <div aria-hidden className="absolute inset-x-0 bottom-0 flex justify-between font-code text-label text-(--soft)"><span>0%</span><span>25%</span><span>50%</span><span>75%</span><span>100% technical weight</span></div>
       </div>
       <ul className="grid gap-1.5">
@@ -186,7 +186,7 @@ function Scenarios({ c, scn, onPick, canPick }: { c: Ctx; scn: string; onPick: (
         {c.r.scenarios.map((s, k) => {
           const d = s.value - best.value, on = scn === s.id;
           return (
-            <Card as="li" key={s.id} i={k} className={`flex flex-col gap-3 ${on ? 'outline outline-2 outline-offset-2 outline-gold' : ''}`}>
+            <Card as="li" key={s.id} i={k} className={`flex flex-col gap-3 ${on ? 'outline outline-2 outline-offset-2 outline-(--gold)' : ''}`}>
               <div className="flex items-start justify-between gap-3"><h3 className="text-section font-semibold">{s.label}</h3>{s.id === 'best_value' && <StatusChip tone="success">Best value</StatusChip>}</div>
               <p className="numeral text-[2rem] leading-none"><Money value={s.value} big /></p>
               <p className="soft">{d === 0 ? 'The reference for comparison.' : <>{d < 0 ? 'Saves ' : 'Costs '}<Money value={Math.abs(d)} className="font-medium text-(--fg)" /> {d < 0 ? 'against' : 'over'} best value.</>}</p>

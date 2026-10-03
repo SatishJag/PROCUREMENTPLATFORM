@@ -35,7 +35,7 @@ export function Insight({ c }: { c: Ctx }) {
   const uncited = out?.source === 'ai' ? new Set(out.uncitedAnomalies) : new Set<string>();
 
   return (
-    <Card glass i={6} className="grid gap-5 !border-gold/40">
+    <Card glass i={6} className="grid gap-5 !border-(--gold)/40">
       <header className="flex flex-wrap items-start justify-between gap-4">
         <div className="grid gap-1">
           <p className="eyebrow !text-(--gold)">Advisory only</p>
@@ -47,7 +47,7 @@ export function Insight({ c }: { c: Ctx }) {
       {err && <Reason>{err}</Reason>}
 
       {out?.source === 'engine' && (
-        <p className="flex flex-wrap items-center gap-3 rounded-ctl border border-white/15 p-3"><StatusChip tone="neutral">Source: engine, rule-based</StatusChip><span className="soft">{out.notice}</span></p>
+        <p className="flex flex-wrap items-center gap-3 rounded-ctl border border-(--hair) p-3"><StatusChip tone="neutral">Source: engine, rule-based</StatusChip><span className="soft">{out.notice}</span></p>
       )}
       {out?.source === 'ai' && (
         <div className="grid gap-3">
@@ -62,7 +62,7 @@ export function Insight({ c }: { c: Ctx }) {
             <section className="grid content-start gap-3"><h3 className="text-section font-semibold">What the AI flags</h3>
               {out.risks.length === 0 && <p className="soft">No risk was raised with valid evidence.</p>}
               <ul className="grid gap-3">{out.risks.map(r => (
-                <li key={r.evidenceRef + r.text} className="grid gap-2 rounded-card border border-white/15 p-3">
+                <li key={r.evidenceRef + r.text} className="grid gap-2 rounded-card border border-(--hair) p-3">
                   <span className="flex flex-wrap items-center gap-2"><StatusChip tone={sev[r.severity]}>{r.severity[0].toUpperCase() + r.severity.slice(1)}</StatusChip><Who c={c} id={r.supplierId} /></span>
                   <span>{r.text}</span>
                   <span className="soft flex items-start gap-2 border-t border-(--hair) pt-2"><Ic n="file" className="size-4 mt-0.5" /><span>Evidence <span className="font-code text-label text-(--fg)">{r.evidenceRef}</span>: {cited(c, r.evidenceRef) ?? 'not found in the current results'}</span></span>
@@ -74,7 +74,7 @@ export function Insight({ c }: { c: Ctx }) {
           <section className="grid content-start gap-3"><h3 className="text-section font-semibold">What the engine flagged, verbatim</h3>
             {eng.length === 0 && <p className="soft">The engine raised no anomalies on any bid.</p>}
             <ul className="grid gap-2">{eng.map(a => (
-              <li key={a.supplierId + a.text} className="grid gap-1.5 rounded-card border border-white/15 p-3">
+              <li key={a.supplierId + a.text} className="grid gap-1.5 rounded-card border border-(--hair) p-3">
                 <span className="flex flex-wrap items-center gap-2"><Who c={c} id={a.supplierId} />{a.ref && uncited.has(a.ref) && <StatusChip tone="warning">Not mentioned by the AI</StatusChip>}</span>
                 <span className="flex items-start gap-2"><Ic n="warn" className="size-4 mt-0.5 text-(--warn)" />{a.text}</span>
               </li>))}</ul>

@@ -22,7 +22,7 @@ export function Detail({ ev, twin, onBack }: { ev: EventRow; twin: Twin; onBack:
   const [answering, setAnswering] = useState<string>();
   const sealed = ev.status === 'draft' || ev.status === 'open';
   const closes = f.closesAt ?? made?.closesAt;
-  const invitedIds = f.created?.invited ?? made?.invite ?? ev.invited.map(s => s.id);
+  const invitedIds = f.created?.invited ?? made?.invited ?? ev.invited.map(s => s.id);
   const criteria = f.created?.criteria ?? made?.criteria;
   const techWeight = f.created?.techWeight ?? made?.techWeight;
   const name = (id: string) => ev.invited.find(s => s.id === id)?.label ?? twin.nodes.find(n => n.id === id)?.label ?? search.data?.find(s => s.id === id)?.name ?? id;

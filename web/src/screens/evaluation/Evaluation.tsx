@@ -20,7 +20,7 @@ const KEY = 'evaluation.event';
 
 export function Evaluation() {
   const twin = useQuery({ queryKey: ['twin', getUser()], queryFn: () => call<{ nodes: TwinNode[] }>('reporting', 'twin') });
-  if (twin.isPending) return <div aria-busy className="h-96 animate-pulse rounded-hero bg-white/5" />;
+  if (twin.isPending) return <div aria-busy className="h-96 animate-pulse rounded-hero bg-(--hair)" />;
   return <Body key={getUser()} nodes={twin.data?.nodes ?? []} twinError={(twin.error as Error | null)?.message} />;
 }
 
@@ -50,7 +50,7 @@ function Body({ nodes, twinError }: { nodes: TwinNode[]; twinError?: string }) {
       {twinError && (
         <form className="flex min-w-0 flex-1 flex-wrap items-end gap-3" onSubmit={e => { e.preventDefault(); if (typed.trim()) pick(typed.trim()); }}>
           <label className="grid min-w-0 flex-1 gap-1.5 md:max-w-sm"><span className="eyebrow">Event reference</span>
-            <input value={typed} onChange={e => setTyped(e.target.value)} placeholder="EV-0003" className="h-11 w-full rounded-ctl border border-white/30 bg-night-deep px-3 font-code text-on-night [color-scheme:dark] placeholder:text-on-night-soft hover:border-gold md:h-10" /></label>
+            <input value={typed} onChange={e => setTyped(e.target.value)} placeholder="EV-0003" className="h-11 w-full rounded-ctl border border-(--soft) bg-stage px-3 font-code text-(--fg) [color-scheme:dark] placeholder:text-(--soft) hover:border-(--gold) md:h-10" /></label>
           <Button variant="secondary" onClick={() => typed.trim() && pick(typed.trim())}>Open event</Button>
           <p className="soft basis-full">Your role cannot list events: {twinError}</p>
         </form>
@@ -59,7 +59,7 @@ function Body({ nodes, twinError }: { nodes: TwinNode[]; twinError?: string }) {
   );
 
   if (!id) return <>{picker}<Card glass><h1 className="text-section font-semibold">Evaluation</h1><p className="soft mt-1">Enter the reference of the event you evaluate to begin.</p></Card></>;
-  if (pack.isPending || res.isPending || acts.isPending) return <>{picker}<div aria-busy className="h-96 animate-pulse rounded-hero bg-white/5" /></>;
+  if (pack.isPending || res.isPending || acts.isPending) return <>{picker}<div aria-busy className="h-96 animate-pulse rounded-hero bg-(--hair)" /></>;
 
   const r = res.data, packErr = (pack.error as Error | null)?.message, locked = (res.error as Error | null)?.message;
   const active = tab ?? (r ? 'commercial' : 'technical');
@@ -114,7 +114,7 @@ function Body({ nodes, twinError }: { nodes: TwinNode[]; twinError?: string }) {
         figures={figures}
         action={action}
       />
-      {done && <Card glass i={0} role="status" className="flex flex-wrap items-center gap-3 !border-gold/50"><StatusChip tone="success">Recommended</StatusChip><span>Award <span className="font-code">{done}</span> is routed to its approvers.</span><LinkBtn href="#/awards">Open awards</LinkBtn></Card>}
+      {done && <Card glass i={0} role="status" className="flex flex-wrap items-center gap-3 !border-(--gold)/50"><StatusChip tone="success">Recommended</StatusChip><span>Award <span className="font-code">{done}</span> is routed to its approvers.</span><LinkBtn href="#/awards">Open awards</LinkBtn></Card>}
 
       <Tabs label="Evaluation envelope" value={active} onChange={setTab} tabs={[['technical', 'Technical'], ['commercial', r ? 'Commercial' : 'Commercial, sealed']]} />
       <div id="tab-panel" role="tabpanel" aria-labelledby={`tab-${active}`} className="grid gap-6">

@@ -68,7 +68,7 @@ const input = `h-11 md:h-10 ${control} [color-scheme:light]`;
 
 function Pack({ pack, error }: { pack?: Pack; error?: string }) {
   if (error) return <Card glass i={1} className="flex items-start gap-4"><Ic n="lock" className="mt-0.5 size-6 text-(--gold)" /><div className="grid gap-1"><h2 className="text-section font-semibold">Technical envelope is closed to you</h2><Reason>{error}</Reason></div></Card>;
-  if (!pack) return <div aria-busy className="h-40 animate-pulse rounded-hero bg-white/5" />;
+  if (!pack) return <div aria-busy className="h-40 animate-pulse rounded-hero bg-(--hair)" />;
   return (
     <section aria-label="Technical pack" className="grid gap-3">
       <div className="flex flex-wrap items-baseline gap-x-4 gap-y-1">

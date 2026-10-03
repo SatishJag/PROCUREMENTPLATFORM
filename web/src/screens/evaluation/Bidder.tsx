@@ -6,7 +6,7 @@ import { Field, control } from '../../ui/Field';
 import { Ic } from '../../ui/bits';
 import { Money } from '../../ui/Money';
 import { StatusChip } from '../../ui/StatusChip';
-import { aliasAt, n2, SERIES, type Norm, type Pack, type Ranked, type Results, type Tech } from './lib';
+import { aliasAt, n2, series, type Norm, type Pack, type Ranked, type Results, type Tech } from './lib';
 import { Badge, Reason } from './parts';
 
 export type Ctx = { r: Results; eventId: string; pack?: Pack; names: (id: string) => string };
@@ -95,7 +95,7 @@ export function BidderDetail({ c, n }: { c: Ctx; n: Norm }) {
         <section className="grid content-start gap-3"><h3 className="text-section font-semibold">Price by lot, AED</h3>
           <ul className="grid gap-3">{Object.entries(n.lots).map(([lot, v]) => (
             <li key={lot} className="grid gap-1"><span className="flex items-baseline justify-between"><span className="font-code text-label">{lot}</span><Money value={v} className="font-medium" /></span>
-              <span aria-hidden className="block h-2 overflow-hidden rounded-full bg-primary-soft"><span className="grow-x block h-full origin-left rounded-full" style={{ transform: `scaleX(${v / maxLot})`, background: SERIES[i % SERIES.length] }} /></span></li>))}</ul>
+              <span aria-hidden className="block h-2 overflow-hidden rounded-full bg-primary-soft"><span className="grow-x block h-full origin-left rounded-full" style={{ transform: `scaleX(${v / maxLot})`, background: series(i) }} /></span></li>))}</ul>
         </section>
         {t && <section className="grid content-start gap-3"><h3 className="text-section font-semibold">Technical consensus</h3>
           <ul className="grid gap-3">{Object.entries(t.consensus).map(([id, v]) => (

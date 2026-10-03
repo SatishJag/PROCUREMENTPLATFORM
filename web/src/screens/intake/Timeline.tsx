@@ -37,7 +37,7 @@ function Chart({ s, k }: { s: Schedule; k: number }) {
             <path d={`M${x} ${STEP_Y + 9}C${x} ${(STEP_Y + RULER_Y) / 2 + 12} ${rx(Date.parse(m.date))} ${(STEP_Y + RULER_Y) / 2 - 12} ${rx(Date.parse(m.date))} ${RULER_Y - 5}`} fill="none" stroke="var(--gold)" strokeOpacity=".28" />
             <circle cx={x} cy={STEP_Y} r="8" className={last ? undefined : 'fill-night-deep'} fill={last ? 'var(--gold)' : undefined} stroke="var(--gold)" strokeWidth="1.5" />
             {first && late && <circle cx={x} cy={STEP_Y} r="12" fill="none" stroke="var(--bad)" strokeWidth="1.5" />}
-            <text x={x} y={STEP_Y - 30} textAnchor="middle" fontSize="16" fontWeight="500" className="fill-(--fg)">{m.name}</text>
+            <text x={x} y={STEP_Y - 30} textAnchor="middle" fontSize="15" fontWeight="500" className="fill-(--fg)">{m.name}</text>
             <text x={x} y={STEP_Y + 32} textAnchor="middle" fontSize="13.5" className="fill-(--soft)" style={mono}>{m.date}</text>
             <circle cx={rx(Date.parse(m.date))} cy={RULER_Y} r="4" fill="var(--gold)" />
             {k >= 1.6 && <text x={rx(Date.parse(m.date))} y={RULER_Y + (i % 2 ? 40 : 24)} textAnchor="middle" fontSize="12" className="fill-(--soft)" style={mono}>{m.date}</text>}
