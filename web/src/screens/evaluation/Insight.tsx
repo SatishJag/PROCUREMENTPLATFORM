@@ -35,7 +35,7 @@ export function Insight({ c }: { c: Ctx }) {
   const uncited = out?.source === 'ai' ? new Set(out.uncitedAnomalies) : new Set<string>();
 
   return (
-    <Card glass i={6} className="grid gap-5 !border-(--gold)/40">
+    <Card glass i={6} className="grid grid-cols-[minmax(0,1fr)] gap-5 !border-(--gold)/40">
       <header className="flex flex-wrap items-start justify-between gap-4">
         <div className="grid gap-1">
           <p className="eyebrow !text-(--gold)">Advisory only</p>

@@ -17,7 +17,7 @@ import { aliasAt, mil, n2, ON_SERIES, series, short, weighting, type Scenario } 
 import { Badge, Reason } from './parts';
 
 const Panel = ({ i, title, note, children, className = '' }: { i: number; title: string; note?: string; children: React.ReactNode; className?: string }) => (
-  <Card glass i={i} className={`grid content-start gap-4 ${className}`}>
+  <Card glass i={i} className={`grid grid-cols-[minmax(0,1fr)] content-start gap-4 ${className}`}>
     <header className="grid gap-1"><h2 className="text-section font-semibold">{title}</h2>{note && <p className="soft">{note}</p>}</header>
     {children}
   </Card>
@@ -95,8 +95,8 @@ function Ranking({ c, sel, onSel }: { c: Ctx; sel: string; onSel: (id: string) =
   const rest = c.r.normalized.filter(n => !rankOf(c, n.supplierId));
   const cheapest = Math.min(...c.r.normalized.map(n => n.total));
   return (
-    <div className="grid gap-3">
-      <ol className="grid gap-2">
+    <div className="grid grid-cols-[minmax(0,1fr)] gap-3">
+      <ol className="grid grid-cols-[minmax(0,1fr)] gap-2">
         {c.r.ranking.map((x, k) => {
           const i = idxOf(c, x.supplierId), on = sel === x.supplierId;
           return (
@@ -105,14 +105,14 @@ function Ranking({ c, sel, onSel }: { c: Ctx; sel: string; onSel: (id: string) =
               <span className="numeral w-6 text-section text-(--gold)">{k + 1}</span>
               <span className="flex min-w-0 items-center gap-2"><Badge i={i} size="size-7" /><span className="truncate font-medium">{c.names(x.supplierId)}</span></span>
               <span className="numeral text-[1.75rem] leading-none">{n2(x.combined)}</span>
-              <span />
-              <span className="grid gap-1.5">
+              <span className="max-sm:hidden" />
+              <span className="grid min-w-0 grid-cols-[minmax(0,1fr)] gap-1.5 max-sm:col-span-3">
                 {([['Technical', x.technical], ['Commercial', x.commercial]] as const).map(([k2, v]) => (
-                  <span key={k2} className="grid grid-cols-[5.5rem_1fr_3.25rem] items-center gap-2"><span className="soft">{k2}</span>
+                  <span key={k2} className="grid grid-cols-[5rem_minmax(0,1fr)_3rem] items-center gap-2"><span className="soft">{k2}</span>
                     <span aria-hidden className="h-1.5 overflow-hidden rounded-full bg-(--hair)"><span className="grow-x block h-full origin-left rounded-full" style={{ transform: `scaleX(${v / 100})`, background: series(i) }} /></span>
                     <span className="numeral text-right">{n2(v)}</span></span>))}
               </span>
-              <span className="soft self-end text-right">combined</span>
+              <span className="soft self-end text-right max-sm:hidden">combined</span>
             </button></li>
           );
         })}
@@ -121,7 +121,7 @@ function Ranking({ c, sel, onSel }: { c: Ctx; sel: string; onSel: (id: string) =
         const i = idxOf(c, n.supplierId), on = sel === n.supplierId;
         return (
           <button key={n.supplierId} type="button" onClick={() => onSel(n.supplierId)} aria-pressed={on} className={`grid gap-1.5 rounded-card border border-dashed p-3 text-left transition-transform duration-200 hover:bg-(--sec-hover) active:scale-[0.99] ${on ? 'border-(--gold)' : 'border-(--soft)'}`}>
-            <span className="flex items-center gap-2"><Badge i={i} size="size-7" dim /><span className="truncate font-medium">{c.names(n.supplierId)}</span><span className="ml-auto"><StatusChip tone="danger">Not ranked</StatusChip></span></span>
+            <span className="flex flex-wrap items-center gap-2"><Badge i={i} size="size-7" dim /><span className="min-w-0 truncate font-medium">{c.names(n.supplierId)}</span><span className="ml-auto"><StatusChip tone="danger">Not ranked</StatusChip></span></span>
             <span className="soft">{whyNot(techOf(c, n.supplierId))}: technical {n2(techOf(c, n.supplierId)?.score ?? 0)}.{n.total === cheapest ? ' It carries the lowest price, but price cannot lift a bid that failed technical.' : ''}</span>
           </button>
         );
@@ -138,7 +138,7 @@ function Ladder({ c, onSel }: { c: Ctx; onSel: (id: string) => void }) {
       {rows.map(n => {
         const i = idxOf(c, n.supplierId), rk = rankOf(c, n.supplierId);
         return (
-          <li key={n.supplierId}><button type="button" onClick={() => onSel(n.supplierId)} className="grid w-full gap-2 rounded-ctl py-1 text-left transition-transform duration-200 hover:bg-(--sec-hover) active:scale-[0.995]">
+          <li key={n.supplierId}><button type="button" onClick={() => onSel(n.supplierId)} className="grid w-full grid-cols-[minmax(0,1fr)] gap-2 rounded-ctl py-1 text-left transition-transform duration-200 hover:bg-(--sec-hover) active:scale-[0.995]">
             <span className="flex items-center gap-2"><Badge i={i} size="size-6" dim={!rk} /><span className="min-w-0 flex-1 truncate font-medium">{c.names(n.supplierId)}</span><Money value={n.total} className="numeral text-section" /></span>
             <span aria-hidden className="block h-3 overflow-hidden rounded-full bg-(--hair)">
               <span className="grow-x block h-full origin-left rounded-full" style={{ transform: `scaleX(${n.total / max})`, background: rk ? series(i) : `repeating-linear-gradient(135deg, color-mix(in srgb, ${series(i)} 35%, transparent) 0 6px, transparent 6px 12px)` }} />
