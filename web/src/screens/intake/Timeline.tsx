@@ -7,7 +7,7 @@ const days = (a: string, b: string) => Math.round((Date.parse(b) - Date.parse(a)
 const minus = (n: number) => (n < 0 ? '−' : '') + Math.abs(n);
 export const signed = minus;
 
-const W = 860, H = 262, PAD = 84, STEP_Y = 78, RULER_Y = 196;
+const W = 840, H = 270, PAD = 100, STEP_Y = 80, RULER_Y = 202;
 
 /**
  * The engine's milestones, drawn twice: as a sequence (top) and to scale in calendar time (bottom).
@@ -25,20 +25,20 @@ function Chart({ s, k }: { s: Schedule; k: number }) {
   const mono = { fontFamily: 'var(--font-code)' };
   return (
     <svg width={W} height={H} viewBox={`0 0 ${W} ${H}`} role="img" aria-label={`Schedule with ${n} milestones, float ${minus(s.floatDays)} days`} className="block">
-      <text x={PAD} y="16" className="fill-(--soft)" fontSize="11" letterSpacing="1.6">SEQUENCE</text>
-      <text x={PAD} y="156" className="fill-(--soft)" fontSize="11" letterSpacing="1.6">TO SCALE</text>
+      <text x="8" y={STEP_Y + 4} className="fill-(--soft)" fontSize="11" letterSpacing="1.6">SEQUENCE</text>
+      <text x="8" y={RULER_Y + 4} className="fill-(--soft)" fontSize="11" letterSpacing="1.6">TO SCALE</text>
 
       <line x1={sx(0)} x2={sx(n - 1)} y1={STEP_Y} y2={STEP_Y} stroke="var(--gold)" strokeOpacity=".55" />
       {ms.map((m, i) => {
         const x = sx(i), last = i === n - 1, first = i === 0;
         return (
           <g key={m.name}>
-            {i > 0 && k >= 1 && <text x={(sx(i - 1) + x) / 2} y={STEP_Y - 10} textAnchor="middle" fontSize="12.5" className="fill-(--soft)">{`+${days(ms[i - 1].date, m.date)} d`}</text>}
+            {i > 0 && k >= 1 && <text x={(sx(i - 1) + x) / 2} y={STEP_Y - 10} textAnchor="middle" fontSize="13" className="fill-(--soft)">{`+${days(ms[i - 1].date, m.date)} d`}</text>}
             <path d={`M${x} ${STEP_Y + 9}C${x} ${(STEP_Y + RULER_Y) / 2 + 12} ${rx(Date.parse(m.date))} ${(STEP_Y + RULER_Y) / 2 - 12} ${rx(Date.parse(m.date))} ${RULER_Y - 5}`} fill="none" stroke="var(--gold)" strokeOpacity=".28" />
-            <circle cx={x} cy={STEP_Y} r="8" fill={last ? 'var(--gold)' : 'var(--color-night-deep)'} stroke="var(--gold)" strokeWidth="1.5" />
+            <circle cx={x} cy={STEP_Y} r="8" className={last ? undefined : 'fill-night-deep'} fill={last ? 'var(--gold)' : undefined} stroke="var(--gold)" strokeWidth="1.5" />
             {first && late && <circle cx={x} cy={STEP_Y} r="12" fill="none" stroke="var(--bad)" strokeWidth="1.5" />}
-            <text x={x} y={STEP_Y - 28} textAnchor="middle" fontSize="14.5" fontWeight="500" className="fill-(--fg)">{m.name}</text>
-            <text x={x} y={STEP_Y + 30} textAnchor="middle" fontSize="12.5" className="fill-(--soft)" style={mono}>{m.date}</text>
+            <text x={x} y={STEP_Y - 30} textAnchor="middle" fontSize="16" fontWeight="500" className="fill-(--fg)">{m.name}</text>
+            <text x={x} y={STEP_Y + 32} textAnchor="middle" fontSize="13.5" className="fill-(--soft)" style={mono}>{m.date}</text>
             <circle cx={rx(Date.parse(m.date))} cy={RULER_Y} r="4" fill="var(--gold)" />
             {k >= 1.6 && <text x={rx(Date.parse(m.date))} y={RULER_Y + (i % 2 ? 40 : 24)} textAnchor="middle" fontSize="12" className="fill-(--soft)" style={mono}>{m.date}</text>}
           </g>

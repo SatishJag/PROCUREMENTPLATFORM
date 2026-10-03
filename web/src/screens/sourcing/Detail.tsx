@@ -105,7 +105,7 @@ export function Detail({ ev, twin, onBack }: { ev: EventRow; twin: Twin; onBack:
                   <li key={c.id} className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-x-4 gap-y-1">
                     <span><span className="font-code mr-2 text-label">{c.id}</span>{c.name}</span>
                     <span className="numeral text-section">{c.gate ? 'Gate' : `${c.weight}%`}</span>
-                    {!c.gate && <span aria-hidden className="col-span-2 h-1 rounded-full bg-(--hair)"><i className="block h-full rounded-full bg-peri" style={{ width: `${c.weight}%` }} /></span>}
+                    {!c.gate && <span aria-hidden className="col-span-2 h-1 rounded-full bg-(--hair)"><i className="block h-full rounded-full bg-(--series)" style={{ width: `${c.weight}%` }} /></span>}
                   </li>
                 ))}
               </ul>

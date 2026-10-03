@@ -118,7 +118,7 @@ function Body({ nodes, twinError }: { nodes: TwinNode[]; twinError?: string }) {
 
       <Tabs label="Evaluation envelope" value={active} onChange={setTab} tabs={[['technical', 'Technical'], ['commercial', r ? 'Commercial' : 'Commercial, sealed']]} />
       <div id="tab-panel" role="tabpanel" aria-labelledby={`tab-${active}`} className="grid gap-6">
-        {active === 'technical' && <Technical id={id} pack={pack.data} packError={packErr} s={s} results={r} names={names} />}
+        {active === 'technical' && <Technical chair={sign} id={id} pack={pack.data} packError={packErr} s={s} results={r} names={names} />}
         {active === 'commercial' && c && <WarRoom c={c} scn={scn} onPick={setScn} canPick={recommend} />}
         {active === 'commercial' && !c && (
           <Card glass i={1} className="grid items-center gap-6 md:grid-cols-[auto_1fr]">

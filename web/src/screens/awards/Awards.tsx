@@ -31,7 +31,7 @@ function List({ open, recommend }: { open: (id: string) => void; recommend: (id:
   const mine = useQueries({ queries: awards.filter(a => a.status === 'pending').map(a => ({ queryKey: ['actions', getUser(), 'awards', a.id], queryFn: () => call<string[]>('awards', 'actions', a.id) })) });
   const canRec = useQueries({ queries: ready.map(e => ({ queryKey: ['actions', getUser(), 'sourcing', e.id], queryFn: () => call<string[]>('sourcing', 'actions', e.id) })) });
   if (twin.error) return <Card glass className="text-(--bad)" role="alert">{(twin.error as Error).message}</Card>;
-  if (!t) return <div aria-busy className="h-96 animate-pulse rounded-hero bg-white/5" />;
+  if (!t) return <div aria-busy className="h-96 animate-pulse rounded-hero bg-(--hair)" />;
 
   const pending = awards.filter(a => a.status === 'pending'), approved = awards.filter(a => a.status === 'approved');
   const sum = (xs: Node[]) => xs.reduce((s, a) => s + (a.value ?? 0), 0);

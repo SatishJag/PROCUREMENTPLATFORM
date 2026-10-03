@@ -1,5 +1,5 @@
 import type { Award } from '@satishjag/procurement-core/types';
-import { call } from '../../api';
+import { call, getUser } from '../../api';
 import { ActionBar } from '../../ui/ActionBar';
 import { Button } from '../../ui/Button';
 import { Card } from '../../ui/Card';
@@ -10,13 +10,13 @@ import { Section } from '../../ui/Section';
 import { StatusChip } from '../../ui/StatusChip';
 import { Table } from '../../ui/Table';
 import { Ic } from '../../ui/bits';
-import { holder, known, linked, stamp, stepsOf, useHistory, useResults, useTurn, useTwin, who, words, type Scenario } from './data';
+import { holder, known, linked, stamp, stepsOf, useActions, useHistory, useResults, useTurn, useTwin, who, words, type Scenario } from './data';
 import { Banner, Controls, Evidence, Route, Split, Trail } from './parts';
 
 const labels = { approved: 'Approve award', rejected: 'Reject award' };
 
 export function Detail({ id, onBack, onRecommend }: { id: string; onBack: () => void; onRecommend: (eventId: string) => void }) {
-  const twin = useTwin(), hist = useHistory(id);
+  const twin = useTwin(), hist = useHistory(id), acts = useActions(id);
   const node = twin.data?.nodes.find(n => n.id === id);
   const event = twin.data && linked(twin.data, 'event-award', undefined, id)[0];
   const pkg = twin.data && event && linked(twin.data, 'package-event', undefined, event.id)[0];
@@ -39,7 +39,7 @@ export function Detail({ id, onBack, onRecommend }: { id: string; onBack: () => 
   const rejected = steps?.find(s => s.decision === 'rejected');
 
   if (twin.error) return <Card glass className="text-(--bad)" role="alert">{(twin.error as Error).message}</Card>;
-  if (!node) return <div aria-busy className="h-96 animate-pulse rounded-hero bg-white/5" />;
+  if (!node) return <div aria-busy className="h-96 animate-pulse rounded-hero bg-(--hair)" />;
 
   const run = async (a: string, reason: string) => { const aw = await call<Award>('awards', 'decide', id, a, reason); known.set(id, aw); return aw; };
 
@@ -59,8 +59,8 @@ export function Detail({ id, onBack, onRecommend }: { id: string; onBack: () => 
           { label: 'Suppliers', value: allocs.length || '-' },
           ...(steps ? [{ label: 'Steps decided', value: `${steps.filter(s => s.decision).length} of ${steps.length}` }] : []),
         ]}
-        action={<ActionBar module="awards" id={id} labels={labels} run={run} sticky />}
-        visual={allocs.length > 0 && <div className="glass p-5"><p className="eyebrow mb-3">Allocation</p><Split dark allocs={allocs} name={name} /></div>}
+        action={<ActionBar module="awards" id={id} labels={labels} run={run} sticky={!!acts.data?.length} />}
+        visual={allocs.length > 0 && <div className="glass p-5"><p className="eyebrow mb-3">Allocation</p><Split allocs={allocs} name={name} /></div>}
       />
 
       {status === 'approved' && <Banner tone="success" icon="check" title={`Approved${last?.at ? `, ${stamp(last.at)}` : ''}`}>{last?.by ? `Final approval by ${who(last.by)}. ` : ''}{contracts.length} contract draft{contracts.length === 1 ? '' : 's'} created from this award.</Banner>}
@@ -69,6 +69,9 @@ export function Detail({ id, onBack, onRecommend }: { id: string; onBack: () => 
           {rejected?.comment && <p>&ldquo;{rejected.comment}&rdquo;</p>}
           {event?.status === 'commercial' && <p className="pt-1">The event is back in commercial evaluation. <button type="button" onClick={() => onRecommend(event.id)} className="font-medium underline underline-offset-4 hover:text-(--fg)">Recommend again</button></p>}
         </Banner>
+      )}
+      {pending && turn.data && !turn.data.mine && (rec?.actor ?? full?.recommendedBy) === getUser() && (
+        <Banner tone="success" icon="check" title="Recommendation submitted">Your recommendation is with the approvers. The engine never lets the recommender approve their own award.</Banner>
       )}
       {pending && turn.data && (turn.data.mine
         ? <Banner tone="success" icon="check" title="It is your turn">{next ? `You are the ${words(next.role)} on this route. ` : ''}Approve or reject with the buttons above. A rejection asks for a reason first.</Banner>
@@ -83,12 +86,12 @@ export function Detail({ id, onBack, onRecommend }: { id: string; onBack: () => 
           {steps.some(s => !s.reason) && <p className="soft mt-5 border-t border-(--hair) pt-4">The engine states why each step exists in the award record. This view has it after a recommendation or decision made here.</p>}
         </Card>
       ) : hist.error && (
-        <Card glass i={1}><h2 className="text-section font-semibold">Approval route</h2><p className="soft mt-2">The route and decisions come from the audit trail. The engine says: &ldquo;{(hist.error as Error).message}&rdquo;</p></Card>
+        <Card glass i={1}><h2 className="text-section font-semibold">Approval route</h2><p className="soft mt-2">The route and decisions come from the audit trail, which your role cannot read. The engine says: &ldquo;{(hist.error as Error).message}&rdquo;</p></Card>
       )}
 
       <div className="grid grid-cols-[minmax(0,1fr)] items-start gap-6 lg:grid-cols-[3fr_2fr]">
         <div className="grid gap-6">
-          <FocusCard i={2} title="Allocation by supplier and lot" note="What the recommended scenario awards, and the evidence behind each bidder" detail={results.data ? <Evidence r={results.data} name={name} picked={allocs.map(a => a.supplierId)} /> : <p className="soft">Evidence needs the commercial results.</p>}>
+          <FocusCard i={2} title="Allocation by supplier and lot" note="What the recommended scenario awards, and the evidence behind each bidder" detail={results.data ? <Evidence r={results.data} name={name} picked={allocs} /> : <p className="soft">Evidence needs the commercial results.</p>}>
             {allocs.length === 0 && <p className="soft">{results.error ? (results.error as Error).message : 'Loading the allocation.'}</p>}
             <div className="lg:hidden"><Split allocs={allocs} name={name} /></div>
             <ul className="divide-y divide-(--hair)">

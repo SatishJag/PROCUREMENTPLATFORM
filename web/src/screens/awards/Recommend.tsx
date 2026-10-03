@@ -21,7 +21,7 @@ export function Recommend({ eventId, onBack, onDone }: { eventId: string; onBack
   const name = (id: string) => twin.data?.nodes.find(n => n.id === id)?.label ?? id;
   const r = results.data;
   if (results.error) return <Card glass className="text-(--bad)" role="alert">{(results.error as Error).message}<div className="mt-3"><Button variant="secondary" onClick={onBack}>All awards</Button></div></Card>;
-  if (!r || !event) return <div aria-busy className="h-96 animate-pulse rounded-hero bg-white/5" />;
+  if (!r || !event) return <div aria-busy className="h-96 animate-pulse rounded-hero bg-(--hair)" />;
   const best = r.scenarios[0], chosen = r.scenarios.find(s => s.id === pick) ?? best;
   const saving = (s: typeof best) => Math.round((best.value - s.value) * 100) / 100;
 
@@ -40,13 +40,13 @@ export function Recommend({ eventId, onBack, onDone }: { eventId: string; onBack
           { label: 'Qualified bidders', value: r.ranking.length },
         ]}
         action={<ActionBar module="sourcing" id={eventId} labels={{ recommend: 'Recommend award' }} run={run} sticky />}
-        visual={<div className="glass p-5"><p className="eyebrow mb-3">Chosen allocation</p><Split dark allocs={chosen.allocations} name={name} /></div>}
+        visual={<div className="glass p-5"><p className="eyebrow mb-3">Chosen allocation</p><Split allocs={chosen.allocations} name={name} /></div>}
       />
 
       <fieldset className="grid gap-4 lg:grid-cols-[repeat(var(--n),minmax(0,1fr))]" style={{ '--n': r.scenarios.length } as React.CSSProperties}>
         <legend className="mb-3 text-section font-semibold">Choose a scenario</legend>
         {r.scenarios.map((s, i) => (
-          <Card as="div" key={s.id} i={i + 1} lift className={`relative grid content-start gap-3 has-[:checked]:shadow-[0_0_0_2px_var(--color-gold-deep),var(--shadow-e2)] has-[:focus-visible]:outline-[3px] has-[:focus-visible]:outline-offset-3 has-[:focus-visible]:outline-(--ring)`}>
+          <Card as="div" key={s.id} i={i + 1} lift className={`relative grid content-start gap-3 has-[:checked]:ring-2 has-[:checked]:ring-(--gold) has-[:focus-visible]:outline-[3px] has-[:focus-visible]:outline-offset-3 has-[:focus-visible]:outline-(--ring)`}>
             <label className="grid cursor-pointer gap-3 after:absolute after:inset-0">
               <input type="radio" name="scenario" value={s.id} checked={pick === s.id} onChange={() => setPick(s.id)} className="sr-only" />
               <span className="flex items-center gap-2"><span aria-hidden className={`grid size-5 place-items-center rounded-full border ${pick === s.id ? 'border-(--gold)' : 'border-control'}`}>{pick === s.id && <span className="size-2.5 rounded-full bg-(--gold)" />}</span><span className="font-semibold">{s.label}</span></span>
@@ -55,8 +55,7 @@ export function Recommend({ eventId, onBack, onDone }: { eventId: string; onBack
                 {s === best ? 'Reference: the best-value ranking' : <>{saving(s) >= 0 ? 'Saves ' : 'Costs '}<Money value={Math.abs(saving(s))} /> against best value</>}
               </span>
             </label>
-            <Split allocs={s.allocations} name={name} />
-            <p className="soft">{s.allocations.map(a => `${name(a.supplierId)}: ${a.lotIds.join(', ')}`).join('. ')}</p>
+            <Split lots allocs={s.allocations} name={name} />
             {s.deviation && <StatusChip tone="warning">Deviates: needs a justification</StatusChip>}
           </Card>
         ))}
@@ -79,7 +78,7 @@ export function Recommend({ eventId, onBack, onDone }: { eventId: string; onBack
               { key: 'b', header: 'Combined', align: 'right', cell: x => <span className="font-semibold">{x.combined}</span> },
               { key: 'v', header: 'Normalised total', align: 'right', cell: x => <Money value={x.total} /> },
             ]} />
-            <Evidence r={r} name={name} picked={chosen.allocations.map(a => a.supplierId)} />
+            <Evidence r={r} name={name} picked={chosen.allocations} />
           </div>
         </Section>
       </Card>

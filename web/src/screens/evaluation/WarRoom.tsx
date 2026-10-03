@@ -14,7 +14,7 @@ import { Zoomable } from '../../ui/Zoomable';
 import { BidderDetail, ExclusionForm, exclusionsOf, idxOf, rankOf, techOf, TileFace, whyNot, type Ctx } from './Bidder';
 import { Insight } from './Insight';
 import { aliasAt, mil, n2, NIGHT, SERIES, short, weighting, type Scenario } from './lib';
-import { Badge, DarkSelect, Reason } from './parts';
+import { Badge, Reason } from './parts';
 
 const Panel = ({ i, title, note, children, className = '' }: { i: number; title: string; note?: string; children: React.ReactNode; className?: string }) => (
   <Card glass i={i} className={`grid content-start gap-4 ${className}`}>
@@ -24,43 +24,49 @@ const Panel = ({ i, title, note, children, className = '' }: { i: number; title:
 );
 
 // ---------- Value map: technical score against normalised price, on a pan-and-zoom canvas ----------
-const W = 860, H = 430, L = 84, R = 40, T = 30, B = 56;
+const W = 640, H = 440, L = 62, R = 26, T = 24, B = 90;
+const nice = (span: number, n: number) => { const raw = span / n, p = 10 ** Math.floor(Math.log10(raw)), f = raw / p; return (f < 1.5 ? 1 : f < 3.5 ? 2 : f < 7.5 ? 5 : 10) * p; };
 function ValueMap({ c, sel, onSel }: { c: Ctx; sel: string; onSel: (id: string) => void }) {
   const pts = c.r.normalized.map((n, i) => ({ n, i, t: techOf(c, n.supplierId)?.score ?? 0, rk: rankOf(c, n.supplierId) }));
   const xs = pts.map(p => p.t), ys = pts.map(p => p.n.total);
   const x0 = Math.floor((Math.min(...xs) - 8) / 10) * 10, x1 = Math.min(100, Math.ceil((Math.max(...xs) + 4) / 10) * 10);
   const lo = Math.min(...ys), hi = Math.max(...ys), pad = (hi - lo || lo * 0.1) * 0.25, y0 = lo - pad, y1 = hi + pad;
   const px = (t: number) => L + ((t - x0) / (x1 - x0)) * (W - L - R), py = (v: number) => T + ((v - y0) / (y1 - y0)) * (H - T - B);
-  const xt = Array.from({ length: (x1 - x0) / 10 + 1 }, (_, k) => x0 + k * 10), yt = [0, 1, 2, 3].map(k => y0 + ((y1 - y0) * k) / 3);
+  const xt = Array.from({ length: (x1 - x0) / 10 + 1 }, (_, k) => x0 + k * 10), ystep = nice(y1 - y0, 4), yt: number[] = [];
+  for (let v = Math.ceil(y0 / ystep) * ystep; v <= y1; v += ystep) yt.push(v);
   const lead = c.r.ranking[0]?.supplierId;
   return (
-    <Zoomable label="Value map of bidders" min={0.5} max={3} className="h-[27rem]">
+    <Zoomable label="Value map of bidders" min={0.5} max={3} className="h-[29rem]">
       {k => (
         <div className="relative" style={{ width: W, height: H }}>
           <svg width={W} height={H} aria-hidden className="absolute inset-0">
             <defs><radialGradient id="vm-glow" cx="100%" cy="0%" r="90%"><stop offset="0" stopColor="#d4b46a" stopOpacity="0.2" /><stop offset="1" stopColor="#d4b46a" stopOpacity="0" /></radialGradient></defs>
             <rect x={L} y={T} width={W - L - R} height={H - T - B} fill="url(#vm-glow)" />
             {xt.map(t => <g key={t}><line x1={px(t)} x2={px(t)} y1={T} y2={H - B} stroke="#fff" strokeOpacity="0.1" /><text x={px(t)} y={H - B + 22} textAnchor="middle" fill="#b4b3d9" fontSize="12" className="font-code">{t}</text></g>)}
-            {yt.map(v => <g key={v}><line x1={L} x2={W - R} y1={py(v)} y2={py(v)} stroke="#fff" strokeOpacity="0.1" /><text x={L - 12} y={py(v) + 4} textAnchor="end" fill="#b4b3d9" fontSize="12" className="font-code">{(v / 1e6).toFixed(1)}</text></g>)}
-            <text x={(L + W - R) / 2} y={H - 10} textAnchor="middle" fill="#b4b3d9" fontSize="12" letterSpacing="1.6">TECHNICAL SCORE</text>
-            <text transform={`translate(18 ${(T + H - B) / 2}) rotate(-90)`} textAnchor="middle" fill="#b4b3d9" fontSize="12" letterSpacing="1.6">NORMALISED PRICE, AED M (CHEAPER IS HIGHER)</text>
-            <text x={W - R - 8} y={T + 20} textAnchor="end" fill="#d4b46a" fontSize="12" letterSpacing="1.6">STRONGER AND CHEAPER</text>
+            {yt.map(v => <g key={v}><line x1={L} x2={W - R} y1={py(v)} y2={py(v)} stroke="#fff" strokeOpacity="0.1" /><text x={L - 12} y={py(v) + 4} textAnchor="end" fill="#b4b3d9" fontSize="12" className="font-code">{(v / 1e6).toFixed(ystep >= 1e6 ? 0 : 1)}</text></g>)}
+            <text x={(L + W - R) / 2} y={H - 10} textAnchor="middle" fill="#b4b3d9" fontSize="11" letterSpacing="1.4">TECHNICAL SCORE</text>
+            <text transform={`translate(14 ${(T + H - B) / 2}) rotate(-90)`} textAnchor="middle" fill="#b4b3d9" fontSize="11" letterSpacing="1.4">PRICE, AED M (CHEAPER IS HIGHER)</text>
+            <text x={W - R - 8} y={T + 20} textAnchor="end" fill="#d4b46a" fontSize="11" letterSpacing="1.4">STRONGER AND CHEAPER</text>
           </svg>
           {pts.map(p => {
-            const x = px(p.t), y = py(p.n.total), right = x < W - 260, on = sel === p.n.supplierId;
+            const x = px(p.t), y = py(p.n.total), on = sel === p.n.supplierId, right = x < W - 200, show = on || k > 1.35;
+            // The wrapper scales by 1/k, so bubbles and labels keep their on-screen size while the canvas zooms.
             return (
-              <div key={p.n.supplierId}>
+              <div key={p.n.supplierId} className="absolute" style={{ left: x, top: y, transform: `scale(${1 / k})`, transformOrigin: '0 0', zIndex: on ? 2 : 1 }}>
                 <button type="button" onClick={() => onSel(p.n.supplierId)} aria-pressed={on} aria-label={`${aliasAt(p.i)}, ${c.names(p.n.supplierId)}: technical ${n2(p.t)}, AED ${mil(p.n.total)}, ${p.rk ? 'ranked' : 'not ranked'}`}
-                  className={`absolute grid size-11 place-items-center rounded-full text-body font-semibold transition-transform duration-200 hover:scale-110 active:scale-95 ${p.rk ? '' : 'border-2 border-dashed border-on-night-soft !bg-night-deep text-on-night-soft'}`}
-                  style={{ left: x - 22, top: y - 22, background: SERIES[p.i % SERIES.length], color: NIGHT, boxShadow: on ? '0 0 0 3px #14123f, 0 0 0 5px #d4b46a, 0 0 28px 6px rgb(212 180 106 / 0.45)' : '0 6px 18px rgb(6 5 30 / 0.5)' }}>
+                  className={`absolute -left-[22px] -top-[22px] grid size-11 place-items-center rounded-full text-body font-semibold transition-transform duration-200 hover:scale-110 active:scale-95 ${p.rk ? '' : 'border-2 border-dashed border-on-night-soft !bg-night-deep text-on-night-soft'}`}
+                  style={{ ...(p.rk ? { background: SERIES[p.i % SERIES.length], color: NIGHT } : {}), boxShadow: on ? '0 0 0 3px #14123f, 0 0 0 5px #d4b46a, 0 0 28px 6px rgb(212 180 106 / 0.45)' : '0 6px 18px rgb(6 5 30 / 0.5)' }}>
                   {String.fromCharCode(65 + p.i)}
                 </button>
-                <div className={`pointer-events-none absolute w-52 ${right ? '' : 'text-right'}`} style={{ top: y - 20, left: right ? x + 30 : x - 30 - 208 }}>
-                  <p className="truncate font-medium">{short(c.names(p.n.supplierId))}{p.n.supplierId === lead && <span className="eyebrow ml-2 !text-(--gold)">Leader</span>}</p>
-                  <p className="numeral text-section leading-5">AED {mil(p.n.total)}</p>
-                  {k > 1.35 && <p className="soft">{p.rk ? `Combined ${n2(p.rk.combined)}` : 'Not ranked'}, {p.n.adjustments.length} adj., {p.n.anomalies.length} anom.</p>}
-                  {k > 1.35 && !p.rk && <p className="text-(--warn)">{whyNot(techOf(c, p.n.supplierId))}</p>}
-                </div>
+                {show && (
+                  <div className={`pointer-events-none absolute -top-5 w-48 ${right ? 'left-8' : 'right-8 text-right'}`}>
+                    <p className="truncate font-medium">{short(c.names(p.n.supplierId))}{p.n.supplierId === lead && <span className="eyebrow ml-2 !text-(--gold)">Leader</span>}</p>
+                    <p className="numeral text-section leading-5">AED {mil(p.n.total)}</p>
+                    {k > 1.35 && <p className="soft">{p.rk ? `Combined ${n2(p.rk.combined)}` : 'Not ranked'}</p>}
+                    {k > 1.35 && <p className="soft">{p.n.adjustments.length} adjustments, {p.n.anomalies.length} anomalies</p>}
+                    {k > 1.35 && !p.rk && <p className="text-(--warn)">{whyNot(techOf(c, p.n.supplierId))}</p>}
+                  </div>
+                )}
               </div>
             );
           })}
@@ -180,14 +186,14 @@ function Scenarios({ c, scn, onPick, canPick }: { c: Ctx; scn: string; onPick: (
         {c.r.scenarios.map((s, k) => {
           const d = s.value - best.value, on = scn === s.id;
           return (
-            <Card as="li" key={s.id} i={k} className={`grid content-start gap-3 ${on ? 'outline outline-2 outline-offset-2 outline-gold' : ''}`}>
+            <Card as="li" key={s.id} i={k} className={`flex flex-col gap-3 ${on ? 'outline outline-2 outline-offset-2 outline-gold' : ''}`}>
               <div className="flex items-start justify-between gap-3"><h3 className="text-section font-semibold">{s.label}</h3>{s.id === 'best_value' && <StatusChip tone="success">Best value</StatusChip>}</div>
               <p className="numeral text-[2rem] leading-none"><Money value={s.value} big /></p>
               <p className="soft">{d === 0 ? 'The reference for comparison.' : <>{d < 0 ? 'Saves ' : 'Costs '}<Money value={Math.abs(d)} className="font-medium text-(--fg)" /> {d < 0 ? 'against' : 'over'} best value.</>}</p>
               <span aria-hidden className="block h-1.5 overflow-hidden rounded-full bg-primary-soft"><span className="grow-x block h-full origin-left rounded-full bg-peri" style={{ transform: `scaleX(${s.value / max})` }} /></span>
               <ul className="grid gap-1.5">{s.allocations.map(a => <li key={a.supplierId} className="flex items-center gap-2"><Badge i={idxOf(c, a.supplierId)} size="size-6" /><span className="min-w-0 flex-1 truncate">{c.names(a.supplierId)}</span><span className="font-code text-label">{a.lotIds.join(' ')}</span></li>)}</ul>
               {s.deviation && <p className="flex items-start gap-2"><StatusChip tone="warning">Deviation</StatusChip><span className="soft">Differs from the best-value ranking. The engine asks for a written justification.</span></p>}
-              {canPick && <div><Button variant="secondary" onClick={() => onPick(s.id)} aria-pressed={on}>{on ? 'Selected' : 'Select scenario'}</Button></div>}
+              {canPick && <div className="mt-auto pt-1"><Button variant="secondary" onClick={() => onPick(s.id)} aria-pressed={on}>{on ? 'Selected' : 'Select scenario'}</Button></div>}
             </Card>
           );
         })}
@@ -241,9 +247,8 @@ export function WarRoom({ c, scn, onPick, canPick }: { c: Ctx; scn: string; onPi
     <div className="grid grid-cols-[minmax(0,1fr)] gap-6">
       {open.length > 0 && (
         <Card i={0} className="grid gap-3 border-l-4 !border-l-(--warn)">
-          <div className="flex flex-wrap items-center gap-3"><h2 className="text-section font-semibold">Exclusions to price</h2><StatusChip tone="warning">{open.length} open</StatusChip></div>
-          <p className="soft">A bidder excluded scope from its price. The commercial evaluator loads the add-back so bids compare like for like. The engine will not recommend an award while ranked bidders have unpriced exclusions.</p>
-          <div className="grid gap-3 md:grid-cols-2">{open.map(({ n, x }) => <div key={n.supplierId + x.desc} className="grid gap-2"><span className="flex items-center gap-2"><Badge i={idxOf(c, n.supplierId)} size="size-6" /><span className="font-medium">{c.names(n.supplierId)}</span></span><ExclusionForm c={c} n={n} x={x} /></div>)}</div>
+          <div className="flex flex-wrap items-center gap-x-3 gap-y-1"><h2 className="text-section font-semibold">Exclusions to price</h2><StatusChip tone="warning">{open.length} open</StatusChip><p className="soft">Bids compare like for like only once the add-back is loaded. The engine will not recommend while ranked bidders have unpriced exclusions.</p></div>
+          {open.map(({ n, x }) => <ExclusionForm key={n.supplierId + x.desc} c={c} n={n} x={x} inline />)}
         </Card>
       )}
 
@@ -263,7 +268,7 @@ export function WarRoom({ c, scn, onPick, canPick }: { c: Ctx; scn: string; onPi
         <h2 className="text-section font-semibold">Bidders</h2>
         <div className="grid grid-cols-[minmax(0,1fr)] gap-4 sm:grid-cols-2 xl:grid-cols-4">
           {c.r.normalized.map((n, k) => (
-            <div key={n.supplierId} id={`bt-${n.supplierId}`} className="grid"><FocusCard i={k} title={aliasAt(k)} note={`Line-level view of ${c.names(n.supplierId)}`} detail={<BidderDetail c={c} n={n} />}><TileFace c={c} n={n} /></FocusCard></div>
+            <div key={n.supplierId} id={`bt-${n.supplierId}`} className="grid"><FocusCard i={k} title={aliasAt(k)} note="Line-level view" detail={<BidderDetail c={c} n={n} />}><TileFace c={c} n={n} /></FocusCard></div>
           ))}
         </div>
       </section>

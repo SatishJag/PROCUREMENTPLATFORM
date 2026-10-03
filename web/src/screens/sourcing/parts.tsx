@@ -19,7 +19,7 @@ export function Sheet({ title, open, onClose, children }: { title: string; open:
   );
 }
 
-export const ErrorNote = ({ children }: { children: ReactNode }) => <p role="alert" className="rounded-ctl bg-danger-soft p-3 font-medium text-danger">{children}</p>;
+export const ErrorNote = ({ children }: { children: ReactNode }) => <p role="alert" className="rounded-ctl bg-(--bad-hover) p-3 font-medium text-(--bad)">{children}</p>;
 
 export function Back({ onClick, children }: { onClick: () => void; children: ReactNode }) {
   return <button type="button" onClick={onClick} className="on-dark soft -ml-2 inline-flex min-h-11 items-center gap-1.5 justify-self-start rounded-ctl px-2 font-medium transition-transform hover:text-(--fg) active:scale-[0.97]"><Ic n="back" />{children}</button>;
@@ -35,8 +35,8 @@ export function StageRail({ status }: { status: string }) {
           const done = i < at, cur = i === at;
           return (
             <li key={id} aria-current={cur ? 'step' : undefined} className="relative grid justify-items-center gap-2">
-              {i > 0 && <span aria-hidden className={`absolute right-1/2 top-[0.6875rem] h-px w-full ${i <= at ? 'bg-gold' : 'bg-white/20'}`} />}
-              <span className={`relative grid size-6 place-items-center rounded-full border ${cur ? 'border-accent bg-accent text-on-accent shadow-[0_0_0_5px_rgb(245_184_0/0.18)]' : done ? 'border-gold bg-gold text-night' : 'border-white/30 bg-night-deep'}`}>
+              {i > 0 && <span aria-hidden className={`absolute right-1/2 top-[0.6875rem] h-px w-full ${i <= at ? 'bg-(--gold)' : 'bg-(--hair)'}`} />}
+              <span className={`relative grid size-6 place-items-center rounded-full border ${cur ? 'border-(--btn-bg) bg-(--btn-bg) text-(--btn-fg) ring-4 ring-(--btn-bg)/20' : done ? 'border-(--gold) text-(--gold)' : 'border-(--hair) text-(--soft)'}`}>
                 {done ? <Ic n="check" className="size-3.5" /> : <span className="text-label font-semibold">{i + 1}</span>}
               </span>
               <span className={`text-center text-label max-md:hidden ${cur ? 'font-semibold text-(--fg)' : done ? 'text-(--fg)' : 'soft'}`}>{label}</span>
@@ -77,7 +77,7 @@ export function Lanes({ events, planned, onOpen, onCreate }: { events: EventRow[
   const [k, setK] = useState(1);
   const far = k < 0.62;
   return (
-    <Zoomable label="Sourcing pipeline map" min={0.35} max={2} onScale={setK} className="h-[22rem]">
+    <Zoomable label="Sourcing pipeline map" min={0.35} max={2} onScale={setK} className="h-[28rem]">
       <div className="flex gap-3 p-5">
         {LANES.map(([id, label]) => {
           const evs = events.filter(e => e.status === id);
@@ -96,14 +96,14 @@ export function Lanes({ events, planned, onOpen, onCreate }: { events: EventRow[
                   </article>
                 ))}
                 {evs.map(e => (
-                  <button key={e.id} type="button" onClick={() => onOpen(e.id)} className="glass lift grid gap-2 border-gold/40 p-4 text-left transition-transform active:scale-[0.98]">
+                  <button key={e.id} type="button" onClick={() => onOpen(e.id)} className="glass lift grid gap-2 border-(--gold)/40 p-4 text-left transition-transform active:scale-[0.98]">
                     <span className={`font-code ${far ? 'text-[1.25rem]' : 'text-label'}`}>{e.id}</span>
                     <span className={`font-medium ${far ? 'text-[1.375rem] leading-tight' : ''}`}>{e.title}</span>
                     <span className="soft flex gap-3"><span className={far ? 'text-[1.125rem]' : ''}>{e.type}</span><span className={far ? 'text-[1.125rem]' : ''}>{e.bids === undefined ? 'Bids sealed' : `${e.bids} bids`}</span></span>
                     {!far && <span className="soft">{e.invited.length ? `${e.invited.length} invited` : 'Invitations not published'}</span>}
                   </button>
                 ))}
-                {!evs.length && !pk.length && <p aria-hidden className="rounded-card border border-dashed border-white/15 p-4 text-center text-white/30">empty</p>}
+                {!evs.length && !pk.length && <p aria-hidden className="rounded-card border border-dashed border-(--hair) p-4 text-center text-(--soft)">empty</p>}
               </div>
             </section>
           );

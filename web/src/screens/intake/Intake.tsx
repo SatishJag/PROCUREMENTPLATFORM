@@ -9,6 +9,7 @@ import { Money } from '../../ui/Money';
 import { PageHeader } from '../../ui/PageHeader';
 import { StatusChip } from '../../ui/StatusChip';
 import { Ic } from '../../ui/bits';
+import { Boq } from './Boq';
 import { Case } from './Case';
 import { amountOf, blank, BudgetLines, Form, validate, type Draft } from './Form';
 import { decided, health, type Dash, type Entry } from './model';
@@ -125,10 +126,13 @@ export function Intake() {
       </nav>
 
       {entry ? <Case e={entry} /> : (
-        <div className="grid grid-cols-[minmax(0,1fr)] gap-6 lg:grid-cols-[minmax(0,1fr)_24rem]">
-          <Form draft={draft} set={setDraft} errors={tried ? errors : {}} budgets={budgets} names={names} onSubmit={go} />
-          <BudgetLines budgets={budgets} draft={draft} set={setDraft} />
-        </div>
+        <>
+          <div className="grid grid-cols-[minmax(0,1fr)] gap-6 lg:grid-cols-[minmax(0,1fr)_24rem]">
+            <Form draft={draft} set={setDraft} errors={tried ? errors : {}} budgets={budgets} names={names} onSubmit={go} />
+            <BudgetLines budgets={budgets} draft={draft} set={setDraft} />
+          </div>
+          <Boq budgets={budgets} projectId={draft.projectId} />
+        </>
       )}
       <p className="soft xl:hidden">No requisition list exists in the engine: the strip above shows requests submitted in this session and those waiting on you.</p>
     </>

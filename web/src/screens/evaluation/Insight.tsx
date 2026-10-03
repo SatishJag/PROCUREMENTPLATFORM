@@ -65,7 +65,7 @@ export function Insight({ c }: { c: Ctx }) {
                 <li key={r.evidenceRef + r.text} className="grid gap-2 rounded-card border border-white/15 p-3">
                   <span className="flex flex-wrap items-center gap-2"><StatusChip tone={sev[r.severity]}>{r.severity[0].toUpperCase() + r.severity.slice(1)}</StatusChip><Who c={c} id={r.supplierId} /></span>
                   <span>{r.text}</span>
-                  <span className="soft flex items-start gap-2 border-t border-(--hair) pt-2"><Ic n="file" className="mt-0.5" /><span>Evidence <span className="font-code text-label text-(--fg)">{r.evidenceRef}</span>: {cited(c, r.evidenceRef) ?? 'not found in the current results'}</span></span>
+                  <span className="soft flex items-start gap-2 border-t border-(--hair) pt-2"><Ic n="file" className="size-4 mt-0.5" /><span>Evidence <span className="font-code text-label text-(--fg)">{r.evidenceRef}</span>: {cited(c, r.evidenceRef) ?? 'not found in the current results'}</span></span>
                 </li>))}</ul>
               {out.dropped > 0 && <p className="soft">{out.dropped} suggested risk{out.dropped > 1 ? 's were' : ' was'} discarded because the evidence cited did not match the engine's output.</p>}
               {out.scenarioNotes.length > 0 && <div className="grid gap-1.5"><h4 className="eyebrow">Scenario notes</h4><ul className="grid gap-1.5">{out.scenarioNotes.map(t => <li key={t} className="flex gap-2"><span aria-hidden className="mt-2 size-1.5 shrink-0 rounded-full bg-(--gold)" />{t}</li>)}</ul></div>}
@@ -76,7 +76,7 @@ export function Insight({ c }: { c: Ctx }) {
             <ul className="grid gap-2">{eng.map(a => (
               <li key={a.supplierId + a.text} className="grid gap-1.5 rounded-card border border-white/15 p-3">
                 <span className="flex flex-wrap items-center gap-2"><Who c={c} id={a.supplierId} />{a.ref && uncited.has(a.ref) && <StatusChip tone="warning">Not mentioned by the AI</StatusChip>}</span>
-                <span className="flex items-start gap-2"><Ic n="warn" className="mt-0.5 text-(--warn)" />{a.text}</span>
+                <span className="flex items-start gap-2"><Ic n="warn" className="size-4 mt-0.5 text-(--warn)" />{a.text}</span>
               </li>))}</ul>
             {out?.source === 'ai' && uncited.size > 0 && <p className="soft">{uncited.size} engine anomal{uncited.size > 1 ? 'ies are' : 'y is'} not covered by the AI. Read them yourself: the engine is the record.</p>}
           </section>

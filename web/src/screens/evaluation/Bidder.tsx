@@ -24,7 +24,7 @@ export function exclusionsOf(c: Ctx, n: Norm) {
   return all.map((x, i) => ({ ...x, index: listed ? Math.max(listed.indexOf(x.desc), 0) : i }));
 }
 
-export function ExclusionForm({ c, n, x }: { c: Ctx; n: Norm; x: ReturnType<typeof exclusionsOf>[number] }) {
+export function ExclusionForm({ c, n, x, inline }: { c: Ctx; n: Norm; x: ReturnType<typeof exclusionsOf>[number]; inline?: boolean }) {
   const qc = useQueryClient();
   const [v, setV] = useState(x.value?.replace(/,/g, '') ?? '');
   const [err, setErr] = useState('');
@@ -34,11 +34,15 @@ export function ExclusionForm({ c, n, x }: { c: Ctx; n: Norm; x: ReturnType<type
     try { await call('evaluation', 'loadExclusion', c.eventId, n.supplierId, x.index, Number(v)); await qc.invalidateQueries(); } catch (e) { setErr((e as Error).message); }
     setBusy(false);
   };
+  const i = idxOf(c, n.supplierId);
   return (
-    <div className="grid gap-2 rounded-ctl border border-(--hair) p-3">
-      <p className="flex flex-wrap items-center gap-2"><span className="font-medium">{x.desc}</span><StatusChip tone={x.value ? 'success' : 'warning'}>{x.value ? 'Priced' : 'Not priced'}</StatusChip></p>
-      <div className="flex flex-wrap items-end gap-3">
-        <div className="min-w-40 flex-1"><Field label="Add-back, AED"><input type="number" min={0} step="any" inputMode="decimal" value={v} onChange={e => setV(e.target.value)} className={`h-11 md:h-10 ${control} text-right [color-scheme:light]`} /></Field></div>
+    <div className={`grid gap-2 ${inline ? '' : 'rounded-ctl border border-(--hair) p-3'}`}>
+      <div className="flex flex-wrap items-end gap-x-4 gap-y-3">
+        <div className="grid min-w-52 flex-1 gap-1.5">
+          {inline && <span className="flex items-center gap-2"><Badge i={i} size="size-6" /><span className="font-medium">{c.names(n.supplierId)}</span></span>}
+          <span className="flex flex-wrap items-center gap-2"><span className={inline ? '' : 'font-medium'}>Excluded: {x.desc}</span><StatusChip tone={x.value ? 'success' : 'warning'}>{x.value ? 'Priced' : 'Not priced'}</StatusChip></span>
+        </div>
+        <div className="w-full min-w-40 sm:w-56"><Field label="Add-back, AED"><input type="number" min={0} step="any" inputMode="decimal" value={v} onChange={e => setV(e.target.value)} className={`h-11 md:h-10 ${control} text-right [color-scheme:light]`} /></Field></div>
         <Button variant="secondary" loading={busy} disabled={v === ''} onClick={run}>{x.value ? 'Reprice add-back' : 'Load add-back'}</Button>
       </div>
       {err && <Reason>{err}</Reason>}
@@ -54,8 +58,8 @@ export function TileFace({ c, n }: { c: Ctx; n: Norm }) {
     <div className="grid gap-3">
       <div className="flex items-center gap-3"><Badge i={i} size="size-10" dim={!rk} /><div className="grid min-w-0"><span className="truncate font-medium">{c.names(n.supplierId)}</span><span className="font-code text-label text-(--soft)">{n.supplierId}</span></div></div>
       <p className="grid"><span className="eyebrow">Normalised total</span><Money value={n.total} className="numeral text-[1.5rem] leading-tight" /></p>
-      <dl className="grid grid-cols-3 gap-2">
-        {[['Technical', t && n2(t.score)], ['Commercial', rk ? n2(rk.commercial) : 'Not ranked'], ['Combined', rk ? n2(rk.combined) : 'Not ranked']].map(([k, v]) => <div key={k}><dt className="eyebrow !tracking-[0.08em]">{k}</dt><dd className={`numeral ${rk || k === 'Technical' ? 'text-section' : 'soft text-body'}`}>{v}</dd></div>)}
+      <dl className="grid gap-1 border-t border-(--hair) pt-2">
+        {[['Technical', t && n2(t.score)], ['Commercial', rk && n2(rk.commercial)], ['Combined', rk && n2(rk.combined)]].map(([k, v]) => <div key={k as string} className="flex items-baseline justify-between"><dt className="soft">{k}</dt><dd className={`numeral ${v ? 'text-section' : 'soft'}`}>{v || 'Not ranked'}</dd></div>)}
       </dl>
       <p className="flex flex-wrap gap-2">
         <StatusChip tone={rk ? 'success' : 'danger'}>{rk ? `Ranked ${place}` : 'Not ranked'}</StatusChip>
@@ -102,11 +106,11 @@ export function BidderDetail({ c, n }: { c: Ctx; n: Norm }) {
 
       <section className="grid gap-3"><h3 className="text-section font-semibold">Adjustments, line by line</h3>
         {n.adjustments.length === 0 ? <p className="soft">The engine made no adjustments to this bid.</p> :
-          <ul className="grid gap-2">{n.adjustments.map(a => <li key={a} className="flex gap-3 rounded-ctl border border-(--hair) p-3"><Ic n="check" className="mt-0.5 text-(--gold)" /><span>{a}</span></li>)}</ul>}
+          <ul className="grid gap-2">{n.adjustments.map(a => <li key={a} className="flex gap-3 rounded-ctl border border-(--hair) p-3"><Ic n="check" className="size-4 mt-0.5 text-(--gold)" /><span>{a}</span></li>)}</ul>}
       </section>
       <section className="grid gap-3"><h3 className="text-section font-semibold">Anomalies the engine flagged</h3>
         {n.anomalies.length === 0 ? <p className="soft">None.</p> :
-          <ul className="grid gap-2">{n.anomalies.map(a => <li key={a} className="flex gap-3 rounded-ctl bg-danger-soft/60 p-3"><Ic n="warn" className="mt-0.5 text-(--bad)" /><span>{a}</span></li>)}</ul>}
+          <ul className="grid gap-2">{n.anomalies.map(a => <li key={a} className="flex gap-3 rounded-ctl bg-danger-soft/60 p-3"><Ic n="warn" className="size-4 mt-0.5 text-(--bad)" /><span>{a}</span></li>)}</ul>}
       </section>
       {exc.length > 0 && <section className="grid gap-3"><h3 className="text-section font-semibold">Exclusions</h3><div className="grid gap-3 md:grid-cols-2">{exc.map(x => <ExclusionForm key={x.desc} c={c} n={n} x={x} />)}</div></section>}
       <section className="grid gap-3"><h3 className="text-section font-semibold">In the award scenarios</h3>

@@ -12,7 +12,7 @@ type View = { k: 'list' } | { k: 'event'; id: string } | { k: 'new'; pkg?: strin
 export function Sourcing() {
   const twin = useTwin();
   const [view, setView] = useState<View>({ k: 'list' });
-  if (twin.isPending) return <div aria-busy className="h-96 animate-pulse rounded-hero bg-white/5" />;
+  if (twin.isPending) return <div aria-busy className="h-96 animate-pulse rounded-hero bg-(--hair)" />;
   if (!twin.data) return <SupplierPortal reason={(twin.error as Error).message} />;
   const back = () => setView({ k: 'list' });
   if (view.k === 'new') return <Wizard twin={twin.data} pkgId={view.pkg} onBack={back} onDone={id => setView({ k: 'event', id })} />;

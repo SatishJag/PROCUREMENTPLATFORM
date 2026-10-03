@@ -78,8 +78,8 @@ export function Wizard({ twin, pkgId, onBack, onDone }: { twin: Twin; pkgId?: st
       <ol aria-label="Steps" className="glass on-dark grid grid-cols-5 p-4">
         {STEPS.map((s, i) => (
           <li key={s} aria-current={i === step ? 'step' : undefined} className="relative grid justify-items-center gap-2">
-            {i > 0 && <span aria-hidden className={`absolute right-1/2 top-[0.6875rem] h-px w-full ${i <= step ? 'bg-gold' : 'bg-white/20'}`} />}
-            <span className={`relative grid size-6 place-items-center rounded-full border ${i === step ? 'border-accent bg-accent text-on-accent shadow-[0_0_0_5px_rgb(245_184_0/0.18)]' : i < step ? 'border-gold bg-gold text-night' : 'border-white/30 bg-night-deep'}`}>{i < step ? <Ic n="check" className="size-3.5" /> : <span className="text-label font-semibold">{i + 1}</span>}</span>
+            {i > 0 && <span aria-hidden className={`absolute right-1/2 top-[0.6875rem] h-px w-full ${i <= step ? 'bg-(--gold)' : 'bg-(--hair)'}`} />}
+            <span className={`relative grid size-6 place-items-center rounded-full border ${i === step ? 'border-(--btn-bg) bg-(--btn-bg) text-(--btn-fg) ring-4 ring-(--btn-bg)/20' : i < step ? 'border-(--gold) text-(--gold)' : 'border-(--hair) text-(--soft)'}`}>{i < step ? <Ic n="check" className="size-3.5" /> : <span className="text-label font-semibold">{i + 1}</span>}</span>
             <span className={`text-center text-label max-md:hidden ${i === step ? 'font-semibold' : 'soft'}`}>{s}</span>
           </li>
         ))}
@@ -93,7 +93,7 @@ export function Wizard({ twin, pkgId, onBack, onDone }: { twin: Twin; pkgId?: st
           {!planned.length && <p className="soft">No planned package is waiting.</p>}
           <div role="radiogroup" aria-label="Planned package" className="grid gap-3 md:grid-cols-2">
             {planned.map(x => (
-              <label key={x.id} className={`grid cursor-pointer gap-1.5 rounded-card border p-4 transition-transform has-[:focus-visible]:outline-3 has-[:focus-visible]:outline-offset-3 has-[:focus-visible]:outline-ring active:scale-[0.99] ${pkg === x.id ? 'border-primary bg-primary-soft' : 'border-line hover:border-primary'}`}>
+              <label key={x.id} className={`grid cursor-pointer gap-1.5 rounded-card border p-4 transition-transform has-[:focus-visible]:outline-3 has-[:focus-visible]:outline-offset-3 has-[:focus-visible]:outline-ring active:scale-[0.99] ${pkg === x.id ? 'border-(--sec) bg-(--sec-hover)' : 'border-(--hair) hover:border-(--sec)'}`}>
                 <input type="radio" name="pkg" checked={pkg === x.id} onChange={() => { setPkg(x.id); setBoq([]); }} className="sr-only" />
                 <span className="flex items-center justify-between gap-2"><span className="font-code text-label">{x.id}</span><StatusChip tone={x.health === 'late' ? 'warning' : 'neutral'}>{x.meta?.route}</StatusChip></span>
                 <span className="font-medium">{x.label}</span>
@@ -133,11 +133,11 @@ export function Wizard({ twin, pkgId, onBack, onDone }: { twin: Twin; pkgId?: st
             <div><h2 className="text-section font-semibold">Criteria and weights</h2><p className="soft">Sample starting point for generator packages. A gate is pass or fail and carries no weight.</p></div>
             <ul className="grid gap-4">
               {criteria.map((c, i) => (
-                <li key={c.id} className="grid grid-cols-[minmax(0,1fr)_5.5rem_auto] items-end gap-x-3 gap-y-2 border-b border-(--hair) pb-4 last:border-0 last:pb-0">
+                <li key={c.id} className="grid grid-cols-[minmax(0,1fr)_5.5rem_auto] items-end gap-x-3 gap-y-1 md:grid-cols-[minmax(0,1fr)_5.5rem_auto_auto] border-b border-(--hair) pb-4 last:border-0 last:pb-0">
                   <Field label={`${c.id} name`}><Input value={c.name} onChange={e => setCrit(i, { name: e.target.value })} /></Field>
                   <Field label="Weight"><Input type="number" min={0} inputMode="decimal" disabled={c.gate} value={c.gate ? 0 : c.weight} onChange={e => setCrit(i, { weight: Number(e.target.value) })} className="text-right" /></Field>
                   <Button variant="text" aria-label={`Remove ${c.id}`} onClick={() => setCriteria(criteria.filter((_, j) => j !== i))}>Remove</Button>
-                  <div className="col-span-3"><Check label="Gate (pass or fail)" checked={!!c.gate} onChange={g => setCrit(i, { gate: g, weight: 0 })} /></div>
+                  <div className="col-span-3 md:order-3 md:col-span-1"><Check label="Gate" checked={!!c.gate} onChange={g => setCrit(i, { gate: g, weight: 0 })} /></div>
                 </li>
               ))}
             </ul>

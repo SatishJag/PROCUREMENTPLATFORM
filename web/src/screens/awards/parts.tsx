@@ -5,13 +5,13 @@ import { Ic } from '../../ui/bits';
 import { holder, stamp, who, words, type Results, type Row, type Step } from './data';
 import type { Allocation } from '@satishjag/procurement-core/types';
 
-const lightTones = ['var(--color-primary)', 'var(--color-peri)', '#a8822e', 'var(--color-ink-soft)'];
-const darkTones = ['var(--color-peri-night)', 'var(--color-gold)', '#e7e3ff', '#7a7fc0'];
+// Semantic series tokens from the surface context (app.css), so any theme and either surface recolours them.
+const tones = ['var(--series)', 'var(--gold)', 'var(--neutral)', 'var(--soft)'];
 
 /** One segment per supplier, width by the engine's allocation value. Colour plus a legend with names and values, never colour alone. */
-export function Split({ allocs, name, dark }: { allocs: Allocation[]; name: (id: string) => string; dark?: boolean }) {
+export function Split({ allocs, name, lots }: { allocs: Allocation[]; name: (id: string) => string; lots?: boolean }) {
   const total = allocs.reduce((s, a) => s + a.value, 0) || 1;
-  const tone = dark ? darkTones : lightTones;
+  const tone = tones;
   return (
     <div className="grid gap-3">
       <div role="img" aria-label={allocs.map(a => `${name(a.supplierId)} ${Math.round((a.value / total) * 100)} percent`).join(', ')} className="flex h-3 gap-0.5 overflow-hidden rounded-full">
@@ -21,7 +21,8 @@ export function Split({ allocs, name, dark }: { allocs: Allocation[]; name: (id:
         {allocs.map((a, i) => (
           <li key={a.supplierId} className="flex items-baseline gap-2">
             <span aria-hidden className="size-2.5 shrink-0 translate-y-px rounded-full" style={{ background: tone[i % 4] }} />
-            <span className="min-w-0 flex-1 truncate font-medium">{name(a.supplierId)}</span>
+            <span className="min-w-0 flex-1 font-medium">{name(a.supplierId)}</span>
+            {lots && <span className="soft font-code text-label">{a.lotIds.join(' ')}</span>}
             <span className="soft numeral !font-normal">{Math.round((a.value / total) * 100)}%</span>
           </li>
         ))}
@@ -41,10 +42,10 @@ export function Route({ steps, pending }: { steps: Step[]; pending: boolean }) {
         const k = state(s, i === at);
         return (
           <li key={s.role} aria-current={k === 'current' ? 'step' : undefined} className="relative grid grid-cols-[2.75rem_minmax(0,1fr)] content-start gap-x-3 md:grid-cols-1 md:gap-y-3">
-            {i < steps.length - 1 && <span aria-hidden className={`absolute left-[1.375rem] top-11 -bottom-6 w-px md:bottom-auto md:left-14 md:right-[-1rem] md:top-[1.375rem] md:h-px md:w-auto ${k === 'done' ? 'bg-(--gold)' : 'border-l border-dashed border-white/25 md:border-l-0 md:border-t'}`} />}
+            {i < steps.length - 1 && <span aria-hidden className={`absolute left-[1.375rem] top-11 -bottom-6 w-px md:bottom-auto md:left-14 md:right-[-1rem] md:top-[1.375rem] md:h-px md:w-auto ${k === 'done' ? 'bg-(--gold)' : 'border-l border-dashed border-(--soft) md:border-l-0 md:border-t'}`} />}
             <span className="relative grid size-11 place-items-center">
               {k === 'current' && <span aria-hidden className="absolute inset-0 animate-ping rounded-full border border-(--btn-bg) opacity-40" />}
-              <span className={`relative grid size-11 place-items-center rounded-full border text-section font-medium ${k === 'done' ? 'border-(--gold) bg-(--gold) text-night-deep' : k === 'rejected' ? 'border-(--bad) bg-(--bad) text-night-deep' : k === 'current' ? 'border-(--btn-bg) bg-night-raised text-(--btn-bg) shadow-[0_0_0_4px_rgb(245_184_0/0.14)]' : 'border-dashed border-white/30 text-(--soft)'}`}>
+              <span className={`relative grid size-11 place-items-center rounded-full border text-section font-medium ${k === 'done' ? 'border-(--gold) bg-(--gold) text-(--btn-fg)' : k === 'rejected' ? 'border-(--bad) bg-(--bad) text-(--btn-fg)' : k === 'current' ? 'border-(--btn-bg) bg-(--btn-bg)/15 text-(--btn-bg) ring-4 ring-(--btn-bg)/15' : 'border-dashed border-(--soft) text-(--soft)'}`}>
                 {k === 'done' ? <Ic n="check" className="size-5" /> : k === 'rejected' ? <Ic n="err" className="size-5" /> : i + 1}
               </span>
             </span>
@@ -84,7 +85,7 @@ export function Banner({ icon, title, children, tone }: { icon: 'clock' | 'check
 export function Controls({ recommender, decided, pending, next }: { recommender?: string; decided: string[]; pending: boolean; next?: string }) {
   const rows: [string, string, ReactNode][] = [
     ['Sequence', 'Approvers act in order; a later role cannot act early.', pending ? (next ? `Now: ${words(next)}` : 'Now: the next open step') : 'Complete'],
-    ['Segregation of duties', 'The recommender, the requester, evaluators and anyone who has already decided cannot approve.', recommender ? `Recommended by ${who(recommender)}${decided.length ? `. Decided: ${decided.map(who).join(', ')}` : ''}` : 'Needs the audit trail'],
+    ['Segregation of duties', 'The recommender, the requester, evaluators and anyone who has already decided cannot approve.', recommender ? `Recommended by ${who(recommender)}${decided.length ? `. Decided: ${decided.map(who).join(', ')}` : ''}` : 'Names are in the audit trail, which your role cannot read'],
     ['Authority limit', 'The final approver needs an approval limit that covers the award value.', 'Checked by the engine on the last step'],
     ['Reasons', 'A rejection needs a written reason. It is recorded with the name of the person.', 'Asked before the engine is called'],
   ];
@@ -120,19 +121,19 @@ export function Trail({ rows }: { rows: Row[] }) {
 }
 
 /** Supplier lines of the engine's ranking and normalisation for the zoomed allocation card. */
-export function Evidence({ r, name, picked }: { r: Results; name: (id: string) => string; picked: string[] }) {
+export function Evidence({ r, name, picked }: { r: Results; name: (id: string) => string; picked: Allocation[] }) {
   return (
     <div className="grid gap-5">
       {r.ranking.map(x => {
-        const n = r.normalized.find(y => y.supplierId === x.supplierId)!;
+        const n = r.normalized.find(y => y.supplierId === x.supplierId)!, pick = picked.find(a => a.supplierId === x.supplierId);
         return (
           <section key={x.supplierId} aria-label={name(x.supplierId)} className="grid gap-2 border-b border-(--hair) pb-5 last:border-0 last:pb-0">
             <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
               <h3 className="text-section font-semibold">{name(x.supplierId)}</h3>
-              {picked.includes(x.supplierId) && <StatusChip tone="success">Allocated</StatusChip>}
+              {pick && <StatusChip tone="success">Awarded {pick.lotIds.join(', ')}</StatusChip>}
               <Money value={n.total} className="numeral ml-auto text-section" />
             </div>
-            <p className="soft numeral !font-normal">Technical {x.technical}, commercial {x.commercial}, combined {x.combined}. Submitted in {n.currency}.</p>
+            <p className="soft numeral !font-normal">Technical {x.technical}, commercial {x.commercial}, combined {x.combined}. Submitted in {n.currency}.{pick && <> Awarded <Money value={pick.value} /> of the bid total.</>}</p>
             {[...n.adjustments.map(t => [t, false] as const), ...n.anomalies.map(t => [t, true] as const)].map(([t, bad]) => (
               <p key={t} className="flex gap-2"><Ic n={bad ? 'warn' : 'file'} className={`mt-0.5 size-4 ${bad ? 'text-(--warn)' : 'text-(--soft)'}`} /><span>{t}</span></p>
             ))}

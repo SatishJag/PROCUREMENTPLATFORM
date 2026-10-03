@@ -79,7 +79,7 @@ export function PortalEvent({ id, onBack }: { id: string; onBack: () => void }) 
     onSuccess: () => { setQuestion(''); setAsking(false); qc.invalidateQueries({ queryKey: ['portal'] }); },
   });
 
-  if (q.isPending) return <div aria-busy className="h-96 animate-pulse rounded-hero bg-white/5" />;
+  if (q.isPending) return <div aria-busy className="h-96 animate-pulse rounded-hero bg-(--hair)" />;
   if (!p) return <><Back onClick={onBack}>Your invitations</Back><ErrorNote>{(q.error as Error).message}</ErrorNote></>;
   const open = p.status === 'open';
   const form = open && (!p.myBid || revising);
@@ -109,7 +109,7 @@ export function PortalEvent({ id, onBack }: { id: string; onBack: () => void }) 
 
       {p.myBid && !revising && (
         <Card i={1} className="grid gap-4 md:grid-cols-[auto_1fr] md:gap-6">
-          <span aria-hidden className="grid size-16 place-items-center rounded-full border border-(--gold) bg-primary-soft text-(--gold)"><Ic n="lock" className="size-8" /></span>
+          <span aria-hidden className="grid size-16 place-items-center rounded-full border border-(--gold) bg-(--sec-hover) text-(--gold)"><Ic n="lock" className="size-8" /></span>
           <div className="grid gap-3">
             <div><h2 className="text-section font-semibold">Seal receipt</h2><p className="soft">Your bid is sealed. Prices are never shown back, and stay sealed until technical evaluation is complete.</p></div>
             <dl className="grid gap-x-8 gap-y-3 sm:grid-cols-3">

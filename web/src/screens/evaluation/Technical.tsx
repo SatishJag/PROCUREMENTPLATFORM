@@ -127,8 +127,8 @@ function Row({ c, bi, s, locked, bl }: { c: Crit; bi: Pack['bidders'][number]; s
         <span className="soft flex flex-wrap items-center gap-x-3">{c.gate ? 'Gate: pass or fail' : `Weight ${c.weight}%`}{saved && !err && <span className="flex items-center gap-1 text-(--ok)"><Ic n="check" className="size-3.5" />Saved</span>}</span>
       </label>
       {c.gate
-        ? <select id={uid} value={cell.v} disabled={locked} onChange={e => s.set(bi.ref, c.id, { v: e.target.value })} className={`${input} w-32`}><option value="">Select</option><option value="1">Pass</option><option value="0">Fail</option></select>
-        : <input id={uid} type="number" inputMode="decimal" min={0} max={10} step={0.5} value={cell.v} disabled={locked} placeholder="0 to 10" onChange={e => s.set(bi.ref, c.id, { v: e.target.value })} className={`${input} w-32 text-right`} />}
+        ? <select id={uid} value={cell.v} disabled={locked} onChange={e => s.set(bi.ref, c.id, { v: e.target.value })} className={`${input} !w-32`}><option value="">Select</option><option value="1">Pass</option><option value="0">Fail</option></select>
+        : <input id={uid} type="number" inputMode="decimal" min={0} max={10} step={0.5} value={cell.v} disabled={locked} placeholder="0 to 10" onChange={e => s.set(bi.ref, c.id, { v: e.target.value })} className={`${input} !w-32 text-right`} />}
       {evidence
         ? <input aria-label={`Evidence for ${c.name}, ${bi.name}`} value={cell.c} disabled={locked} placeholder="Evidence or comment" onChange={e => s.set(bi.ref, c.id, { c: e.target.value })} className={`${input} col-span-2`} />
         : !locked && <button type="button" onClick={() => s.set(bi.ref, c.id, { open: true })} className="col-span-2 min-h-11 justify-self-start rounded-ctl px-1 text-(--sec) underline underline-offset-4 hover:bg-(--sec-hover) active:scale-[0.97] md:min-h-8">Add evidence</button>}
@@ -174,7 +174,7 @@ function Readiness({ pack, s, onModerate }: { pack: Pack; s: Scoring; onModerate
         <h2 className="text-section font-semibold">Sign-off readiness</h2>
         {attempted && <StatusChip tone="danger">{s.blockers!.length} blocking</StatusChip>}
       </div>
-      {!attempted && !s.signErr && <p className="soft">The engine lists what blocks sign-off when the committee chair presses Sign off technical. Quorum, evidence and consensus are checked there.</p>}
+      {!attempted && !s.signErr && <p className="soft">The engine lists what blocks sign-off when Sign off technical is pressed. Quorum, evidence and consensus are checked there.</p>}
       {s.signErr && <Reason>{s.signErr}</Reason>}
       {attempted && (
         <>
@@ -227,7 +227,7 @@ function Moderation({ id, pack, draft, setDraft }: { id: string; pack: Pack; dra
       </div>
       <Field label="Criterion"><select value={draft.cid} onChange={e => setDraft({ ...draft, cid: e.target.value })} className={input}>{pack.criteria.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}</select></Field>
       <Field label="Note of the consensus reached"><textarea rows={2} value={draft.note} onChange={e => setDraft({ ...draft, note: e.target.value })} className={control} /></Field>
-      {msg && (msg.ok ? <p className="flex items-start gap-2 text-(--ok)"><Ic n="check" className="mt-0.5" />{msg.t}</p> : <Reason>{msg.t}</Reason>)}
+      {msg && (msg.ok ? <p className="flex items-start gap-2 text-(--ok)"><Ic n="check" className="size-4 mt-0.5" />{msg.t}</p> : <Reason>{msg.t}</Reason>)}
       <div><Button variant="secondary" loading={busy} onClick={run}>Record consensus</Button></div>
     </Card>
   );
@@ -249,22 +249,33 @@ function Outcome({ r, pack, names }: { r: Results; pack?: Pack; names: (id: stri
   );
 }
 
-export function Technical({ id, pack, packError, s, results, names }: { id: string; pack?: Pack; packError?: string; s: Scoring; results?: Results; names: (id: string) => string }) {
+export function Technical({ id, pack, packError, s, results, names, chair }: { chair?: boolean; id: string; pack?: Pack; packError?: string; s: Scoring; results?: Results; names: (id: string) => string }) {
   const [draft, setDraft] = useState({ ref: '', cid: '', v: '', note: '' });
+  const onModerate = (pk: Pack) => (b: Blocker) => {
+    setDraft({ ref: b.bidder, cid: pk.criteria.find(x => x.name === b.criterion)?.id ?? '', v: '', note: '' });
+    document.getElementById('moderation')?.scrollIntoView({ behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth', block: 'center' });
+  };
   const filled = pack && { ...draft, ref: draft.ref || pack.bidders[0]?.ref || '', cid: draft.cid || pack.criteria.find(c => !c.gate)?.id || '' };
   return (
     <div className="grid grid-cols-[minmax(0,1fr)] gap-8">
       <Pack pack={pack} error={packError} />
-      {pack && filled && (
+      {pack && filled && chair && (
+        <>
+          <div className="grid grid-cols-[minmax(0,1fr)] gap-6 lg:grid-cols-2 lg:items-start">
+            <Readiness pack={pack} s={s} onModerate={onModerate(pack)} />
+            <Moderation id={id} pack={pack} draft={filled} setDraft={setDraft} />
+          </div>
+          <Card className="!py-2"><Section title="Committee scoring" meta="Your own declaration and scores, if you sit on the committee">
+            <div className="grid grid-cols-[minmax(0,1fr)] gap-6 pt-3 lg:grid-cols-[minmax(0,1fr)_23rem] lg:items-start"><Grid pack={pack} s={s} /><Declaration id={id} /></div>
+          </Section></Card>
+        </>
+      )}
+      {pack && filled && !chair && (
         <div className="grid grid-cols-[minmax(0,1fr)] gap-6 lg:grid-cols-[minmax(0,1fr)_23rem] lg:items-start">
           <div className="max-lg:order-2"><Grid pack={pack} s={s} /></div>
           <div className="grid gap-6 max-lg:contents lg:content-start">
             <div className="max-lg:order-1"><Declaration id={id} /></div>
-            <div className="max-lg:order-3"><Readiness pack={pack} s={s} onModerate={b => {
-              const c = pack.criteria.find(x => x.name === b.criterion);
-              setDraft({ ref: b.bidder, cid: c?.id ?? '', v: '', note: '' });
-              document.getElementById('moderation')?.scrollIntoView({ behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth', block: 'center' });
-            }} /></div>
+            <div className="max-lg:order-3"><Readiness pack={pack} s={s} onModerate={onModerate(pack)} /></div>
             <div className="max-lg:order-4"><Moderation id={id} pack={pack} draft={filled} setDraft={setDraft} /></div>
           </div>
         </div>
