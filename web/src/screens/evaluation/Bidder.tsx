@@ -7,6 +7,7 @@ import { Ic } from '../../ui/bits';
 import { Money } from '../../ui/Money';
 import { StatusChip } from '../../ui/StatusChip';
 import { aliasAt, n2, series, type Norm, type Pack, type Ranked, type Results, type Tech } from './lib';
+import { BasisList } from './Basis';
 import { Badge, Reason } from './parts';
 
 export type Ctx = { r: Results; eventId: string; pack?: Pack; names: (id: string) => string };
@@ -78,7 +79,6 @@ export function BidderDetail({ c, n }: { c: Ctx; n: Norm }) {
   const maxLot = Math.max(...Object.values(n.lots), 1);
   const inScn = c.r.scenarios.filter(s => s.allocations.some(a => a.supplierId === n.supplierId));
   const exc = exclusionsOf(c, n);
-  const crit = (id: string) => c.pack?.criteria.find(x => x.id === id);
   return (
     <div className="grid gap-8">
       <div className="flex flex-wrap items-center gap-3"><Badge i={i} size="size-11" dim={!rk} /><div className="grid"><span className="text-section font-semibold">{aliasAt(i)}, {c.names(n.supplierId)}</span><span className="font-code text-label text-(--soft)">{n.supplierId}</span></div>
@@ -97,10 +97,8 @@ export function BidderDetail({ c, n }: { c: Ctx; n: Norm }) {
             <li key={lot} className="grid gap-1"><span className="flex items-baseline justify-between"><span className="font-code text-label">{lot}</span><Money value={v} className="font-medium" /></span>
               <span aria-hidden className="block h-2 overflow-hidden rounded-full bg-primary-soft"><span className="grow-x block h-full origin-left rounded-full" style={{ transform: `scaleX(${v / maxLot})`, background: series(i) }} /></span></li>))}</ul>
         </section>
-        {t && <section className="grid content-start gap-3"><h3 className="text-section font-semibold">Technical consensus</h3>
-          <ul className="grid gap-3">{Object.entries(t.consensus).map(([id, v]) => (
-            <li key={id} className="grid gap-1"><span className="flex items-baseline justify-between gap-3"><span>{crit(id)?.name ?? <span className="font-code text-label">{id}</span>}{crit(id)?.gate && <span className="soft"> (gate)</span>}</span><span className="numeral font-medium">{crit(id)?.gate ? (v ? 'Pass' : 'Fail') : n2(v)}</span></span>
-              {!crit(id)?.gate && <span aria-hidden className="block h-1.5 overflow-hidden rounded-full bg-primary-soft"><span className="grow-x block h-full origin-left rounded-full bg-peri" style={{ transform: `scaleX(${v / 10})` }} /></span>}</li>))}</ul>
+        {t && <section className="grid content-start gap-3"><h3 className="text-section font-semibold">Technical consensus</h3><p className="soft">Press the info button on a criterion to see on what basis it was scored.</p>
+          <BasisList eventId={c.eventId} bidderRef={n.supplierId} consensus={t.consensus} />
         </section>}
       </div>
 

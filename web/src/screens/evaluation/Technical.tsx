@@ -4,11 +4,13 @@ import { call } from '../../api';
 import { Button } from '../../ui/Button';
 import { Card } from '../../ui/Card';
 import { Field, control } from '../../ui/Field';
+import { FocusCard } from '../../ui/FocusCard';
 import { Ic, Tags } from '../../ui/bits';
 import { Section } from '../../ui/Section';
 import { StatusChip } from '../../ui/StatusChip';
 import { Table } from '../../ui/Table';
 import { blocker, lines, n2, type Blocker, type Crit, type Pack, type Results } from './lib';
+import { BasisList } from './Basis';
 import { Badge, Reason } from './parts';
 
 type Cell = { v: string; c: string; sig?: string; err?: string; open?: boolean };
@@ -66,7 +68,21 @@ export type Scoring = ReturnType<typeof useScoring>;
 
 const input = `h-11 md:h-10 ${control}`;
 
-function Pack({ pack, error }: { pack?: Pack; error?: string }) {
+function Facts({ label, items }: { label: string; items: string[] }) {
+  return <div className="grid gap-1"><span className="eyebrow">{label}</span>{items.length ? <ul className="grid gap-1">{items.map(d => <li key={d} className="flex gap-2"><span aria-hidden className="mt-2 size-1.5 shrink-0 rounded-full bg-(--gold)" />{d}</li>)}</ul> : <span className="soft">None declared</span>}</div>;
+}
+
+/** The zoomed bidder: full submission facts plus the scoring basis behind each criterion. */
+function BidderPack({ eventId, b, i }: { eventId: string; b: Pack['bidders'][number]; i: number }) {
+  return (
+    <div className="grid gap-8 lg:grid-cols-2">
+      <div className="grid content-start gap-4"><div className="flex items-center gap-3"><Badge i={i} size="size-11" /><span className="text-section font-semibold">{b.name}</span></div><Facts label="Deviations" items={b.deviations} /><Facts label="Exclusions" items={b.exclusions} /></div>
+      <section className="grid content-start gap-3"><h3 className="text-section font-semibold">Scoring basis</h3><p className="soft">Press the info button on a criterion to see the written basis. Until consensus, you see your own scores; the chair sees every evaluator.</p><BasisList eventId={eventId} bidderRef={b.ref} /></section>
+    </div>
+  );
+}
+
+function Pack({ pack, error, eventId }: { pack?: Pack; error?: string; eventId: string }) {
   if (error) return <Card glass i={1} className="flex items-start gap-4"><Ic n="lock" className="mt-0.5 size-6 text-(--gold)" /><div className="grid gap-1"><h2 className="text-section font-semibold">Technical envelope is closed to you</h2><Reason>{error}</Reason></div></Card>;
   if (!pack) return <div aria-busy className="h-40 animate-pulse rounded-hero bg-(--hair)" />;
   return (
@@ -77,12 +93,14 @@ function Pack({ pack, error }: { pack?: Pack; error?: string }) {
       </div>
       <ul className="grid grid-cols-[minmax(0,1fr)] gap-4 sm:grid-cols-2 xl:grid-cols-4">
         {pack.bidders.map((b, i) => (
-          <Card as="li" key={b.ref} i={i + 1} className="grid content-start gap-3">
-            <div className="flex items-center gap-3"><Badge i={i} size="size-10" /><div className="grid"><span className="text-section font-semibold">{b.name}</span><span className="soft">Price envelope sealed</span></div></div>
-            <div className="gold-rule" />
-            <div className="grid gap-1"><span className="eyebrow">Deviations</span>{b.deviations.length ? <ul className="grid gap-1">{b.deviations.map(d => <li key={d} className="flex gap-2"><span aria-hidden className="mt-2 size-1.5 shrink-0 rounded-full bg-(--gold)" />{d}</li>)}</ul> : <span className="soft">None declared</span>}</div>
-            <div className="grid gap-1"><span className="eyebrow">Exclusions</span>{b.exclusions.length ? <ul className="grid gap-1">{b.exclusions.map(d => <li key={d} className="flex gap-2"><span aria-hidden className="mt-2 size-1.5 shrink-0 rounded-full bg-(--gold)" />{d}</li>)}</ul> : <span className="soft">None declared</span>}</div>
-          </Card>
+          <li key={b.ref} className="grid">
+            <FocusCard i={i + 1} title={b.name} note="Technical submission and scoring basis" detail={<BidderPack eventId={eventId} b={b} i={i} />}>
+              <div className="flex items-center gap-3"><Badge i={i} size="size-10" /><span className="soft">Price envelope sealed</span></div>
+              <div className="gold-rule" />
+              <Facts label="Deviations" items={b.deviations} />
+              <Facts label="Exclusions" items={b.exclusions} />
+            </FocusCard>
+          </li>
         ))}
       </ul>
     </section>
@@ -258,7 +276,7 @@ export function Technical({ id, pack, packError, s, results, names, chair }: { c
   const filled = pack && { ...draft, ref: draft.ref || pack.bidders[0]?.ref || '', cid: draft.cid || pack.criteria.find(c => !c.gate)?.id || '' };
   return (
     <div className="grid grid-cols-[minmax(0,1fr)] gap-8">
-      <Pack pack={pack} error={packError} />
+      <Pack pack={pack} error={packError} eventId={id} />
       {pack && filled && chair && (
         <>
           <div className="grid grid-cols-[minmax(0,1fr)] gap-6 lg:grid-cols-2 lg:items-start">

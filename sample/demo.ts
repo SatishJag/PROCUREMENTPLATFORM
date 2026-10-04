@@ -92,13 +92,40 @@ export function run(print: (...a: unknown[]) => void = console.log, stopAt?: Sta
     'SUP-ALN': { C1: [6, 5], C2: [6, 6], C3: [4, 5], C4: [6, 5] },
   };
   const evaluators = [u('u-hana'), u('u-marco'), u('u-aisha')];
+  // The written basis behind each mark. One string = every evaluator cites the same finding; an array is one per evaluator.
+  const why: Record<string, Record<string, string | string[]>> = {
+    'SUP-MER': {
+      C1: 'Meets the full 2.5 MVA specification; type-test certificates attached for all 12 sets',
+      C2: 'Factory slots confirmed for all 12 sets; 14-month delivery with float on the critical path',
+      C3: 'Two comparable hyperscale sites verified with the reference owners',
+      C4: 'Regional spares depot and a 4-hour call-out commitment in the offer',
+    },
+    'SUP-FAL': {
+      C1: 'Compliant with the specification; two minor deviations on enclosure noise rating, both acceptable',
+      C2: ['Programme is credible but commissioning is about 3 weeks tight', 'Delivery relies on a single factory slot with little float', 'Commissioning overlaps the hall 3 handover; some risk'],
+      C3: 'Three data-centre references, one comparable in scale',
+      C4: 'Local spares stock held; response time stated as next business day',
+    },
+    'SUP-NWD': {
+      C1: 'Alternative alternator brand proposed; the performance data supports equivalence',
+      C2: ['Factory slot letter covers only 8 of the 12 sets; the rest is unconfirmed', 'Delivery of the last 4 sets is unsupported; programme looks optimistic', 'Strong programme if the slot letter holds; vendor delivered early on a past project'],
+      C3: 'One data-centre reference; the others are industrial plants',
+      C4: 'Standard warranty and spares list; no local depot',
+    },
+    'SUP-ALN': {
+      C1: 'Several items unconfirmed; the synchronisation panel interface is not detailed',
+      C2: 'Programme has no commissioning plan for the fuel system',
+      C3: 'No data-centre experience; references are commercial buildings',
+      C4: 'Generic spares offer with no response-time commitment',
+    },
+  };
   for (const [supplierId, byCriterion] of Object.entries(marks)) {
     for (const [i, e] of evaluators.entries()) {
       if (supplierId === 'SUP-ALN' && e.id === 'u-aisha') continue;
-      evaluation.score(p, e, ev.id, supplierId, 'C0', 1);
+      evaluation.score(p, e, ev.id, supplierId, 'C0', 1, 'HSE prequalification certificate verified and in date');
       for (const [c, scores] of Object.entries(byCriterion)) {
-        const comment = scores[i] >= 9 && !(e.id === 'u-hana' && c === 'C3') ? 'Exceeds spec; evidence in technical submission vol. 2' : undefined;
-        evaluation.score(p, e, ev.id, supplierId, c, scores[i], comment);
+        const w = why[supplierId][c];
+        evaluation.score(p, e, ev.id, supplierId, c, scores[i], Array.isArray(w) ? w[i] : w);
       }
     }
   }

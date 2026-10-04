@@ -84,7 +84,7 @@ const paths = {
   clock: 'M12 7v5l3 2M12 21a9 9 0 100-18 9 9 0 000 18z', up: 'M12 19V6M6 11l6-6 6 6', file: 'M7 3h7l4 4v14H7zM14 3v4h4', bell: 'M6 16V11a6 6 0 1112 0v5l2 2H4zM10 21h4',
   users: 'M9 11a3 3 0 100-6 3 3 0 000 6zM3 20c0-3 3-5 6-5s6 2 6 5M16 5a3 3 0 010 6M18 15c2 .6 3 2 3 5', check: 'M5 12l5 5 9-10', warn: 'M12 4l9 16H3zM12 10v4M12 17h.01',
   err: 'M12 21a9 9 0 100-18 9 9 0 000 18zM12 8v5M12 16h.01', up2: 'M6 15l6-6 6 6', down2: 'M6 9l6 6 6-6', plus: 'M12 5v14M5 12h14', branch: 'M6 4v8a4 4 0 004 4h8M6 4L4 6M6 4l2 2M18 16l-2-2M18 16l-2 2',
-  back: 'M15 5l-7 7 7 7', lock: 'M6 11h12v9H6zM8 11V8a4 4 0 118 0v3', grip: 'M9 6h.01M15 6h.01M9 12h.01M15 12h.01M9 18h.01M15 18h.01',
+  info: 'M12 21a9 9 0 100-18 9 9 0 000 18zM12 11v6M12 7.5h.01', back: 'M15 5l-7 7 7 7', lock: 'M6 11h12v9H6zM8 11V8a4 4 0 118 0v3', grip: 'M9 6h.01M15 6h.01M9 12h.01M15 12h.01M9 18h.01M15 18h.01',
 };
 export const Ic = ({ n, className = 'size-4' }: { n: keyof typeof paths; className?: string }) => (
   <svg aria-hidden viewBox="0 0 24 24" className={`${className} shrink-0`} fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"><path d={paths[n]} /></svg>
