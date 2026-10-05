@@ -1,12 +1,12 @@
 // End-to-end walkthrough: intake → plan → ITT → bids → technical → commercial → award → audit.
 // Run: npm run demo. Every call is module.command(platform, user, ...args).
 import { fileURLToPath } from 'node:url';
-import { awards, createPlatform, evaluation, intake, reporting, sourcing } from '@satishjag/procurement-core';
-import type { Contract } from '@satishjag/procurement-core/types';
+import { awards, createPlatform, evaluation, intake, payables, reporting, sourcing } from '@satishjag/procurement-core';
+import type { Contract, User } from '@satishjag/procurement-core/types';
 import { demoSeed } from './seed.ts';
 
 // stopAt returns the platform early so the UI can start in any workflow state (server env DEMO_STAGE).
-export type Stage = 'package' | 'draft' | 'bids' | 'technical' | 'commercial' | 'award';
+export type Stage = 'package' | 'draft' | 'bids' | 'technical' | 'commercial' | 'award' | 'payables';
 export function run(print: (...a: unknown[]) => void = console.log, stopAt?: Stage) {
   let now = '2026-10-01T09:00:00Z';
   const p = createPlatform(demoSeed(), () => now);
@@ -159,6 +159,8 @@ export function run(print: (...a: unknown[]) => void = console.log, stopAt?: Sta
   awards.decide(p, u('u-rashid'), award.id, 'approved', 'Approved');
   print(`  Award ${award.status}; event ${ev.status}; contracts ${[...p.table<Contract>('contracts').values()].map(c => `${c.id} ${name(c.supplierId)} ${aed(c.value)}`).join(', ')}`);
 
+  if (stopAt === 'payables') { payablesFlow(p, u, () => now, t => { now = t; }); return { p, ev, award, result }; }
+
   step('Dashboard and audit');
   const d = reporting.dashboard(p, u('u-daniel'));
   print(`  Pipeline ${JSON.stringify(d.pipeline)}, value in pipeline ${aed(d.valueInPipeline)}, long-lead ${d.longLead}`);
@@ -171,3 +173,34 @@ export function run(print: (...a: unknown[]) => void = console.log, stopAt?: Sta
 }
 
 if (process.argv[1] === fileURLToPath(import.meta.url)) run();
+
+// Payables state for the UI: terms set, IPCs in every status, invoices waiting, held, accounted and exported.
+function payablesFlow(p: ReturnType<typeof createPlatform>, u: (id: string) => User, _now: () => string, setNow: (t: string) => void) {
+  const cts = [...p.table<Contract>('contracts').values()].sort((a, b) => b.value - a.value);
+  const [big, small] = cts;
+  const [ravi, nadia, karim, rashid] = ['u-ravi', 'u-nadia', 'u-karim', 'u-rashid'].map(u);
+  setNow('2027-03-01T09:00:00Z');
+  for (const c of cts) payables.setTerms(p, nadia, c.id, { retentionPct: 5, retentionCap: c.value * 0.1, advanceAmount: c.value * 0.1, advanceRecoveryPct: 20, vatPct: 5, whtPct: 0, revisedValue: c.value });
+  let n = 0;
+  const ipc = (c: Contract, share: number, o: Partial<Parameters<typeof payables.stageIpc>[3]> = {}) => {
+    n++;
+    const gross = Math.round(c.value * share);
+    return payables.stageIpc(p, ravi, c.id, {
+      messageId: `PMIS-${n}`, ipcRef: `IPC-${String(n).padStart(2, '0')}`, version: 1, periodFrom: '2027-01-01', periodTo: '2027-01-31', taxInvoiceNo: `TI-${1000 + n}`,
+      lines: [{ boqItem: 'G1', wbs: 'DC1-1.1', costCode: '26-32-00', description: 'Works certified to date, this period', uom: 'lot', prevQty: 0, currQty: 1, rate: gross }],
+      variations: [], adjustments: { otherDeductions: [{ type: 'Utilities', amount: Math.round(gross * 0.01) }] },
+      attachments: [{ type: 'ipc', name: `IPC-${n}.pdf` }, { type: 'tax_invoice', name: `TI-${1000 + n}.pdf` }], ...o,
+    });
+  };
+  const accountIt = (id: string) => { const inv = payables.createInvoice(p, nadia, id); payables.approveInvoice(p, karim, inv.id, 'Within certified value'); return payables.account(p, nadia, inv.id); };
+  accountIt(ipc(big, 0.04).id);
+  payables.exportJournals(p, nadia);                      // first batch goes to the corporate GL
+  setNow('2027-03-05T09:00:00Z');
+  accountIt(ipc(big, 0.03, { periodFrom: '2027-02-01', periodTo: '2027-02-28' }).id);   // accounted, waiting for the next export
+  const waiting = payables.createInvoice(p, nadia, ipc(big, 0.28, { periodFrom: '2027-03-01', periodTo: '2027-03-31' }).id); // above Karim's limit: needs an executive
+  void waiting; void rashid;
+  ipc(big, 0.02, { periodFrom: '2027-04-01', periodTo: '2027-04-30' });                  // validated, no invoice yet
+  ipc(big, 0.9, { periodFrom: '2027-05-01', periodTo: '2027-05-31' });                   // fails: beyond the contract value
+  const held = payables.createInvoice(p, nadia, ipc(small, 0.06).id);
+  payables.hold(p, karim, held.id, { reason: 'Insurance certificate expired on 28 Feb', ownerId: 'u-ravi', releaseCondition: 'Renewed certificate uploaded' });
+}

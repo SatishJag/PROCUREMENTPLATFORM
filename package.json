@@ -16,7 +16,7 @@
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.131.0",
-    "@satishjag/procurement-core": "github:SatishJag/Procurement_core#fc1d0c7"
+    "@satishjag/procurement-core": "github:SatishJag/Procurement_core#fd8be03"
   },
   "devDependencies": {
     "@tanstack/react-query": "^5.59.0",
