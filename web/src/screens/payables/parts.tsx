@@ -84,7 +84,7 @@ export function AskDialog({ label, title, fields, onSubmit, primary }: { label: 
   const list = useQuery({ ...people(), enabled: wantsPeople });
   return (
     <>
-      <Button variant={primary ? 'primary' : 'secondary'} onClick={() => dlg.current?.showModal()}>{label}</Button>
+      <Button variant={primary ? 'primary' : 'secondary'} className={primary ? 'max-md:w-full' : ''} onClick={() => dlg.current?.showModal()}>{label}</Button>
       <dialog ref={dlg} aria-label={title} onClose={() => { setErr(''); setOwner(''); }} className="zoom-panel card on-light m-auto w-[min(28rem,calc(100vw-2rem))] p-6 shadow-e3">
         <form ref={form} className="grid gap-4" onSubmit={async e => {
           e.preventDefault();

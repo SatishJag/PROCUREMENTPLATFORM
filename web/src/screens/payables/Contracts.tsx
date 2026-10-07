@@ -24,7 +24,7 @@ function TermsForm({ c }: { c: ContractRow }) {
   });
   return (
     <form ref={form} key={JSON.stringify(t)} onSubmit={e => { e.preventDefault(); m.mutate(new FormData(e.currentTarget)); }} className="grid gap-4">
-      <div className="grid gap-4 sm:grid-cols-2">
+      <div className="grid items-start gap-4 sm:grid-cols-2">
         {FIELDS.map(([k, l]) => <Field key={k} label={l}><Input name={k} type="number" inputMode="decimal" step="any" min="0" required defaultValue={t?.[k] ?? (k === 'revisedValue' ? c.value : '')} /></Field>)}
         <Field label="Variation reference" hint="Needed to raise the value above the awarded amount."><Input name="variationRef" /></Field>
       </div>

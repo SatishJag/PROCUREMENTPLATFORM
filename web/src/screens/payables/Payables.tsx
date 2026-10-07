@@ -71,7 +71,7 @@ export function Payables() {
           { label: `On hold, ${held.length}`, value: <Money value={r2(held.map(v => v.calc.netPayable))} /> },
         ]}
         action={primary
-          ? <div className="bar-sticky"><Button variant="primary" loading={exp.isPending && primary === exportIt} onClick={primary.run} className="max-md:flex-1">{primary.label}</Button></div>
+          ? <div className="bar-sticky"><Button variant="primary" loading={exp.isPending && primary === exportIt} onClick={primary.run} className="max-md:w-full">{primary.label}</Button></div>
           : !failed && !loading && <p className="soft self-center">Nothing is waiting on you. Switch role in the top bar to see another queue.</p>}
       />
       {failed && <Card glass role="alert" className="text-(--bad)"><p className="font-semibold">The engine did not show payables to your role.</p><p className="mt-1">{bad(failed)}</p></Card>}

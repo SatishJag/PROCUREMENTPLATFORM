@@ -69,7 +69,7 @@ function Actions({ id }: { id: string }) {
         {list.includes('reject') && <Button variant="destructive" onReason={r => go('reject', r)}>Reject invoice</Button>}
         {primary === 'release'
           ? <AskDialog primary label="Release hold" title="Release the hold" fields={[{ name: 'comment', label: 'Comment', hint: 'How the release condition was met. Recorded with your name.' }]} onSubmit={v => go('release', v.comment)} />
-          : primary && <Button variant="primary" loading={m.isPending && m.variables?.a === primary} disabled={m.isPending} onClick={() => go(primary, ...(primary === 'approve' ? [comment] : [])).catch(() => {})}>{label[primary]}</Button>}
+          : primary && <Button variant="primary" loading={m.isPending && m.variables?.a === primary} disabled={m.isPending} className="max-md:w-full" onClick={() => go(primary, ...(primary === 'approve' ? [comment] : [])).catch(() => {})}>{label[primary]}</Button>}
       </div>
     </>
   );
