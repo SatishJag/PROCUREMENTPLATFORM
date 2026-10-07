@@ -4,10 +4,11 @@ import { getUser, setUser } from '../api';
 import { ThemePicker } from './ThemePicker';
 
 // ponytail: the sample users, copied from sample/seed.ts. Replace with the signed-in session (Entra ID) or a users command.
-const USERS = [
+export const USERS = [
   ['u-omar', 'Omar Siddiqui', 'Requester'], ['u-priya', 'Priya Raman', 'Buyer'], ['u-daniel', 'Daniel Okafor', 'Procurement manager'],
   ['u-hana', 'Hana Kobayashi', 'Technical evaluator'], ['u-tom', 'Tom Weller', 'Commercial evaluator'], ['u-fatima', 'Fatima Al Mansoori', 'Budget owner'],
-  ['u-rashid', 'Rashid Khan', 'Executive'], ['u-grace', 'Grace Lindqvist', 'Auditor'], ['u-falcon', 'Falcon bid desk', 'Supplier'],
+  ['u-rashid', 'Rashid Khan', 'Executive'], ['u-grace', 'Grace Lindqvist', 'Auditor'], ['u-ravi', 'Ravi Menon', 'Project manager'], ['u-nadia', 'Nadia Haddad', 'Finance'],
+  ['u-karim', 'Karim Saleh', 'Finance'], ['u-falcon', 'Falcon bid desk', 'Supplier'],
 ] as const;
 const initials = (n: string) => n.split(' ').map(w => w[0]).slice(0, 2).join('');
 
@@ -19,6 +20,7 @@ const icons = {
   evaluation: 'M12 3v18M5 7h14M5 7l-3 7a3 3 0 006 0zM19 7l-3 7a3 3 0 006 0z',
   awards: 'M12 14a6 6 0 100-12 6 6 0 000 12zM8.5 13L7 22l5-3 5 3-1.5-9',
   suppliers: 'M4 21V7l8-4 8 4v14M9 21v-6h6v6M9 10h.01M15 10h.01',
+  payables: 'M4 4h12l4 4v12H4zM16 4v4h4M8 12h8M8 16h5',
   workflows: 'M5 5h5v5H5zM14 14h5v5h-5zM10 7.5h4a3 3 0 013 3V14',
 };
 const Icon = ({ name }: { name: NavItem['icon'] }) => (

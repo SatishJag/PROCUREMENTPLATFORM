@@ -18,6 +18,7 @@ import { Evaluation } from './screens/evaluation/Evaluation';
 import { Intake } from './screens/intake/Intake';
 import { Sourcing } from './screens/sourcing/Sourcing';
 import { Suppliers } from './screens/suppliers/Suppliers';
+import { Payables } from './screens/payables/Payables';
 import { Workflows } from './screens/workflows/Workflows';
 
 const nav: NavItem[] = [
@@ -27,9 +28,10 @@ const nav: NavItem[] = [
   { to: '/evaluation', label: 'Evaluation', icon: 'evaluation' },
   { to: '/awards', label: 'Awards', icon: 'awards' },
   { to: '/suppliers', label: 'Suppliers', icon: 'suppliers' },
+  { to: '/payables', label: 'Payables', icon: 'payables' },
   { to: '/workflows', label: 'Workflows', icon: 'workflows', group: 'Administration' },
 ];
-const screens: Record<string, ComponentType> = { '/': Dashboard, '/intake': Intake, '/sourcing': Sourcing, '/evaluation': Evaluation, '/awards': Awards, '/suppliers': Suppliers, '/workflows': Workflows };
+const screens: Record<string, ComponentType> = { '/': Dashboard, '/intake': Intake, '/sourcing': Sourcing, '/evaluation': Evaluation, '/awards': Awards, '/suppliers': Suppliers, '/payables': Payables, '/workflows': Workflows };
 
 const client = new QueryClient({ defaultOptions: { queries: { retry: false, refetchOnWindowFocus: false } } });
 const path = () => location.hash.slice(1) || '/';
